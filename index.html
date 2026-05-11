@@ -8,7 +8,7 @@
     * { margin: 0; padding: 0; box-sizing: border-box; }
 
     body {
-      background: #888;
+      background: #555;
       color: #f5c800;
       font-family: 'Courier New', monospace;
       min-height: 100vh;
@@ -18,7 +18,7 @@
     #overlay {
       position: fixed;
       inset: 0;
-      background: #888;
+      background: #555;
       display: flex;
       flex-direction: column;
       align-items: center;
@@ -36,7 +36,7 @@
     }
 
     #overlay p {
-      color: #888;
+      color: #333;
       font-size: 1rem;
     }
 
@@ -73,13 +73,13 @@
       display: flex;
       align-items: center;
       gap: 12px;
-      color: #888;
+      color: #333;
       font-size: 0.85rem;
     }
 
     #speed {
       accent-color: #f5c800;
-      width: 140px;
+      width: 260px;
       cursor: pointer;
     }
 
@@ -91,9 +91,7 @@
       max-width: 100%;
     }
 
-    .word {
-      display: inline;
-    }
+    .word { display: inline; }
 
     .word.new {
       animation: pop 0.12s ease-out;
@@ -110,8 +108,8 @@
       bottom: 0;
       left: 0;
       right: 0;
-      padding: 12px 24px;
-      background: linear-gradient(transparent, #888888dd 40%, #888);
+      padding: 12px 24px 16px;
+      background: linear-gradient(transparent, #555555dd 40%, #555);
       display: flex;
       align-items: center;
       gap: 16px;
@@ -136,36 +134,109 @@
       cursor: pointer;
       letter-spacing: 0.1em;
       transition: background 0.15s;
+      flex-shrink: 0;
     }
 
     #pause-btn:hover { background: #f5c80022; }
 
-    #progress {
+    #progress-wrap {
       flex: 1;
-      height: 2px;
-      background: #555;
-      border-radius: 2px;
-      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+    }
+
+    #progress {
+      position: relative;
+      height: 6px;
+      background: #333;
+      border-radius: 3px;
     }
 
     #progress-bar {
       height: 100%;
       background: #f5c800;
       width: 0%;
+      border-radius: 3px;
       transition: width 0.3s linear;
     }
 
+    .milestone {
+      position: absolute;
+      top: 50%;
+      transform: translate(-50%, -50%);
+      width: 10px;
+      height: 10px;
+      background: #fff;
+      border-radius: 50%;
+      border: 2px solid #333;
+      cursor: pointer;
+      transition: transform 0.15s, background 0.15s;
+      z-index: 2;
+    }
+
+    .milestone.reached {
+      background: #f5c800;
+      border-color: #f5c800;
+    }
+
+    .milestone-label {
+      position: absolute;
+      bottom: 14px;
+      transform: translateX(-50%);
+      background: #222;
+      color: #f5c800;
+      font-size: 0.65rem;
+      font-family: 'Courier New', monospace;
+      white-space: nowrap;
+      padding: 3px 6px;
+      border-radius: 3px;
+      pointer-events: none;
+      opacity: 0;
+      transition: opacity 0.2s;
+    }
+
+    .milestone:hover .milestone-label,
+    .milestone.reached:hover .milestone-label { opacity: 1; }
+
     #word-count {
-      color: #555;
+      color: #333;
       font-size: 0.75rem;
-      min-width: 80px;
+      min-width: 90px;
       text-align: right;
+      flex-shrink: 0;
     }
 
     #live-speed {
       accent-color: #f5c800;
-      width: 80px;
+      width: 120px;
       cursor: pointer;
+      flex-shrink: 0;
+    }
+
+    #milestone-toast {
+      position: fixed;
+      top: 24px;
+      left: 50%;
+      transform: translateX(-50%) translateY(-80px);
+      background: #111;
+      color: #f5c800;
+      font-family: 'Courier New', monospace;
+      font-size: 0.9rem;
+      padding: 10px 20px;
+      border: 1px solid #f5c800;
+      border-radius: 4px;
+      z-index: 200;
+      transition: transform 0.3s ease, opacity 0.3s ease;
+      opacity: 0;
+      pointer-events: none;
+      text-align: center;
+      max-width: 80vw;
+    }
+
+    #milestone-toast.show {
+      transform: translateX(-50%) translateY(0);
+      opacity: 1;
     }
   </style>
 </head>
@@ -177,7 +248,7 @@
   <div class="controls">
     <div class="speed-row">
       <span>slow</span>
-      <input type="range" id="speed" min="1" max="10" value="5" />
+      <input type="range" id="speed" min="1" max="50" value="15" />
       <span>fast</span>
     </div>
     <button id="start-btn">START</button>
@@ -185,35 +256,95 @@
 </div>
 
 <div id="words"></div>
+<div id="milestone-toast"></div>
 
 <div id="hud">
   <button id="pause-btn">PAUSE</button>
-  <input type="range" id="live-speed" min="1" max="10" value="5" />
-  <div id="progress"><div id="progress-bar"></div></div>
+  <input type="range" id="live-speed" min="1" max="50" value="15" />
+  <div id="progress-wrap">
+    <div id="progress">
+      <div id="progress-bar"></div>
+    </div>
+  </div>
   <span id="word-count">0 / 0</span>
 </div>
 
 <script>
   const SCRIPT_FILE = 'vibes.txt';
 
-  const overlay    = document.getElementById('overlay');
-  const wordsEl    = document.getElementById('words');
-  const hud        = document.getElementById('hud');
-  const pauseBtn   = document.getElementById('pause-btn');
-  const speedEl    = document.getElementById('speed');
-  const liveSpeed  = document.getElementById('live-speed');
+  // Milestones: [approximate % through the script, emoji + label]
+  const MILESTONES = [
+    { pct:  2,  icon: '🐝', label: 'Yellow, black. Yellow, black.' },
+    { pct: 14,  icon: '🎓', label: 'Graduation Day' },
+    { pct: 27,  icon: '🎷', label: 'You like jazz?' },
+    { pct: 33,  icon: '🌸', label: 'Meeting Vanessa' },
+    { pct: 38,  icon: '🧠', label: 'Thinking bee!' },
+    { pct: 45,  icon: '🍯', label: 'Honey Farms discovered' },
+    { pct: 57,  icon: '⚖️',  label: 'The trial begins' },
+    { pct: 68,  icon: '🎤', label: 'Mr. Sting takes the stand' },
+    { pct: 73,  icon: '✊', label: 'FREE THE BEES!' },
+    { pct: 75,  icon: '🏆', label: 'The bees win!' },
+    { pct: 84,  icon: '🌺', label: 'Flowers are dying...' },
+    { pct: 91,  icon: '✈️',  label: 'Barry flies the plane' },
+    { pct: 97,  icon: '🛬', label: 'Barry, we did it!' },
+    { pct: 100, icon: '🎬', label: 'No rehearsal for that.' },
+  ];
+
+  const overlay     = document.getElementById('overlay');
+  const wordsEl     = document.getElementById('words');
+  const hud         = document.getElementById('hud');
+  const pauseBtn    = document.getElementById('pause-btn');
+  const speedEl     = document.getElementById('speed');
+  const liveSpeed   = document.getElementById('live-speed');
   const progressBar = document.getElementById('progress-bar');
-  const wordCount  = document.getElementById('word-count');
-  const startBtn   = document.getElementById('start-btn');
+  const progressEl  = document.getElementById('progress');
+  const wordCount   = document.getElementById('word-count');
+  const startBtn    = document.getElementById('start-btn');
+  const toast       = document.getElementById('milestone-toast');
 
   let words = [];
   let idx = 0;
   let paused = false;
   let timer = null;
+  let toastTimer = null;
+  let nextMilestone = 0;
 
   function msPerWord(val) {
-    // val 1-10 → ~600ms down to ~30ms
-    return Math.round(600 / (val ** 1.5) * 10);
+    // val 1-50 → ~800ms down to ~8ms
+    return Math.round(800 / (val ** 1.4));
+  }
+
+  function showToast(text) {
+    clearTimeout(toastTimer);
+    toast.textContent = text;
+    toast.classList.add('show');
+    toastTimer = setTimeout(() => toast.classList.remove('show'), 2800);
+  }
+
+  function buildMilestones() {
+    MILESTONES.forEach((m, i) => {
+      const dot = document.createElement('div');
+      dot.className = 'milestone';
+      dot.id = `ms-${i}`;
+      dot.style.left = m.pct + '%';
+
+      const lbl = document.createElement('div');
+      lbl.className = 'milestone-label';
+      lbl.textContent = `${m.icon} ${m.label}`;
+      dot.appendChild(lbl);
+
+      progressEl.appendChild(dot);
+    });
+  }
+
+  function checkMilestones(pct) {
+    while (nextMilestone < MILESTONES.length && pct >= MILESTONES[nextMilestone].pct) {
+      const m = MILESTONES[nextMilestone];
+      const dot = document.getElementById(`ms-${nextMilestone}`);
+      if (dot) dot.classList.add('reached');
+      showToast(`${m.icon} ${m.label}`);
+      nextMilestone++;
+    }
   }
 
   function addWord() {
@@ -230,9 +361,10 @@
     setTimeout(() => span.classList.remove('new'), 200);
 
     idx++;
-    const pct = (idx / words.length * 100).toFixed(1);
-    progressBar.style.width = pct + '%';
+    const pct = idx / words.length * 100;
+    progressBar.style.width = pct.toFixed(1) + '%';
     wordCount.textContent = `${idx.toLocaleString()} / ${words.length.toLocaleString()}`;
+    checkMilestones(pct);
 
     window.scrollTo({ top: document.body.scrollHeight, behavior: 'instant' });
   }
@@ -263,13 +395,14 @@
     words = text.trim().split(/\s+/);
     wordCount.textContent = `0 / ${words.length.toLocaleString()}`;
 
+    buildMilestones();
+
     overlay.style.opacity = '0';
     overlay.style.pointerEvents = 'none';
     hud.classList.add('visible');
 
     startInterval();
   });
-
 </script>
 </body>
 </html>
