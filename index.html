@@ -4,7 +4,12 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>beelieveInYourself</title>
-  <script src="config.js"></script>
+  <script>
+    const CONFIG = {
+      JSONBIN_KEY: '$2a$10$koP4muu.a.utvHipMT1WHOyTApRAej0vJ7iEJvEKzyW1zNYFA2mzG',
+      JSONBIN_BIN: '6a025b04c0954111d80c6193'
+    };
+  </script>
   <style>
     * { margin: 0; padding: 0; box-sizing: border-box; }
 
@@ -258,21 +263,13 @@
 
     /* ---- leaderboard ---- */
     #leaderboard {
-      position: fixed;
-      top: 50%;
-      left: 0;
-      transform: translateY(-50%);
-      width: 200px;
-      background: #33333388;
-      backdrop-filter: blur(6px);
-      border-right: 1px solid #f5c80033;
-      padding: 16px 14px;
-      z-index: 60;
+      width: 300px;
+      background: #44444466;
+      border: 1px solid #f5c80033;
+      border-radius: 4px;
+      padding: 14px 16px;
       font-size: 0.75rem;
-      display: none;
     }
-
-    #leaderboard.visible { display: block; }
 
     #leaderboard h3 {
       color: #f5c800;
@@ -348,14 +345,15 @@
       <select id="voice-select"><option>loading voices...</option></select>
     </div>
     <button id="start-btn">START</button>
-    <a href="beelieve.html" style="color:#888; font-size:0.75rem; letter-spacing:0.1em; text-decoration:none; margin-top:4px;">how was this made? →</a>
+    <a href="beelieve.html" style="color:#111; font-size:0.75rem; letter-spacing:0.1em; text-decoration:none; margin-top:4px;">how was this made? →</a>
+
+    <div id="leaderboard">
+      <h3>🏆 leaderboard</h3>
+      <div id="lb-rows"><div style="color:#666;text-align:center;padding:8px">loading...</div></div>
+    </div>
   </div>
 </div>
 
-<div id="leaderboard">
-  <h3>🏆 leaderboard</h3>
-  <div id="lb-rows"></div>
-</div>
 <div id="bees"></div>
 <div id="words"></div>
 <div id="milestone-toast"></div>
@@ -470,6 +468,9 @@
     renderLeaderboard(scores, playerName);
   }
 
+  // show leaderboard immediately on page load
+  loadLeaderboard();
+
   // save on tab close
   window.addEventListener('beforeunload', () => {
     if (running || litCount > 0) saveScore(playerName, litCount);
@@ -500,8 +501,14 @@
       voiceSelect.appendChild(opt);
     });
   }
+  speechSynthesis.onvoiceschanged = loadVoices;
   loadVoices();
-  if (speechSynthesis.onvoiceschanged !== undefined) speechSynthesis.onvoiceschanged = loadVoices;
+  // Chrome loads voices async — retry a few times if empty on first call
+  let voiceRetries = 0;
+  const voiceRetryTimer = setInterval(() => {
+    if (voices.length || voiceRetries++ > 10) { clearInterval(voiceRetryTimer); return; }
+    loadVoices();
+  }, 300);
 
   function ttsRate() {
     return 0.5 + (+liveSpeed.value - 1) / 37 * 1.5;
@@ -690,7 +697,6 @@
     overlay.style.opacity = '0';
     overlay.style.pointerEvents = 'none';
     hud.classList.add('visible');
-    lbPanel.classList.add('visible');
     loadLeaderboard();
 
     running = true;
