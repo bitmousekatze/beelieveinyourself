@@ -35,10 +35,7 @@
       text-shadow: 0 0 30px #f5c800aa;
     }
 
-    #overlay p {
-      color: #111;
-      font-size: 1rem;
-    }
+    #overlay p { color: #111; font-size: 1rem; }
 
     .controls {
       display: flex;
@@ -58,10 +55,7 @@
       font-size: 0.85rem;
     }
 
-    .control-row label {
-      min-width: 50px;
-      color: #111;
-    }
+    .control-row label { min-width: 50px; color: #111; }
 
     .control-row input[type=range] {
       flex: 1;
@@ -104,11 +98,7 @@
       margin-top: 8px;
     }
 
-    #start-btn:hover {
-      transform: scale(1.05);
-      box-shadow: 0 0 40px #f5c800aa;
-    }
-
+    #start-btn:hover { transform: scale(1.05); box-shadow: 0 0 40px #f5c800aa; }
     #start-btn:active { transform: scale(0.97); }
 
     #words {
@@ -119,15 +109,14 @@
       max-width: 100%;
     }
 
-    .word { display: inline; }
-
-    .word.new { animation: pop 0.12s ease-out; }
-
-    @keyframes pop {
-      0%   { opacity: 0; transform: scale(0.8); }
-      60%  { opacity: 1; transform: scale(1.08); }
-      100% { transform: scale(1); }
+    .word {
+      display: inline;
+      color: #555; /* hidden by default — same as background */
+      transition: color 0.08s ease;
     }
+
+    .word.lit-yellow { color: #f5c800; }
+    .word.lit-black  { color: #111; }
 
     #hud {
       position: fixed;
@@ -145,10 +134,7 @@
       transition: opacity 0.4s;
     }
 
-    #hud.visible {
-      opacity: 1;
-      pointer-events: all;
-    }
+    #hud.visible { opacity: 1; pointer-events: all; }
 
     #pause-btn {
       background: transparent;
@@ -215,10 +201,7 @@
       z-index: 2;
     }
 
-    .milestone.reached {
-      background: #f5c800;
-      border-color: #f5c800;
-    }
+    .milestone.reached { background: #f5c800; border-color: #f5c800; }
 
     .milestone-label {
       position: absolute;
@@ -279,24 +262,20 @@
   <h1>🐝 beelieveInYourself</h1>
   <p>according to all known laws of aviation...</p>
   <div class="controls">
-
     <div class="control-row">
       <label>speed</label>
       <input type="range" id="speed" min="1" max="38" value="12" />
       <span class="val" id="speed-val">12</span>
     </div>
-
     <div class="control-row">
       <label>pitch</label>
       <input type="range" id="pitch" min="0.1" max="2" step="0.05" value="1" />
-      <span class="val" id="pitch-val">1.0</span>
+      <span class="val" id="pitch-val">1.00</span>
     </div>
-
     <div class="control-row">
       <label>voice</label>
       <select id="voice-select"><option>loading voices...</option></select>
     </div>
-
     <button id="start-btn">START</button>
   </div>
 </div>
@@ -355,23 +334,23 @@
   const startBtn    = document.getElementById('start-btn');
   const toast       = document.getElementById('milestone-toast');
 
-  let words = [];
-  let idx = 0;
-  let paused = false;
+  let words     = [];
+  let spans     = [];   // pre-rendered span for each word
+  let sentences = [];   // [{start, end, text, charMap}]
+  let sentIdx   = 0;    // which sentence we're on
+  let litCount  = 0;    // how many words have been lit so far
+  let paused    = false;
+  let running   = false;
   let toastTimer = null;
   let nextMilestone = 0;
-  let voices = [];
-  let running = false;
+  let voices    = [];
 
-  // --- Web Speech API setup ---
+  // --- voices ---
   function loadVoices() {
     const all = speechSynthesis.getVoices();
     voices = all.filter(v => v.lang.startsWith('en'));
     voiceSelect.innerHTML = '';
-    if (!voices.length) {
-      voiceSelect.innerHTML = '<option>no voices found</option>';
-      return;
-    }
+    if (!voices.length) { voiceSelect.innerHTML = '<option>no voices found</option>'; return; }
     voices.forEach((v, i) => {
       const opt = document.createElement('option');
       opt.value = i;
@@ -380,69 +359,25 @@
       voiceSelect.appendChild(opt);
     });
   }
-
   loadVoices();
-  if (speechSynthesis.onvoiceschanged !== undefined) {
-    speechSynthesis.onvoiceschanged = loadVoices;
-  }
+  if (speechSynthesis.onvoiceschanged !== undefined) speechSynthesis.onvoiceschanged = loadVoices;
 
   function ttsRate() {
-    // slider 1-38 → speech rate 0.5 (slow) to 2.0 (fast), midpoint=1.0 at val~14
     return 0.5 + (+liveSpeed.value - 1) / 37 * 1.5;
   }
 
-  function getChunk() {
-    // collect up to 4 words, extending to sentence end if punctuation is close
-    const CHUNK = 4;
-    const end = /[.!?]$/;
-    let chunk = [];
-    let i = idx;
-    while (i < words.length) {
-      chunk.push(words[i]);
-      i++;
-      if (end.test(words[i - 1])) break;        // natural sentence end
-      if (chunk.length >= CHUNK) {
-        // peek ahead up to 3 more words to finish the sentence
-        let peek = 0;
-        while (peek < 3 && i + peek < words.length) {
-          if (end.test(words[i + peek])) {
-            // include up to and including that word
-            for (let j = 0; j <= peek; j++) { chunk.push(words[i + j]); }
-            i += peek + 1;
-            break;
-          }
-          peek++;
-        }
-        break;
-      }
-    }
-    return { chunk, nextIdx: i };
-  }
+  speedEl.addEventListener('input', () => { speedVal.textContent = speedEl.value; });
+  pitchEl.addEventListener('input', () => { pitchVal.textContent = parseFloat(pitchEl.value).toFixed(2); });
 
-  function makeUtt(text) {
-    const utt = new SpeechSynthesisUtterance(text);
-    utt.pitch = parseFloat(pitchEl.value);
-    utt.rate  = ttsRate();
-    const vi = parseInt(voiceSelect.value);
-    if (voices[vi]) utt.voice = voices[vi];
-    return utt;
-  }
-
-  // --- Live label updates ---
-  speedEl.addEventListener('input', () => {
-    speedVal.textContent = speedEl.value;
-  });
-  pitchEl.addEventListener('input', () => {
-    pitchVal.textContent = parseFloat(pitchEl.value).toFixed(2);
-  });
-
-function showToast(text) {
+  // --- toast ---
+  function showToast(text) {
     clearTimeout(toastTimer);
     toast.textContent = text;
     toast.classList.add('show');
     toastTimer = setTimeout(() => toast.classList.remove('show'), 2800);
   }
 
+  // --- milestones ---
   function buildMilestones() {
     MILESTONES.forEach((m, i) => {
       const dot = document.createElement('div');
@@ -460,50 +395,99 @@ function showToast(text) {
   function checkMilestones(pct) {
     while (nextMilestone < MILESTONES.length && pct >= MILESTONES[nextMilestone].pct) {
       const m = MILESTONES[nextMilestone];
-      const dot = document.getElementById(`ms-${nextMilestone}`);
-      if (dot) dot.classList.add('reached');
+      document.getElementById(`ms-${nextMilestone}`)?.classList.add('reached');
       showToast(`${m.icon} ${m.label}`);
       nextMilestone++;
     }
   }
 
-  function pipeline() {
-    if (!running || paused || idx >= words.length) {
-      if (idx >= words.length) running = false;
+  // --- pre-render all words as grey spans ---
+  function renderAll() {
+    words.forEach((w, i) => {
+      const span = document.createElement('span');
+      span.className = 'word';
+      span.textContent = w + ' ';
+      wordsEl.appendChild(span);
+      spans.push(span);
+    });
+  }
+
+  // --- build sentence list with char→word maps ---
+  function buildSentences() {
+    const end = /[.!?]$/;
+    let start = 0;
+    for (let i = 0; i < words.length; i++) {
+      if (end.test(words[i]) || i === words.length - 1) {
+        const slice = words.slice(start, i + 1);
+        // build char offset → word index within sentence
+        const charMap = [];
+        let pos = 0;
+        slice.forEach((w, wi) => {
+          for (let c = 0; c < w.length; c++) charMap[pos + c] = start + wi;
+          pos += w.length + 1; // +1 for space
+        });
+        sentences.push({ start, end: i + 1, text: slice.join(' '), charMap });
+        start = i + 1;
+      }
+    }
+  }
+
+  // --- light up a word ---
+  function lightWord(globalIdx) {
+    if (globalIdx >= spans.length) return;
+    spans[globalIdx].classList.add(globalIdx % 2 === 0 ? 'lit-yellow' : 'lit-black');
+    litCount = Math.max(litCount, globalIdx + 1);
+
+    const pct = litCount / words.length * 100;
+    progressBar.style.width = pct.toFixed(1) + '%';
+    wordCount.textContent = `${litCount.toLocaleString()} / ${words.length.toLocaleString()}`;
+    checkMilestones(pct);
+
+    // scroll to keep current word in view
+    spans[globalIdx].scrollIntoView({ block: 'center', behavior: 'smooth' });
+  }
+
+  // --- speak a sentence, lighting words via onboundary ---
+  function speakSentence(si) {
+    if (!running || paused || si >= sentences.length) {
+      if (si >= sentences.length) running = false;
       return;
     }
 
-    const { chunk, nextIdx } = getChunk();
-    const displayAt = idx;
-    idx = nextIdx;
+    const s = sentences[si];
+    const utt = new SpeechSynthesisUtterance(s.text);
+    utt.pitch = parseFloat(pitchEl.value);
+    utt.rate  = ttsRate();
+    const vi = parseInt(voiceSelect.value);
+    if (voices[vi]) utt.voice = voices[vi];
 
-    const utt = makeUtt(chunk.join(' '));
+    utt.onboundary = (e) => {
+      if (e.name !== 'word') return;
+      const globalIdx = s.charMap[e.charIndex];
+      if (globalIdx !== undefined) lightWord(globalIdx);
+    };
 
     utt.onstart = () => {
-      // show words the moment this chunk starts speaking
-      chunk.forEach((w, i) => {
-        const span = document.createElement('span');
-        span.className = 'word new';
-        span.style.color = (displayAt + i) % 2 === 0 ? '#f5c800' : '#111';
-        span.textContent = w + ' ';
-        wordsEl.appendChild(span);
-        setTimeout(() => span.classList.remove('new'), 200);
-      });
-      const pct = idx / words.length * 100;
-      progressBar.style.width = pct.toFixed(1) + '%';
-      wordCount.textContent = `${idx.toLocaleString()} / ${words.length.toLocaleString()}`;
-      checkMilestones(pct);
-      window.scrollTo({ top: document.body.scrollHeight, behavior: 'instant' });
+      // light the first word immediately (onboundary can lag on some browsers)
+      lightWord(s.start);
+      // pre-queue the next sentence to eliminate gap
+      speakSentence(si + 1);
+    };
 
-      // queue next chunk immediately so there's no gap
-      pipeline();
+    utt.onend = () => {
+      // light any remaining words in this sentence that onboundary missed
+      for (let i = s.start; i < s.end; i++) {
+        if (!spans[i].classList.contains('lit-yellow') && !spans[i].classList.contains('lit-black')) {
+          lightWord(i);
+        }
+      }
     };
 
     speechSynthesis.speak(utt);
+    sentIdx = si + 1;
   }
 
-  liveSpeed.addEventListener('input', () => { /* rate picked up per-utterance */ });
-
+  // --- pause / resume ---
   pauseBtn.addEventListener('click', () => {
     paused = !paused;
     pauseBtn.textContent = paused ? 'RESUME' : 'PAUSE';
@@ -514,6 +498,7 @@ function showToast(text) {
     }
   });
 
+  // --- start ---
   startBtn.addEventListener('click', async () => {
     liveSpeed.value = speedEl.value;
 
@@ -524,6 +509,8 @@ function showToast(text) {
     words = text.trim().split(/\s+/);
     wordCount.textContent = `0 / ${words.length.toLocaleString()}`;
 
+    renderAll();
+    buildSentences();
     buildMilestones();
 
     overlay.style.opacity = '0';
@@ -531,7 +518,7 @@ function showToast(text) {
     hud.classList.add('visible');
 
     running = true;
-    pipeline();
+    speakSentence(0);
   });
 </script>
 </body>
