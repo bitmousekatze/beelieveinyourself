@@ -441,6 +441,98 @@
     <li>Speed slider 1–10 → 1–50 → 1–38 (slowed max by 25%)</li>
   </ul>
 
+    <div class="timeline-item">
+      <h3>11. leaderboard</h3>
+      <div class="prompt-box">
+        Now let's add a leaderboard. Before you hit start you enter a name, this name gets recorded and scored by how many words they listened to. You should be able to see the leaderboard on the left side of the screen.
+      </div>
+      <p>
+        GitHub Pages is static hosting — it can't write to files. We used
+        <strong>JSONBin.io</strong> as a free JSON storage backend. Scores are stored as
+        <code>{"scores": [{name, score, date}]}</code>. A name input was added to the start screen.
+        Score = number of words lit up by the voice. Saves on pause, on finish, and on tab close
+        via <code>beforeunload</code>. Top 50 scores kept, top 10 shown.
+      </p>
+      <p>
+        The API key and Bin ID are stored in a <code>config.js</code> file that is
+        listed in <code>.gitignore</code> so it is never committed to the repo.
+      </p>
+
+      <div class="bug-box">
+        <span class="bug-label">🐛 bug — CONFIG not defined on GitHub Pages</span>
+        <code>config.js</code> was gitignored, so it didn't exist on GitHub Pages.
+        The page threw <code>ReferenceError: CONFIG is not defined</code> and nothing worked.
+      </div>
+
+      <div class="fix-box">
+        <span class="fix-label">✅ fix</span>
+        Inlined the config directly into the HTML. The gitignored file still exists locally
+        for clean separation, but the live site has the values baked in.
+      </div>
+
+      <div class="bug-box">
+        <span class="bug-label">🐛 bug — voices not loading on start screen</span>
+        <code>speechSynthesis.getVoices()</code> returns an empty array on first call in Chrome —
+        voices load asynchronously. The dropdown showed "loading voices..." forever.
+      </div>
+
+      <div class="fix-box">
+        <span class="fix-label">✅ fix</span>
+        Added a retry loop that polls every 300ms up to 10 times alongside the
+        <code>onvoiceschanged</code> event handler. Whichever fires first populates the dropdown.
+      </div>
+    </div>
+
+    <div class="timeline-item">
+      <h3>12. infinite recursion bug kills TTS</h3>
+
+      <div class="bug-box">
+        <span class="bug-label">🐛 bug — no voice, no word lighting after leaderboard added</span>
+        To hook score-saving into the end of the script, a wrapper function was written:
+        <code>const _orig = speakSentence; function speakSentence(si) { _orig(si); }</code>.
+        JavaScript hoists <code>function</code> declarations to the top of scope, so
+        <code>_orig</code> ended up pointing at the wrapper itself — instant infinite recursion.
+        The whole TTS system crashed silently before a single word was spoken.
+      </div>
+
+      <div class="fix-box">
+        <span class="fix-label">✅ fix</span>
+        Removed the wrapper entirely. The <code>saveScore()</code> call was placed directly
+        inside the real <code>speakSentence</code> function at the point where
+        <code>si >= sentences.length</code> — the natural finish condition.
+      </div>
+    </div>
+
+    <div class="timeline-item">
+      <h3>13. bees</h3>
+      <div class="prompt-box">
+        bee.png is in the project folder. Can you add a bunch moving across the screen at all times?
+      </div>
+      <p>
+        22 <code>&lt;img&gt;</code> elements are spawned via JS on page load. Each gets a random
+        size (108–324px after two rounds of "BIGGER"), random vertical position, random direction
+        (left or right, flipped via <code>scaleX(-1)</code>), random speed (6–24s per pass),
+        staggered negative animation delay so they're already mid-flight on load, and a wobble
+        keyframe animation so they bob up and down as they fly.
+      </p>
+    </div>
+
+  </div>
+
+  <h2>// things that were tried and changed</h2>
+  <ul>
+    <li>setInterval word timer → replaced by TTS-driven display</li>
+    <li>Single word utterances → 4-word chunks → full sentences</li>
+    <li>onend chaining → onstart pre-queueing to remove gaps</li>
+    <li>Words appended as spoken → all pre-rendered grey, revealed by onboundary</li>
+    <li>Estimated milestone positions → exact positions found by scanning the word array</li>
+    <li>All system voices → filtered to English only</li>
+    <li>Speed slider 1–10 → 1–50 → 1–38 (slowed max by 25%)</li>
+    <li>12 bees → 22 bees, 24px max → 324px max (two rounds of "BIGGER")</li>
+    <li>Leaderboard fixed left panel → moved inside landing overlay, hidden after start</li>
+    <li>speakSentence wrapper → removed, save call inlined directly</li>
+  </ul>
+
   <hr>
 
   <footer>
