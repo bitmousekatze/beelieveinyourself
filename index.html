@@ -441,7 +441,8 @@
       await fetch(BIN_URL, {
         method: 'PUT',
         headers: BIN_HEADERS,
-        body: JSON.stringify({ scores: top50 })
+        body: JSON.stringify({ scores: top50 }),
+        keepalive: true
       });
       renderLeaderboard(top50, name);
     } catch {}
