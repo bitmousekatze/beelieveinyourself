@@ -4,6 +4,7 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>beelieveInYourself</title>
+  <script src="config.js"></script>
   <style>
     * { margin: 0; padding: 0; box-sizing: border-box; }
 
@@ -255,6 +256,48 @@
       opacity: 1;
     }
 
+    /* ---- leaderboard ---- */
+    #leaderboard {
+      position: fixed;
+      top: 50%;
+      left: 0;
+      transform: translateY(-50%);
+      width: 200px;
+      background: #33333388;
+      backdrop-filter: blur(6px);
+      border-right: 1px solid #f5c80033;
+      padding: 16px 14px;
+      z-index: 60;
+      font-size: 0.75rem;
+      display: none;
+    }
+
+    #leaderboard.visible { display: block; }
+
+    #leaderboard h3 {
+      color: #f5c800;
+      font-size: 0.8rem;
+      letter-spacing: 0.1em;
+      margin-bottom: 12px;
+      text-align: center;
+    }
+
+    .lb-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 4px 0;
+      border-bottom: 1px solid #ffffff11;
+      gap: 6px;
+    }
+
+    .lb-row:last-child { border-bottom: none; }
+
+    .lb-rank { color: #f5c800; min-width: 18px; }
+    .lb-name { color: #ddd; flex: 1; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+    .lb-score { color: #f5c800; text-align: right; min-width: 40px; }
+    .lb-row.me .lb-name, .lb-row.me .lb-score { color: #fff; font-weight: bold; }
+
     /* ---- bees ---- */
     .bee {
       position: fixed;
@@ -284,6 +327,13 @@
   <p>according to all known laws of aviation...</p>
   <div class="controls">
     <div class="control-row">
+      <label>name</label>
+      <input type="text" id="player-name" maxlength="20" placeholder="enter your name"
+        style="flex:1; background:#444; color:#f5c800; border:1px solid #f5c800;
+               font-family:'Courier New',monospace; font-size:0.85rem; padding:4px 8px; outline:none;" />
+    </div>
+
+    <div class="control-row">
       <label>speed</label>
       <input type="range" id="speed" min="1" max="38" value="12" />
       <span class="val" id="speed-val">12</span>
@@ -302,6 +352,10 @@
   </div>
 </div>
 
+<div id="leaderboard">
+  <h3>🏆 leaderboard</h3>
+  <div id="lb-rows"></div>
+</div>
 <div id="bees"></div>
 <div id="words"></div>
 <div id="milestone-toast"></div>
@@ -341,6 +395,9 @@
     { pct: 100,  icon: '🎬', label: 'No rehearsal for that.' },
   ];
 
+  const lbPanel     = document.getElementById('leaderboard');
+  const lbRows      = document.getElementById('lb-rows');
+  const playerNameEl = document.getElementById('player-name');
   const overlay     = document.getElementById('overlay');
   const wordsEl     = document.getElementById('words');
   const hud         = document.getElementById('hud');
@@ -356,6 +413,67 @@
   const wordCount   = document.getElementById('word-count');
   const startBtn    = document.getElementById('start-btn');
   const toast       = document.getElementById('milestone-toast');
+
+  let playerName = 'anonymous';
+  let scoreSaved = false;
+
+  // --- leaderboard ---
+  const BIN_URL = `https://api.jsonbin.io/v3/b/${CONFIG.JSONBIN_BIN}`;
+  const BIN_HEADERS = {
+    'X-Master-Key': CONFIG.JSONBIN_KEY,
+    'Content-Type': 'application/json'
+  };
+
+  async function fetchScores() {
+    try {
+      const res = await fetch(BIN_URL, { headers: { 'X-Master-Key': CONFIG.JSONBIN_KEY } });
+      const data = await res.json();
+      return data.record.scores || [];
+    } catch { return []; }
+  }
+
+  async function saveScore(name, score) {
+    if (scoreSaved || score < 10) return;
+    scoreSaved = true;
+    const scores = await fetchScores();
+    scores.push({ name, score, date: new Date().toISOString().slice(0, 10) });
+    scores.sort((a, b) => b.score - a.score);
+    const top50 = scores.slice(0, 50);
+    try {
+      await fetch(BIN_URL, {
+        method: 'PUT',
+        headers: BIN_HEADERS,
+        body: JSON.stringify({ scores: top50 })
+      });
+      renderLeaderboard(top50, name);
+    } catch {}
+  }
+
+  function renderLeaderboard(scores, highlightName) {
+    lbRows.innerHTML = '';
+    const top10 = scores.slice(0, 10);
+    top10.forEach((s, i) => {
+      const row = document.createElement('div');
+      row.className = 'lb-row' + (s.name === highlightName ? ' me' : '');
+      row.innerHTML = `
+        <span class="lb-rank">${i + 1}</span>
+        <span class="lb-name">${s.name}</span>
+        <span class="lb-score">${s.score.toLocaleString()}</span>
+      `;
+      lbRows.appendChild(row);
+    });
+    if (!top10.length) lbRows.innerHTML = '<div style="color:#666;text-align:center;padding:8px">no scores yet</div>';
+  }
+
+  async function loadLeaderboard() {
+    const scores = await fetchScores();
+    renderLeaderboard(scores, playerName);
+  }
+
+  // save on tab close
+  window.addEventListener('beforeunload', () => {
+    if (running || litCount > 0) saveScore(playerName, litCount);
+  });
 
   let words     = [];
   let spans     = [];   // pre-rendered span for each word
@@ -516,7 +634,9 @@
     pauseBtn.textContent = paused ? 'RESUME' : 'PAUSE';
     if (paused) {
       speechSynthesis.pause();
+      if (litCount > 0) saveScore(playerName, litCount);
     } else {
+      scoreSaved = false; // allow saving again on resume
       speechSynthesis.resume();
     }
   });
@@ -553,6 +673,7 @@
 
   // --- start ---
   startBtn.addEventListener('click', async () => {
+    playerName = playerNameEl.value.trim() || 'anonymous';
     liveSpeed.value = speedEl.value;
 
     const res = await fetch(SCRIPT_FILE);
@@ -569,10 +690,19 @@
     overlay.style.opacity = '0';
     overlay.style.pointerEvents = 'none';
     hud.classList.add('visible');
+    lbPanel.classList.add('visible');
+    loadLeaderboard();
 
     running = true;
     speakSentence(0);
   });
+
+  // save score when finished
+  const _origSpeakSentence = speakSentence;
+  function speakSentence(si) {
+    if (si >= sentences.length && litCount > 0) saveScore(playerName, litCount);
+    _origSpeakSentence(si);
+  }
 </script>
 </body>
 </html>
