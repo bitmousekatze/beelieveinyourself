@@ -1,0 +1,21 @@
+BEE MOVIE SCRIPT - WORD POSITIONS
+total words: 9,157
+==================================
+
+milestone                     | word #  | % through script
+------------------------------|---------|------------------
+Yellow, black. Yellow, black. |      47 |   0.5%
+Graduation Day                |     298 |   3.3%
+Pollen Jocks!                 |     692 |   7.6%
+She saved my life             |   2,187 |  23.9%
+You like jazz?                |   2,251 |  24.6%
+Thinking bee!                 |   3,118 |  34.1%
+Honey Farms discovered        |   3,760 |  41.1%
+The trial begins              |   4,998 |  54.6%
+Mr. Sting takes the stand     |   5,395 |  58.9%
+FREE THE BEES!                |   6,817 |  74.4%
+The bees win!                 |   6,833 |  74.6%
+Flowers are dying...          |   7,284 |  79.5%
+Barry flies the plane         |   8,142 |  88.9%
+Barry, we did it!             |   8,759 |  95.7%
+No rehearsal for that.        |   9,157 | 100.0%

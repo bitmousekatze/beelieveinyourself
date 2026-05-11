@@ -322,20 +322,21 @@
   const SCRIPT_FILE = 'vibes.txt';
 
   const MILESTONES = [
-    { pct:  2,  icon: '🐝', label: 'Yellow, black. Yellow, black.' },
-    { pct: 14,  icon: '🎓', label: 'Graduation Day' },
-    { pct: 27,  icon: '🎷', label: 'You like jazz?' },
-    { pct: 33,  icon: '🌸', label: 'Meeting Vanessa' },
-    { pct: 38,  icon: '🧠', label: 'Thinking bee!' },
-    { pct: 45,  icon: '🍯', label: 'Honey Farms discovered' },
-    { pct: 57,  icon: '⚖️',  label: 'The trial begins' },
-    { pct: 68,  icon: '🎤', label: 'Mr. Sting takes the stand' },
-    { pct: 73,  icon: '✊', label: 'FREE THE BEES!' },
-    { pct: 75,  icon: '🏆', label: 'The bees win!' },
-    { pct: 84,  icon: '🌺', label: 'Flowers are dying...' },
-    { pct: 91,  icon: '✈️',  label: 'Barry flies the plane' },
-    { pct: 97,  icon: '🛬', label: 'Barry, we did it!' },
-    { pct: 100, icon: '🎬', label: 'No rehearsal for that.' },
+    { pct:  0.5, icon: '🐝', label: 'Yellow, black. Yellow, black.' },
+    { pct:  3.3, icon: '🎓', label: 'Graduation Day' },
+    { pct:  7.6, icon: '🌻', label: 'Pollen Jocks!' },
+    { pct: 23.9, icon: '🌸', label: 'She saved my life' },
+    { pct: 24.6, icon: '🎷', label: 'You like jazz?' },
+    { pct: 34.1, icon: '🧠', label: 'Thinking bee!' },
+    { pct: 41.1, icon: '🍯', label: 'Honey Farms discovered' },
+    { pct: 54.6, icon: '⚖️',  label: 'The trial begins' },
+    { pct: 58.9, icon: '🎤', label: 'Mr. Sting takes the stand' },
+    { pct: 74.4, icon: '✊', label: 'FREE THE BEES!' },
+    { pct: 74.6, icon: '🏆', label: 'The bees win!' },
+    { pct: 79.5, icon: '🌺', label: 'Flowers are dying...' },
+    { pct: 88.9, icon: '✈️',  label: 'Barry flies the plane' },
+    { pct: 95.7, icon: '🛬', label: 'Barry, we did it!' },
+    { pct: 100,  icon: '🎬', label: 'No rehearsal for that.' },
   ];
 
   const overlay     = document.getElementById('overlay');
@@ -364,7 +365,8 @@
 
   // --- Web Speech API setup ---
   function loadVoices() {
-    voices = speechSynthesis.getVoices();
+    const all = speechSynthesis.getVoices();
+    voices = all.filter(v => v.lang.startsWith('en'));
     voiceSelect.innerHTML = '';
     if (!voices.length) {
       voiceSelect.innerHTML = '<option>no voices found</option>';
@@ -374,7 +376,7 @@
       const opt = document.createElement('option');
       opt.value = i;
       opt.textContent = `${v.name} (${v.lang})`;
-      if (v.default) opt.selected = true;
+      if (v.default || v.lang === 'en-US') opt.selected = true;
       voiceSelect.appendChild(opt);
     });
   }
