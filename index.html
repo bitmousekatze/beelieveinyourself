@@ -598,7 +598,10 @@
   // --- speak a sentence, lighting words via onboundary ---
   function speakSentence(si) {
     if (!running || paused || si >= sentences.length) {
-      if (si >= sentences.length) running = false;
+      if (si >= sentences.length) {
+        running = false;
+        saveScore(playerName, litCount);
+      }
       return;
     }
 
@@ -704,11 +707,6 @@
   });
 
   // save score when finished
-  const _origSpeakSentence = speakSentence;
-  function speakSentence(si) {
-    if (si >= sentences.length && litCount > 0) saveScore(playerName, litCount);
-    _origSpeakSentence(si);
-  }
 </script>
 </body>
 </html>
