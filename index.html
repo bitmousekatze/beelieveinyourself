@@ -389,8 +389,36 @@
     return 0.5 + (+liveSpeed.value - 1) / 37 * 1.5;
   }
 
-  function speakAndAdvance(word) {
-    const utt = new SpeechSynthesisUtterance(word);
+  function getChunk() {
+    // collect up to 4 words, extending to sentence end if punctuation is close
+    const CHUNK = 4;
+    const end = /[.!?]$/;
+    let chunk = [];
+    let i = idx;
+    while (i < words.length) {
+      chunk.push(words[i]);
+      i++;
+      if (end.test(words[i - 1])) break;        // natural sentence end
+      if (chunk.length >= CHUNK) {
+        // peek ahead up to 3 more words to finish the sentence
+        let peek = 0;
+        while (peek < 3 && i + peek < words.length) {
+          if (end.test(words[i + peek])) {
+            // include up to and including that word
+            for (let j = 0; j <= peek; j++) { chunk.push(words[i + j]); }
+            i += peek + 1;
+            break;
+          }
+          peek++;
+        }
+        break;
+      }
+    }
+    return { chunk, nextIdx: i };
+  }
+
+  function speakAndAdvance(text) {
+    const utt = new SpeechSynthesisUtterance(text);
     utt.pitch = parseFloat(pitchEl.value);
     utt.rate  = ttsRate();
     const vi = parseInt(voiceSelect.value);
@@ -441,21 +469,25 @@ function showToast(text) {
   function showWord() {
     if (idx >= words.length) { running = false; return; }
 
-    const span = document.createElement('span');
-    span.className = 'word new';
-    span.style.color = idx % 2 === 0 ? '#f5c800' : '#111';
-    span.textContent = words[idx] + ' ';
-    wordsEl.appendChild(span);
-    setTimeout(() => span.classList.remove('new'), 200);
+    const { chunk, nextIdx } = getChunk();
 
-    const pct = (idx + 1) / words.length * 100;
+    chunk.forEach((w, i) => {
+      const span = document.createElement('span');
+      span.className = 'word new';
+      span.style.color = (idx + i) % 2 === 0 ? '#f5c800' : '#111';
+      span.textContent = w + ' ';
+      wordsEl.appendChild(span);
+      setTimeout(() => span.classList.remove('new'), 200);
+    });
+
+    idx = nextIdx;
+    const pct = idx / words.length * 100;
     progressBar.style.width = pct.toFixed(1) + '%';
-    wordCount.textContent = `${(idx + 1).toLocaleString()} / ${words.length.toLocaleString()}`;
+    wordCount.textContent = `${idx.toLocaleString()} / ${words.length.toLocaleString()}`;
     checkMilestones(pct);
     window.scrollTo({ top: document.body.scrollHeight, behavior: 'instant' });
 
-    speakAndAdvance(words[idx]);
-    idx++;
+    speakAndAdvance(chunk.join(' '));
   }
 
   liveSpeed.addEventListener('input', () => { /* rate picked up per-utterance */ });
