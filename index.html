@@ -1,0 +1,296 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>beelieveInYourself</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+
+    body {
+      background: #0a0a00;
+      color: #f5c800;
+      font-family: 'Courier New', monospace;
+      min-height: 100vh;
+      overflow-x: hidden;
+    }
+
+    #overlay {
+      position: fixed;
+      inset: 0;
+      background: #0a0a00;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 32px;
+      z-index: 100;
+      transition: opacity 0.6s ease;
+    }
+
+    #overlay h1 {
+      font-size: clamp(2rem, 6vw, 4rem);
+      letter-spacing: 0.1em;
+      text-align: center;
+      text-shadow: 0 0 30px #f5c800aa;
+    }
+
+    #overlay p {
+      color: #888;
+      font-size: 1rem;
+    }
+
+    .controls {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 16px;
+    }
+
+    #start-btn {
+      background: #f5c800;
+      color: #0a0a00;
+      border: none;
+      padding: 16px 48px;
+      font-size: 1.4rem;
+      font-family: 'Courier New', monospace;
+      font-weight: bold;
+      cursor: pointer;
+      letter-spacing: 0.15em;
+      text-transform: uppercase;
+      transition: transform 0.1s, box-shadow 0.1s;
+      box-shadow: 0 0 20px #f5c80066;
+    }
+
+    #start-btn:hover {
+      transform: scale(1.05);
+      box-shadow: 0 0 40px #f5c800aa;
+    }
+
+    #start-btn:active { transform: scale(0.97); }
+
+    .speed-row {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      color: #888;
+      font-size: 0.85rem;
+    }
+
+    #speed {
+      accent-color: #f5c800;
+      width: 140px;
+      cursor: pointer;
+    }
+
+    #words {
+      padding: 48px 5vw 200px;
+      font-size: clamp(0.9rem, 2vw, 1.15rem);
+      line-height: 1.9;
+      word-spacing: 0.25em;
+      max-width: 100%;
+    }
+
+    .word {
+      display: inline;
+    }
+
+    .word.new {
+      animation: pop 0.12s ease-out;
+    }
+
+    @keyframes pop {
+      0%   { opacity: 0; transform: scale(0.8); }
+      60%  { opacity: 1; transform: scale(1.08); }
+      100% { transform: scale(1); }
+    }
+
+    #hud {
+      position: fixed;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      padding: 12px 24px;
+      background: linear-gradient(transparent, #0a0a00dd 40%, #0a0a00);
+      display: flex;
+      align-items: center;
+      gap: 16px;
+      z-index: 50;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.4s;
+    }
+
+    #hud.visible {
+      opacity: 1;
+      pointer-events: all;
+    }
+
+    #pause-btn {
+      background: transparent;
+      border: 1px solid #f5c800;
+      color: #f5c800;
+      padding: 6px 20px;
+      font-family: 'Courier New', monospace;
+      font-size: 0.85rem;
+      cursor: pointer;
+      letter-spacing: 0.1em;
+      transition: background 0.15s;
+    }
+
+    #pause-btn:hover { background: #f5c80022; }
+
+    #progress {
+      flex: 1;
+      height: 2px;
+      background: #222200;
+      border-radius: 2px;
+      overflow: hidden;
+    }
+
+    #progress-bar {
+      height: 100%;
+      background: #f5c800;
+      width: 0%;
+      transition: width 0.3s linear;
+    }
+
+    #word-count {
+      color: #555;
+      font-size: 0.75rem;
+      min-width: 80px;
+      text-align: right;
+    }
+
+    #live-speed {
+      accent-color: #f5c800;
+      width: 80px;
+      cursor: pointer;
+    }
+  </style>
+</head>
+<body>
+
+<div id="overlay">
+  <h1>🐝 beelieveInYourself</h1>
+  <p>according to all known laws of aviation...</p>
+  <div class="controls">
+    <div class="speed-row">
+      <span>slow</span>
+      <input type="range" id="speed" min="1" max="10" value="5" />
+      <span>fast</span>
+    </div>
+    <button id="start-btn">START</button>
+  </div>
+</div>
+
+<div id="words"></div>
+
+<div id="hud">
+  <button id="pause-btn">PAUSE</button>
+  <input type="range" id="live-speed" min="1" max="10" value="5" />
+  <div id="progress"><div id="progress-bar"></div></div>
+  <span id="word-count">0 / 0</span>
+</div>
+
+<script>
+  const SCRIPT_FILE = 'script.txt';
+
+  const overlay    = document.getElementById('overlay');
+  const wordsEl    = document.getElementById('words');
+  const hud        = document.getElementById('hud');
+  const pauseBtn   = document.getElementById('pause-btn');
+  const speedEl    = document.getElementById('speed');
+  const liveSpeed  = document.getElementById('live-speed');
+  const progressBar = document.getElementById('progress-bar');
+  const wordCount  = document.getElementById('word-count');
+  const startBtn   = document.getElementById('start-btn');
+
+  let words = [];
+  let idx = 0;
+  let paused = false;
+  let timer = null;
+
+  function msPerWord(val) {
+    // val 1-10 → ~600ms down to ~30ms
+    return Math.round(600 / (val ** 1.5) * 10);
+  }
+
+  function addWord() {
+    if (paused || idx >= words.length) {
+      if (idx >= words.length) clearInterval(timer);
+      return;
+    }
+
+    const span = document.createElement('span');
+    span.className = 'word new';
+    span.textContent = words[idx] + ' ';
+    wordsEl.appendChild(span);
+    setTimeout(() => span.classList.remove('new'), 200);
+
+    idx++;
+    const pct = (idx / words.length * 100).toFixed(1);
+    progressBar.style.width = pct + '%';
+    wordCount.textContent = `${idx.toLocaleString()} / ${words.length.toLocaleString()}`;
+
+    window.scrollTo({ top: document.body.scrollHeight, behavior: 'instant' });
+  }
+
+  function startInterval() {
+    clearInterval(timer);
+    const ms = msPerWord(+liveSpeed.value);
+    timer = setInterval(addWord, ms);
+  }
+
+  liveSpeed.addEventListener('input', () => {
+    if (!paused) startInterval();
+  });
+
+  pauseBtn.addEventListener('click', () => {
+    paused = !paused;
+    pauseBtn.textContent = paused ? 'RESUME' : 'PAUSE';
+    if (!paused) startInterval();
+  });
+
+  startBtn.addEventListener('click', async () => {
+    liveSpeed.value = speedEl.value;
+
+    let text;
+    try {
+      const res = await fetch(SCRIPT_FILE);
+      if (!res.ok) throw new Error('not found');
+      text = await res.text();
+    } catch {
+      // fallback: prompt user to pick a file
+      text = await pickFile();
+      if (!text) return;
+    }
+
+    words = text.trim().split(/\s+/);
+    wordCount.textContent = `0 / ${words.length.toLocaleString()}`;
+
+    overlay.style.opacity = '0';
+    overlay.style.pointerEvents = 'none';
+    hud.classList.add('visible');
+
+    startInterval();
+  });
+
+  function pickFile() {
+    return new Promise(resolve => {
+      const input = document.createElement('input');
+      input.type = 'file';
+      input.accept = '.txt,text/plain';
+      input.onchange = () => {
+        const file = input.files[0];
+        if (!file) return resolve(null);
+        const reader = new FileReader();
+        reader.onload = e => resolve(e.target.result);
+        reader.readAsText(file);
+      };
+      input.click();
+    });
+  }
+</script>
+</body>
+</html>
