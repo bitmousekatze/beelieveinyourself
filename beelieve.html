@@ -1,0 +1,451 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>beelieve.html — how we built it</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+
+    body {
+      background: #444;
+      color: #ddd;
+      font-family: 'Courier New', monospace;
+      padding: 48px 5vw 120px;
+      max-width: 860px;
+      margin: 0 auto;
+      line-height: 1.8;
+    }
+
+    h1 {
+      font-size: clamp(1.8rem, 5vw, 3rem);
+      color: #f5c800;
+      text-shadow: 0 0 20px #f5c80066;
+      margin-bottom: 8px;
+      letter-spacing: 0.05em;
+    }
+
+    .subtitle {
+      color: #888;
+      font-size: 0.9rem;
+      margin-bottom: 48px;
+    }
+
+    h2 {
+      color: #f5c800;
+      font-size: 1.2rem;
+      margin: 48px 0 16px;
+      border-bottom: 1px solid #f5c80044;
+      padding-bottom: 6px;
+      letter-spacing: 0.08em;
+    }
+
+    h3 {
+      color: #ccc;
+      font-size: 1rem;
+      margin: 28px 0 10px;
+    }
+
+    p { margin-bottom: 14px; color: #ccc; }
+
+    ul, ol {
+      padding-left: 24px;
+      margin-bottom: 14px;
+      color: #ccc;
+    }
+
+    li { margin-bottom: 6px; }
+
+    .prompt-box {
+      background: #333;
+      border-left: 3px solid #f5c800;
+      padding: 14px 18px;
+      margin: 16px 0;
+      font-size: 0.88rem;
+      color: #f5c800aa;
+      font-style: italic;
+    }
+
+    .prompt-box::before {
+      content: '💬 prompt — ';
+      color: #f5c800;
+      font-style: normal;
+      font-weight: bold;
+    }
+
+    .bug-box {
+      background: #3a2a2a;
+      border-left: 3px solid #ff6b6b;
+      padding: 14px 18px;
+      margin: 16px 0;
+      font-size: 0.88rem;
+    }
+
+    .bug-box .bug-label {
+      color: #ff6b6b;
+      font-weight: bold;
+      display: block;
+      margin-bottom: 4px;
+    }
+
+    .fix-box {
+      background: #2a3a2a;
+      border-left: 3px solid #6bff8a;
+      padding: 14px 18px;
+      margin: 16px 0;
+      font-size: 0.88rem;
+    }
+
+    .fix-box .fix-label {
+      color: #6bff8a;
+      font-weight: bold;
+      display: block;
+      margin-bottom: 4px;
+    }
+
+    .tech-tag {
+      display: inline-block;
+      background: #f5c80022;
+      border: 1px solid #f5c80055;
+      color: #f5c800;
+      font-size: 0.75rem;
+      padding: 2px 8px;
+      border-radius: 3px;
+      margin: 2px 3px 2px 0;
+    }
+
+    .timeline {
+      border-left: 2px solid #f5c80044;
+      padding-left: 24px;
+      margin: 16px 0;
+    }
+
+    .timeline-item {
+      position: relative;
+      margin-bottom: 28px;
+    }
+
+    .timeline-item::before {
+      content: '🐝';
+      position: absolute;
+      left: -36px;
+      top: 0;
+      font-size: 0.9rem;
+    }
+
+    .timeline-item h3 { margin-top: 0; }
+
+    a { color: #f5c800; text-decoration: none; }
+    a:hover { text-decoration: underline; }
+
+    .back-btn {
+      display: inline-block;
+      margin-bottom: 40px;
+      background: transparent;
+      border: 1px solid #f5c800;
+      color: #f5c800;
+      padding: 8px 24px;
+      font-family: 'Courier New', monospace;
+      font-size: 0.9rem;
+      cursor: pointer;
+      letter-spacing: 0.1em;
+      text-decoration: none;
+      transition: background 0.15s;
+    }
+
+    .back-btn:hover { background: #f5c80022; text-decoration: none; }
+
+    hr {
+      border: none;
+      border-top: 1px solid #f5c80033;
+      margin: 40px 0;
+    }
+
+    footer {
+      margin-top: 64px;
+      color: #555;
+      font-size: 0.8rem;
+      text-align: center;
+    }
+  </style>
+</head>
+<body>
+
+  <a href="index.html" class="back-btn">← back to the bees</a>
+
+  <h1>🐝 beelieve.html</h1>
+  <p class="subtitle">a design document — how beelieveInYourself was built, what broke, and how we fixed it</p>
+
+  <h2>// what is this project</h2>
+  <p>
+    beelieveInYourself is a GitHub Pages website that renders the entire Bee Movie script
+    word by word, filling the screen with alternating yellow and black text while a text-to-speech
+    voice reads it aloud. It has a progress bar with 15 collectible milestones mapped to
+    exact moments in the script, and a start screen where you can configure voice, pitch, and speed.
+  </p>
+  <p>
+    It was built entirely through a conversation with Claude (AI), iterating on bugs, ideas, and vibes.
+    This document is a record of that process.
+  </p>
+
+  <div>
+    <span class="tech-tag">HTML</span>
+    <span class="tech-tag">CSS</span>
+    <span class="tech-tag">JavaScript</span>
+    <span class="tech-tag">Web Speech API</span>
+    <span class="tech-tag">GitHub Pages</span>
+    <span class="tech-tag">the bee movie (2007)</span>
+  </div>
+
+  <h2>// how it started</h2>
+
+  <div class="prompt-box">
+    If you had the bee movie script could we somehow make it play each word one by one and fill up the entire page? You go there and hit start and then the words of the bee movie will run and fill the webpage. Make a new folder for this project called beelieveInYourself.
+  </div>
+
+  <p>
+    The initial idea was simple: word by word, filling the screen. The bee movie script was sourced
+    locally from the Downloads folder. The first build used <code>fetch()</code> to load a
+    <code>script.txt</code> file, with a speed slider and a start button.
+  </p>
+
+  <h2>// build timeline</h2>
+
+  <div class="timeline">
+
+    <div class="timeline-item">
+      <h3>1. the first build</h3>
+      <p>Basic HTML page. Words appended one at a time using <code>setInterval</code>.
+      Speed slider (1–10). Auto-scroll to bottom. Dark background, yellow text.</p>
+    </div>
+
+    <div class="timeline-item">
+      <h3>2. visual redesign</h3>
+      <div class="prompt-box">
+        The background should be grey and the words should alternate between yellow and black.
+      </div>
+      <p>Background changed to grey. Every even-indexed word renders yellow (<code>#f5c800</code>),
+      every odd word renders near-black (<code>#111</code>). The script file was renamed to
+      <code>vibes.txt</code> to match what was already in the folder.</p>
+    </div>
+
+    <div class="timeline-item">
+      <h3>3. pushing to github pages</h3>
+      <p>
+        The repo was created manually on GitHub and pushed via git. During this process
+        we hit a diverged history problem — the README was created on GitHub directly,
+        which conflicted with local commits. A force push resolved it.
+      </p>
+
+      <div class="bug-box">
+        <span class="bug-label">🐛 bug — file picker opening on start</span>
+        The <code>fetch()</code> call to load <code>vibes.txt</code> was failing silently when
+        opening the file directly in a browser via <code>file://</code> protocol. The fallback
+        code opened a file picker dialog instead of just starting.
+      </div>
+
+      <div class="fix-box">
+        <span class="fix-label">✅ fix</span>
+        Removed the file picker fallback entirely. <code>fetch()</code> works correctly
+        on GitHub Pages (HTTP), just not locally via <code>file://</code>.
+        Replaced the fallback with a simple alert.
+      </div>
+    </div>
+
+    <div class="timeline-item">
+      <h3>4. bigger speed slider + milestone markers</h3>
+      <div class="prompt-box">
+        Can you make the slider bigger so there are more speed options? Also there should be
+        milestones in the progress bar if you can find some of those.
+      </div>
+      <p>Speed slider expanded from 1–10 to 1–50. Progress bar upgraded from a plain bar
+      to one with 14 milestone dot markers. Each dot has a hover label. A toast notification
+      pops up at the top of the screen when a milestone is reached.</p>
+    </div>
+
+    <div class="timeline-item">
+      <h3>5. text-to-speech added</h3>
+      <div class="prompt-box">
+        Let's do the Web Speech API — I'd also like that before you press start you set the pitch and voice.
+      </div>
+      <p>
+        Added the browser's built-in <code>window.speechSynthesis</code> API. No library,
+        no API key, works entirely in the browser. The start screen gained a pitch slider
+        and a voice dropdown populated from the browser's installed voices.
+        The speed slider now also controls the TTS rate.
+      </p>
+
+      <div class="bug-box">
+        <span class="bug-label">🐛 bug — text speed and voice speed out of sync</span>
+        The <code>setInterval</code> word timer ran independently from the TTS,
+        so words appeared on screen at a different rate than the voice was speaking them.
+      </div>
+
+      <div class="fix-box">
+        <span class="fix-label">✅ fix — TTS drives the display</span>
+        Removed <code>setInterval</code> entirely. Words now appear when the voice speaks them,
+        using <code>utterance.onend</code> to chain to the next word. The voice became the clock.
+      </div>
+    </div>
+
+    <div class="timeline-item">
+      <h3>6. natural speech chunks</h3>
+      <div class="prompt-box">
+        Can we make it more human by saying 4 words at a time? Or if the end is less than 4 words,
+        it finishes a sentence to make it sound more human.
+      </div>
+      <p>
+        Switched from single-word utterances to sentence-aware chunks. The engine collects
+        up to 4 words, then peeks ahead up to 3 more to find the nearest sentence-ending
+        punctuation (<code>.</code> <code>!</code> <code>?</code>) and extends to it.
+        This made the TTS sound dramatically more natural.
+      </p>
+    </div>
+
+    <div class="timeline-item">
+      <h3>7. eliminating the gap between chunks</h3>
+      <div class="prompt-box">
+        Once it's finished speaking there is still a pause. Can you make it 67% less of a pause?
+      </div>
+
+      <div class="bug-box">
+        <span class="bug-label">🐛 bug — audible pause between utterances</span>
+        Each chunk finished speaking, then the browser overhead of creating the next
+        <code>SpeechSynthesisUtterance</code> caused a noticeable gap before the next chunk started.
+      </div>
+
+      <div class="fix-box">
+        <span class="fix-label">✅ fix — pipeline queuing via onstart</span>
+        Instead of queuing the next utterance in <code>onend</code> of the current one,
+        the next utterance is queued inside <code>onstart</code> of the current one.
+        This means by the time chunk N finishes, chunk N+1 is already loaded and waiting —
+        eliminating most of the gap.
+      </div>
+    </div>
+
+    <div class="timeline-item">
+      <h3>8. pre-rendering + onboundary lighting</h3>
+      <div class="prompt-box">
+        What if we render the whole script as grey as the background and then once the voice says it
+        it goes black or yellow? That way the voice is reading in a flow with commas and periods.
+      </div>
+      <p>
+        Complete architectural rethink. All 9,157 words are pre-rendered to the page as grey
+        <code>&lt;span&gt;</code> elements (same colour as background, so invisible) the moment
+        you press start. The TTS now speaks full sentences rather than 4-word chunks.
+        The <code>onboundary</code> event fires at each word boundary mid-speech and lights
+        up the corresponding span yellow or black in real time. The page scrolls to follow
+        the current word.
+      </p>
+      <p>
+        A fallback in <code>onend</code> catches any words that <code>onboundary</code> missed
+        (some browsers fire it inconsistently).
+      </p>
+    </div>
+
+    <div class="timeline-item">
+      <h3>9. milestone positions corrected</h3>
+      <div class="prompt-box">
+        The milestones don't seem to add up. The yellow and black one is too late compared to
+        where it is in the movie.
+      </div>
+
+      <div class="bug-box">
+        <span class="bug-label">🐛 bug — milestone positions were estimated, not measured</span>
+        The original milestone percentages were rough guesses based on line numbers.
+        "Yellow, black." was set at 2% when it actually appears at word 47 out of 9,157 — just 0.5%.
+      </div>
+
+      <div class="fix-box">
+        <span class="fix-label">✅ fix — PowerShell word search</span>
+        Used PowerShell to scan the actual text and find the exact word index of each iconic phrase.
+        All 15 milestones were remapped to their real positions. A <code>word-positions.txt</code>
+        file was added to the repo with the full breakdown.
+      </div>
+    </div>
+
+    <div class="timeline-item">
+      <h3>10. english-only voices</h3>
+      <div class="prompt-box">
+        Can you get rid of the German speakers?
+      </div>
+      <p>
+        The voice dropdown was filtered to only show voices where <code>lang.startsWith('en')</code>.
+        No more accidentally selecting a German synthesiser to read the bee movie script.
+      </p>
+    </div>
+
+  </div>
+
+  <h2>// milestone map</h2>
+  <p>There are 15 milestones. Here's where they actually fall in the script:</p>
+
+  <table style="width:100%; border-collapse:collapse; font-size:0.85rem; margin-top:12px;">
+    <thead>
+      <tr style="color:#f5c800; border-bottom:1px solid #f5c80044;">
+        <th style="text-align:left; padding:6px 10px;">#</th>
+        <th style="text-align:left; padding:6px 10px;">milestone</th>
+        <th style="text-align:right; padding:6px 10px;">word #</th>
+        <th style="text-align:right; padding:6px 10px;">%</th>
+      </tr>
+    </thead>
+    <tbody style="color:#ccc;">
+      <tr><td style="padding:5px 10px;">1</td><td>🐝 Yellow, black. Yellow, black.</td><td style="text-align:right;">47</td><td style="text-align:right;">0.5%</td></tr>
+      <tr><td style="padding:5px 10px;">2</td><td>🎓 Graduation Day</td><td style="text-align:right;">298</td><td style="text-align:right;">3.3%</td></tr>
+      <tr><td style="padding:5px 10px;">3</td><td>🌻 Pollen Jocks!</td><td style="text-align:right;">692</td><td style="text-align:right;">7.6%</td></tr>
+      <tr><td style="padding:5px 10px;">4</td><td>🌸 She saved my life</td><td style="text-align:right;">2,187</td><td style="text-align:right;">23.9%</td></tr>
+      <tr><td style="padding:5px 10px;">5</td><td>🎷 You like jazz?</td><td style="text-align:right;">2,251</td><td style="text-align:right;">24.6%</td></tr>
+      <tr><td style="padding:5px 10px;">6</td><td>🧠 Thinking bee!</td><td style="text-align:right;">3,118</td><td style="text-align:right;">34.1%</td></tr>
+      <tr><td style="padding:5px 10px;">7</td><td>🍯 Honey Farms discovered</td><td style="text-align:right;">3,760</td><td style="text-align:right;">41.1%</td></tr>
+      <tr><td style="padding:5px 10px;">8</td><td>⚖️ The trial begins</td><td style="text-align:right;">4,998</td><td style="text-align:right;">54.6%</td></tr>
+      <tr><td style="padding:5px 10px;">9</td><td>🎤 Mr. Sting takes the stand</td><td style="text-align:right;">5,395</td><td style="text-align:right;">58.9%</td></tr>
+      <tr><td style="padding:5px 10px;">10</td><td>✊ FREE THE BEES!</td><td style="text-align:right;">6,817</td><td style="text-align:right;">74.4%</td></tr>
+      <tr><td style="padding:5px 10px;">11</td><td>🏆 The bees win!</td><td style="text-align:right;">6,833</td><td style="text-align:right;">74.6%</td></tr>
+      <tr><td style="padding:5px 10px;">12</td><td>🌺 Flowers are dying...</td><td style="text-align:right;">7,284</td><td style="text-align:right;">79.5%</td></tr>
+      <tr><td style="padding:5px 10px;">13</td><td>✈️ Barry flies the plane</td><td style="text-align:right;">8,142</td><td style="text-align:right;">88.9%</td></tr>
+      <tr><td style="padding:5px 10px;">14</td><td>🛬 Barry, we did it!</td><td style="text-align:right;">8,759</td><td style="text-align:right;">95.7%</td></tr>
+      <tr><td style="padding:5px 10px;">15</td><td>🎬 No rehearsal for that.</td><td style="text-align:right;">9,157</td><td style="text-align:right;">100%</td></tr>
+    </tbody>
+  </table>
+
+  <h2>// architecture overview</h2>
+
+  <h3>files in the repo</h3>
+  <ul>
+    <li><strong>index.html</strong> — the main experience</li>
+    <li><strong>vibes.txt</strong> — the bee movie script (9,157 words)</li>
+    <li><strong>beelieve.html</strong> — this document</li>
+    <li><strong>word-positions.txt</strong> — exact word indices for all 15 milestones</li>
+    <li><strong>README.md</strong> — the repo readme with milestone table</li>
+  </ul>
+
+  <h3>how the display works</h3>
+  <ol>
+    <li>On start, all 9,157 words are rendered as grey <code>&lt;span&gt;</code> elements — invisible against the background</li>
+    <li>The script is split into sentences by punctuation</li>
+    <li>Sentences are fed to <code>SpeechSynthesisUtterance</code> one at a time</li>
+    <li>Each sentence pre-queues the next in its <code>onstart</code> handler to minimise gaps</li>
+    <li>The <code>onboundary</code> event fires at each spoken word, lighting the matching span yellow or black</li>
+    <li>The page scrolls to follow the current word</li>
+    <li>Milestone dots on the progress bar light up as their percentage is crossed</li>
+  </ol>
+
+  <h2>// things that were tried and changed</h2>
+  <ul>
+    <li>setInterval word timer → replaced by TTS-driven display</li>
+    <li>Single word utterances → 4-word chunks → full sentences</li>
+    <li>onend chaining → onstart pre-queueing to remove gaps</li>
+    <li>Words appended as spoken → all pre-rendered grey, revealed by onboundary</li>
+    <li>Estimated milestone positions → exact positions found by scanning the word array</li>
+    <li>All system voices → filtered to English only</li>
+    <li>Speed slider 1–10 → 1–50 → 1–38 (slowed max by 25%)</li>
+  </ul>
+
+  <hr>
+
+  <footer>
+    built with claude (claude.ai/code) · beelieveinyourself · 2026
+  </footer>
+
+</body>
+</html>
