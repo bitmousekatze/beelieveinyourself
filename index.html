@@ -357,10 +357,10 @@
   let words = [];
   let idx = 0;
   let paused = false;
-  let timer = null;
   let toastTimer = null;
   let nextMilestone = 0;
   let voices = [];
+  let running = false;
 
   // --- Web Speech API setup ---
   function loadVoices() {
@@ -384,13 +384,18 @@
     speechSynthesis.onvoiceschanged = loadVoices;
   }
 
-  function speak(word) {
+  function ttsRate() {
+    // slider 1-38 → speech rate 0.5 (slow) to 2.0 (fast), midpoint=1.0 at val~14
+    return 0.5 + (+liveSpeed.value - 1) / 37 * 1.5;
+  }
+
+  function speakAndAdvance(word) {
     const utt = new SpeechSynthesisUtterance(word);
     utt.pitch = parseFloat(pitchEl.value);
-    // map speed slider (1-38) to speech rate (0.4 - 3.0)
-    utt.rate = 0.4 + (+liveSpeed.value / 38) * 2.6;
+    utt.rate  = ttsRate();
     const vi = parseInt(voiceSelect.value);
     if (voices[vi]) utt.voice = voices[vi];
+    utt.onend = () => { if (running && !paused) showWord(); };
     speechSynthesis.speak(utt);
   }
 
@@ -402,12 +407,7 @@
     pitchVal.textContent = parseFloat(pitchEl.value).toFixed(2);
   });
 
-  // --- Speed formula: val 1-38 → ms per word ---
-  function msPerWord(val) {
-    return Math.round(1000 / (val ** 1.4));
-  }
-
-  function showToast(text) {
+function showToast(text) {
     clearTimeout(toastTimer);
     toast.textContent = text;
     toast.classList.add('show');
@@ -438,11 +438,8 @@
     }
   }
 
-  function addWord() {
-    if (paused || idx >= words.length) {
-      if (idx >= words.length) clearInterval(timer);
-      return;
-    }
+  function showWord() {
+    if (idx >= words.length) { running = false; return; }
 
     const span = document.createElement('span');
     span.className = 'word new';
@@ -451,33 +448,26 @@
     wordsEl.appendChild(span);
     setTimeout(() => span.classList.remove('new'), 200);
 
-    speak(words[idx]);
-
-    idx++;
-    const pct = idx / words.length * 100;
+    const pct = (idx + 1) / words.length * 100;
     progressBar.style.width = pct.toFixed(1) + '%';
-    wordCount.textContent = `${idx.toLocaleString()} / ${words.length.toLocaleString()}`;
+    wordCount.textContent = `${(idx + 1).toLocaleString()} / ${words.length.toLocaleString()}`;
     checkMilestones(pct);
-
     window.scrollTo({ top: document.body.scrollHeight, behavior: 'instant' });
+
+    speakAndAdvance(words[idx]);
+    idx++;
   }
 
-  function startInterval() {
-    clearInterval(timer);
-    timer = setInterval(addWord, msPerWord(+liveSpeed.value));
-  }
-
-  liveSpeed.addEventListener('input', () => {
-    if (!paused) startInterval();
-  });
+  liveSpeed.addEventListener('input', () => { /* rate picked up per-utterance */ });
 
   pauseBtn.addEventListener('click', () => {
     paused = !paused;
     pauseBtn.textContent = paused ? 'RESUME' : 'PAUSE';
     if (paused) {
-      speechSynthesis.cancel();
+      speechSynthesis.pause();
     } else {
-      startInterval();
+      speechSynthesis.resume();
+      showWord();
     }
   });
 
@@ -497,7 +487,8 @@
     overlay.style.pointerEvents = 'none';
     hud.classList.add('visible');
 
-    startInterval();
+    running = true;
+    showWord();
   });
 </script>
 </body>
