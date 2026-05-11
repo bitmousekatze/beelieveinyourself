@@ -4,6 +4,7 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>beelieveInYourself</title>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/matter-js/0.19.0/matter.min.js"></script>
   <script>
     const CONFIG = {
       JSONBIN_KEY: '$2a$10$koP4muu.a.utvHipMT1WHOyTApRAej0vJ7iEJvEKzyW1zNYFA2mzG',
@@ -21,6 +22,47 @@
       overflow-x: hidden;
     }
 
+    /* ---- header ---- */
+    #header {
+      position: fixed;
+      top: 0; left: 0; right: 0;
+      height: 44px;
+      background: #3a3a3a;
+      border-bottom: 1px solid #f5c80033;
+      display: none;
+      align-items: center;
+      padding: 0 14px;
+      gap: 10px;
+      z-index: 90;
+    }
+    #header.visible { display: flex; }
+
+    .header-title {
+      color: #f5c800;
+      font-size: 0.75rem;
+      letter-spacing: 0.1em;
+      flex: 1;
+    }
+
+    .header-btn {
+      background: transparent;
+      border: 1px solid #f5c80066;
+      color: #f5c800;
+      padding: 4px 14px;
+      font-family: 'Courier New', monospace;
+      font-size: 0.72rem;
+      cursor: pointer;
+      letter-spacing: 0.1em;
+      transition: background 0.15s, border-color 0.15s;
+      flex-shrink: 0;
+    }
+    .header-btn:hover { background: #f5c80022; border-color: #f5c800; }
+    .header-btn:active { transform: scale(0.96); }
+
+    .mode-btn { opacity: 0.45; }
+    .mode-btn.active { opacity: 1; background: #f5c80018; border-color: #f5c800; }
+
+    /* ---- overlay ---- */
     #overlay {
       position: fixed;
       inset: 0;
@@ -107,8 +149,9 @@
     #start-btn:hover { transform: scale(1.05); box-shadow: 0 0 40px #f5c800aa; }
     #start-btn:active { transform: scale(0.97); }
 
+    /* ---- words ---- */
     #words {
-      padding: 48px 5vw 200px;
+      padding: 64px 5vw 200px;
       font-size: clamp(0.9rem, 2vw, 1.15rem);
       line-height: 1.9;
       word-spacing: 0.25em;
@@ -117,13 +160,26 @@
 
     .word {
       display: inline;
-      color: #555; /* hidden by default — same as background */
+      color: #555;
       transition: color 0.08s ease;
     }
 
     .word.lit-yellow { color: #f5c800; }
     .word.lit-black  { color: #111; }
 
+    /* ---- falling word clones ---- */
+    .falling-word {
+      position: absolute;
+      font-family: 'Courier New', monospace;
+      font-size: clamp(0.9rem, 2vw, 1.15rem);
+      pointer-events: none;
+      z-index: 5;
+      white-space: nowrap;
+      line-height: 1;
+      transform-origin: center center;
+    }
+
+    /* ---- HUD ---- */
     #hud {
       position: fixed;
       bottom: 0;
@@ -238,7 +294,7 @@
 
     #milestone-toast {
       position: fixed;
-      top: 24px;
+      top: 60px;
       left: 50%;
       transform: translateX(-50%) translateY(-80px);
       background: #111;
@@ -319,6 +375,14 @@
 </head>
 <body>
 
+<!-- header — visible only during gameplay -->
+<div id="header">
+  <span class="header-title">🐝 beelieveInYourself</span>
+  <button class="header-btn" id="save-btn">SAVE</button>
+  <button class="header-btn mode-btn active" id="mode-list">LIST</button>
+  <button class="header-btn mode-btn" id="mode-fall">FALL</button>
+</div>
+
 <div id="overlay">
   <h1>🐝 beelieveInYourself</h1>
   <p>according to all known laws of aviation...</p>
@@ -393,24 +457,28 @@
     { pct: 100,  icon: '🎬', label: 'No rehearsal for that.' },
   ];
 
-  const lbPanel     = document.getElementById('leaderboard');
-  const lbRows      = document.getElementById('lb-rows');
+  const lbPanel      = document.getElementById('leaderboard');
+  const lbRows       = document.getElementById('lb-rows');
   const playerNameEl = document.getElementById('player-name');
-  const overlay     = document.getElementById('overlay');
-  const wordsEl     = document.getElementById('words');
-  const hud         = document.getElementById('hud');
-  const pauseBtn    = document.getElementById('pause-btn');
-  const speedEl     = document.getElementById('speed');
-  const speedVal    = document.getElementById('speed-val');
-  const pitchEl     = document.getElementById('pitch');
-  const pitchVal    = document.getElementById('pitch-val');
-  const voiceSelect = document.getElementById('voice-select');
-  const liveSpeed   = document.getElementById('live-speed');
-  const progressBar = document.getElementById('progress-bar');
-  const progressEl  = document.getElementById('progress');
-  const wordCount   = document.getElementById('word-count');
-  const startBtn    = document.getElementById('start-btn');
-  const toast       = document.getElementById('milestone-toast');
+  const overlay      = document.getElementById('overlay');
+  const wordsEl      = document.getElementById('words');
+  const hud          = document.getElementById('hud');
+  const header       = document.getElementById('header');
+  const pauseBtn     = document.getElementById('pause-btn');
+  const speedEl      = document.getElementById('speed');
+  const speedVal     = document.getElementById('speed-val');
+  const pitchEl      = document.getElementById('pitch');
+  const pitchVal     = document.getElementById('pitch-val');
+  const voiceSelect  = document.getElementById('voice-select');
+  const liveSpeed    = document.getElementById('live-speed');
+  const progressBar  = document.getElementById('progress-bar');
+  const progressEl   = document.getElementById('progress');
+  const wordCount    = document.getElementById('word-count');
+  const startBtn     = document.getElementById('start-btn');
+  const toast        = document.getElementById('milestone-toast');
+  const saveBtnEl    = document.getElementById('save-btn');
+  const modeListBtn  = document.getElementById('mode-list');
+  const modeFallBtn  = document.getElementById('mode-fall');
 
   let playerName = 'anonymous';
   let scoreSaved = false;
@@ -469,24 +537,22 @@
     renderLeaderboard(scores, playerName);
   }
 
-  // show leaderboard immediately on page load
   loadLeaderboard();
 
-  // save on tab close
   window.addEventListener('beforeunload', () => {
     if (running || litCount > 0) saveScore(playerName, litCount);
   });
 
-  let words     = [];
-  let spans     = [];   // pre-rendered span for each word
-  let sentences = [];   // [{start, end, text, charMap}]
-  let sentIdx   = 0;    // which sentence we're on
-  let litCount  = 0;    // how many words have been lit so far
-  let paused    = false;
-  let running   = false;
-  let toastTimer = null;
+  let words        = [];
+  let spans        = [];
+  let sentences    = [];
+  let sentIdx      = 0;
+  let litCount     = 0;
+  let paused       = false;
+  let running      = false;
+  let toastTimer   = null;
   let nextMilestone = 0;
-  let voices    = [];
+  let voices       = [];
 
   // --- voices ---
   function loadVoices() {
@@ -504,7 +570,6 @@
   }
   speechSynthesis.onvoiceschanged = loadVoices;
   loadVoices();
-  // Chrome loads voices async — retry a few times if empty on first call
   let voiceRetries = 0;
   const voiceRetryTimer = setInterval(() => {
     if (voices.length || voiceRetries++ > 10) { clearInterval(voiceRetryTimer); return; }
@@ -552,7 +617,7 @@
 
   // --- pre-render all words as grey spans ---
   function renderAll() {
-    words.forEach((w, i) => {
+    words.forEach((w) => {
       const span = document.createElement('span');
       span.className = 'word';
       span.textContent = w + ' ';
@@ -568,18 +633,129 @@
     for (let i = 0; i < words.length; i++) {
       if (end.test(words[i]) || i === words.length - 1) {
         const slice = words.slice(start, i + 1);
-        // build char offset → word index within sentence
         const charMap = [];
         let pos = 0;
         slice.forEach((w, wi) => {
           for (let c = 0; c < w.length; c++) charMap[pos + c] = start + wi;
-          pos += w.length + 1; // +1 for space
+          pos += w.length + 1;
         });
         sentences.push({ start, end: i + 1, text: slice.join(' '), charMap });
         start = i + 1;
       }
     }
   }
+
+  // =============================================
+  // FALL MODE — Matter.js physics
+  // =============================================
+  let fallMode    = false;
+  let fallEngine  = null;
+  let fallWorld   = null;
+  let fallBodies  = [];   // { body, el, span }
+  let fallInited  = false;
+
+  function initFall() {
+    if (fallInited) return;
+    fallInited = true;
+
+    fallEngine = Matter.Engine.create();
+    fallWorld  = fallEngine.world;
+    fallEngine.gravity.y = 1.2;
+
+    // ground sits below all current content
+    const groundY = Math.max(document.body.scrollHeight, 4000) + 60;
+    document.body.style.minHeight = (groundY + 400) + 'px';
+
+    const ground    = Matter.Bodies.rectangle(window.innerWidth / 2, groundY + 30, window.innerWidth * 4, 60, { isStatic: true });
+    const leftWall  = Matter.Bodies.rectangle(-30, groundY / 2, 60, groundY * 2, { isStatic: true });
+    const rightWall = Matter.Bodies.rectangle(window.innerWidth + 30, groundY / 2, 60, groundY * 2, { isStatic: true });
+    Matter.World.add(fallWorld, [ground, leftWall, rightWall]);
+
+    // physics tick
+    setInterval(() => Matter.Engine.update(fallEngine, 1000 / 60), 1000 / 60);
+
+    // DOM sync loop
+    (function raf() {
+      requestAnimationFrame(raf);
+      fallBodies.forEach(({ body, el }) => {
+        el.style.left      = (body.position.x - el.offsetWidth  / 2) + 'px';
+        el.style.top       = (body.position.y - el.offsetHeight / 2) + 'px';
+        el.style.transform = `rotate(${body.angle}rad)`;
+      });
+    })();
+  }
+
+  function dropSpan(span) {
+    if (span._falling) return;
+    span._falling = true;
+
+    const rect = span.getBoundingClientRect();
+    const docX = rect.left + rect.width  / 2 + window.scrollX;
+    const docY = rect.top  + rect.height / 2 + window.scrollY;
+
+    // clone floats in document space
+    const el = document.createElement('span');
+    el.className = 'falling-word';
+    el.textContent = span.textContent.trim();
+    el.style.color = span.classList.contains('lit-yellow') ? '#f5c800' : '#111';
+    el.style.left = '-9999px';
+    el.style.top  = '-9999px';
+    document.body.appendChild(el);
+
+    const w = Math.max(el.offsetWidth,  10) + 6;
+    const h = Math.max(el.offsetHeight, 10) + 6;
+
+    const body = Matter.Bodies.rectangle(docX, docY, w, h, {
+      restitution: 0.4,
+      friction:    0.3,
+      frictionAir: 0.012,
+      angle: (Math.random() - 0.5) * 0.4,
+    });
+    Matter.Body.setVelocity(body, {
+      x: (Math.random() - 0.5) * 4,
+      y: 2 + Math.random() * 2,
+    });
+    Matter.World.add(fallWorld, body);
+    fallBodies.push({ body, el, span });
+
+    span.style.visibility = 'hidden';
+  }
+
+  function dropAllLit() {
+    initFall();
+    spans.forEach(span => {
+      if (
+        (span.classList.contains('lit-yellow') || span.classList.contains('lit-black'))
+        && !span._falling
+      ) {
+        dropSpan(span);
+      }
+    });
+  }
+
+  // --- mode buttons ---
+  modeListBtn.addEventListener('click', () => {
+    fallMode = false;
+    modeListBtn.classList.add('active');
+    modeFallBtn.classList.remove('active');
+  });
+
+  modeFallBtn.addEventListener('click', () => {
+    fallMode = true;
+    modeFallBtn.classList.add('active');
+    modeListBtn.classList.remove('active');
+    if (running) dropAllLit();
+  });
+
+  // --- save button ---
+  saveBtnEl.addEventListener('click', () => {
+    if (litCount > 0) {
+      scoreSaved = false;
+      saveScore(playerName, litCount);
+      saveBtnEl.textContent = 'SAVED!';
+      setTimeout(() => { saveBtnEl.textContent = 'SAVE'; }, 1800);
+    }
+  });
 
   // --- light up a word ---
   function lightWord(globalIdx) {
@@ -592,11 +768,18 @@
     wordCount.textContent = `${litCount.toLocaleString()} / ${words.length.toLocaleString()}`;
     checkMilestones(pct);
 
-    // scroll to keep current word in view
     spans[globalIdx].scrollIntoView({ block: 'center', behavior: 'smooth' });
+
+    // schedule fall after 3s if in fall mode
+    if (fallMode) {
+      const captured = spans[globalIdx];
+      setTimeout(() => {
+        if (fallMode && !captured._falling) dropSpan(captured);
+      }, 3000);
+    }
   }
 
-  // --- speak a sentence, lighting words via onboundary ---
+  // --- speak a sentence ---
   function speakSentence(si) {
     if (!running || paused || si >= sentences.length) {
       if (si >= sentences.length) {
@@ -620,14 +803,11 @@
     };
 
     utt.onstart = () => {
-      // light the first word immediately (onboundary can lag on some browsers)
       lightWord(s.start);
-      // pre-queue the next sentence to eliminate gap
       speakSentence(si + 1);
     };
 
     utt.onend = () => {
-      // light any remaining words in this sentence that onboundary missed
       for (let i = s.start; i < s.end; i++) {
         if (!spans[i].classList.contains('lit-yellow') && !spans[i].classList.contains('lit-black')) {
           lightWord(i);
@@ -647,7 +827,7 @@
       speechSynthesis.pause();
       if (litCount > 0) saveScore(playerName, litCount);
     } else {
-      scoreSaved = false; // allow saving again on resume
+      scoreSaved = false;
       speechSynthesis.resume();
     }
   });
@@ -662,12 +842,12 @@
       bee.src = 'bee.png';
       bee.className = 'bee';
 
-      const goRight  = Math.random() > 0.5;
-      const size     = 108 + Math.random() * 216;         // 108–324px (200% bigger)
-      const topPct   = 2 + Math.random() * 88;           // 2–90% down screen
-      const duration = 6 + Math.random() * 18;           // 6–24s per pass
-      const delay    = -(Math.random() * duration);      // stagger so they're already mid-flight
-      const wobbleDur = 1.2 + Math.random() * 1.8;      // 1.2–3s wobble
+      const goRight   = Math.random() > 0.5;
+      const size      = 108 + Math.random() * 216;
+      const topPct    = 2 + Math.random() * 88;
+      const duration  = 6 + Math.random() * 18;
+      const delay     = -(Math.random() * duration);
+      const wobbleDur = 1.2 + Math.random() * 1.8;
 
       bee.style.cssText = `
         width: ${size}px;
@@ -701,13 +881,12 @@
     overlay.style.opacity = '0';
     overlay.style.pointerEvents = 'none';
     hud.classList.add('visible');
+    header.classList.add('visible');
     loadLeaderboard();
 
     running = true;
     speakSentence(0);
   });
-
-  // save score when finished
 </script>
 </body>
 </html>
