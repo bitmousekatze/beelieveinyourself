@@ -741,6 +741,122 @@
       </p>
     </div>
 
+    <div class="timeline-item">
+      <h3>23. username persistence + speed "Normal" label</h3>
+      <div class="prompt-box">
+        It should save the username you use. We should rename the 12 next to speed to Normal just so it's easy to find.
+      </div>
+      <p>
+        The player name input now saves to <code>localStorage</code> under <code>beelieve_username</code>
+        on every keystroke and is auto-filled on page load. No more re-entering your name every visit.
+      </p>
+      <p>
+        The speed slider's value label shows <strong>"Normal"</strong> when set to 12 (the default TTS rate),
+        and a number for everything else. In the gameplay HUD, the speed label turns green when you're at Normal speed.
+        Value 12 maps to a TTS rate of roughly 1× — the most natural-sounding pace.
+      </p>
+    </div>
+
+    <div class="timeline-item">
+      <h3>24. ElevenLabs TTS integration</h3>
+      <div class="prompt-box">
+        Is there an API users could plug in for a text to speech they could use themselves?
+      </div>
+      <p>
+        An optional ElevenLabs API key field was added to the landing page. When a key is present,
+        speech is routed through the <strong>ElevenLabs streaming TTS API</strong> instead of the
+        browser's built-in voice. The audio is fetched as an <code>ArrayBuffer</code>, decoded via
+        the <strong>Web Audio API</strong> (<code>AudioContext.decodeAudioData</code>), and played
+        through a <code>BufferSource</code> node. Since ElevenLabs returns raw audio with no word
+        boundary events, the existing character-rate fallback timer lights words as the audio plays.
+      </p>
+      <p>
+        If the API key is invalid or the request fails, the system shows a toast and automatically
+        falls back to browser TTS. The key is saved to <code>localStorage</code> so it only needs
+        to be entered once.
+      </p>
+      <p>
+        A <strong>?</strong> help button sits next to the label. Hovering it opens a tooltip with
+        step-by-step instructions for getting an ElevenLabs key, including a direct signup link.
+        The tooltip stays open when you move the mouse onto it (120ms grace period) so you can
+        click the link without it disappearing.
+      </p>
+    </div>
+
+    <div class="timeline-item">
+      <h3>25. daily rewards calendar</h3>
+      <div class="prompt-box">
+        Can you add a daily login bonus of 69 honey that doubles each day you log in? The icon should be a book and clicking on it should open like a book and show a calendar with checkmarks if you claimed that day's daily gift.
+      </div>
+      <p>
+        A <strong>📖 DAILY REWARDS</strong> button sits on the landing page. When today's reward is
+        unclaimed it gains a dark honey background and a pulsing red notification dot.
+        Clicking it opens a panel with a CSS 3D book-open animation
+        (<code>perspective(800px) rotateY(-90deg → 0deg)</code>).
+      </p>
+      <p>
+        The panel shows a 7-day calendar grid (6 past days + today + tomorrow locked).
+        Each cell shows its state: ✅ claimed · 🍯 claimable today · 📺 missed (watch ad) · 🔒 future.
+      </p>
+      <p>
+        Clicking CLAIM starts a <strong>3-second countdown bar</strong> — the reward button only
+        activates once it completes, preventing accidental instant claims.
+      </p>
+      <p>
+        Claimed dates are stored as an array of ISO date strings in <code>progress.claimedDates</code>.
+        Streak is calculated by counting consecutive claimed days ending at today. Bonus = <code>69 × 2^(streak − 1)</code>.
+      </p>
+
+      <div class="bug-box">
+        <span class="bug-label">🐛 bug — daily bonus banner never showed after first deploy</span>
+        The original implementation auto-granted the bonus and set <code>lastLoginDate = today</code> on load.
+        On next visit the date check saw today was already set and skipped the bonus entirely — the banner
+        was invisible because <code>_dailyBonus</code> was 0.
+      </div>
+      <div class="fix-box">
+        <span class="fix-label">✅ fix</span>
+        Replaced the auto-grant model with a <code>claimedDates</code> array. The bonus is only credited
+        when the user explicitly clicks CLAIM and survives the countdown. Old <code>loginStreak</code>
+        and <code>lastLoginDate</code> data is migrated into <code>claimedDates</code> on first load.
+      </div>
+    </div>
+
+    <div class="timeline-item">
+      <h3>26. ad-watch for missed days</h3>
+      <div class="prompt-box">
+        If you hover over a past day, you can click and watch an ad to get the reward. If I watched an ad I would get 138 honey, then if I watched an ad for the day before that, I get double 138?
+      </div>
+      <p>
+        Missed past days (unclaimed and not ad-claimed) show a 📺 icon in the calendar.
+        Hovering reveals a tooltip: <em>"▶ watch ad · +X 🍯"</em>.
+        Clicking starts a <strong>5-second countdown</strong> that simulates an ad view.
+        When the countdown completes, a ✓ CLAIM button appears and the honey is credited on click.
+      </p>
+      <p>
+        The ad reward doubles the further back in time: yesterday = 138, 2 days ago = 276,
+        3 days ago = 552, and so on (<code>138 × 2^(daysBack − 1)</code>).
+        Each day can only be ad-claimed once — tracked in <code>progress.adDays</code>.
+      </p>
+      <p>
+        The countdown is currently simulated (no real ad SDK). To integrate a real ad network
+        (e.g. Google AdSense Rewarded, AdMob Web), replace the <code>showCountdown()</code> call
+        with the ad SDK's show method and invoke the <code>onComplete</code> callback in the
+        ad's reward event handler.
+      </p>
+    </div>
+
+    <div class="timeline-item">
+      <h3>27. header layout + polish</h3>
+      <div class="prompt-box">
+        The buttons and text options need to be moved so that CHAOS is touching the right side of the header.
+      </div>
+      <p>
+        A <code>flex: 1</code> spacer div was inserted between the BPS display and the SHOP button.
+        This pushes all mode/color buttons to the right edge so CHAOS sits flush against it,
+        while 🐝, honey count, and BPS stay anchored to the left.
+      </p>
+    </div>
+
   </div>
 
   <h2>// local storage schema</h2>
@@ -751,8 +867,8 @@
     <li><code>listeningSeconds</code> — total seconds spent actively listening (not paused)</li>
     <li><code>completions</code> — number of times the full script was finished</li>
     <li><code>savedLitCount</code> — word index to resume from (0 if no active session)</li>
-    <li><code>loginStreak</code> — current consecutive daily login streak</li>
-    <li><code>lastLoginDate</code> — ISO date string of last visit (for streak calculation)</li>
+    <li><code>claimedDates</code> — array of ISO date strings for claimed daily rewards</li>
+    <li><code>adDays</code> — array of ISO date strings for days claimed via ad-watch</li>
     <li><code>shop</code> — object mapping upgrade IDs to owned counts</li>
     <li><code>unlocked</code> — object mapping achievement IDs to unlock date strings</li>
   </ul>
@@ -766,6 +882,8 @@
     <span class="tech-tag">Matter.js (physics)</span>
     <span class="tech-tag">localStorage</span>
     <span class="tech-tag">GitHub Pages</span>
+    <span class="tech-tag">Web Audio API</span>
+    <span class="tech-tag">ElevenLabs TTS (optional)</span>
     <span class="tech-tag">Supabase (coming soon)</span>
     <span class="tech-tag">the bee movie (2007)</span>
   </div>
@@ -788,6 +906,14 @@
     <li>BPS/honey auto-gen always running → gated on <code>running && !paused</code></li>
     <li>Virtual mice always hunting → freeze when paused, resume on play</li>
     <li>All voices → English only; voice retry 10× at 300ms → 20× at 250ms for iOS</li>
+    <li>Username lost on refresh → saved to localStorage, auto-filled on load</li>
+    <li>Speed label shows number → shows "Normal" at 12, HUD label turns green</li>
+    <li>Browser-only TTS → optional ElevenLabs API key for AI voices with Web Audio playback</li>
+    <li>Auto-grant daily bonus → explicit CLAIM button with 3-second countdown</li>
+    <li>Daily bonus invisible after first deploy → switched to claimedDates array model</li>
+    <li>Missed days locked forever → can watch a simulated ad to retroactively claim</li>
+    <li>Header buttons crowded left → flex spacer pushes mode/color buttons to right edge</li>
+    <li>loginStreak + lastLoginDate → replaced by claimedDates array (old data migrated)</li>
   </ul>
 
   <hr>
