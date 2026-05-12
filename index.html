@@ -151,7 +151,8 @@
       background: #2a2000;
     }
     .shop-item:hover { background: #3a3000; border-color: #f5c80044; }
-    .shop-item.unaffordable { opacity: 0.4; cursor: not-allowed; }
+    .shop-item.unaffordable { opacity: 0.4; cursor: not-allowed; pointer-events: none; }
+    .shop-item.unaffordable * { pointer-events: none; }
     .shop-item-icon { font-size: 1.8rem; flex-shrink: 0; width: 40px; text-align: center; }
     .shop-item-body { flex: 1; min-width: 0; }
     .shop-item-name { color: #f5c800; font-size: 0.8rem; font-weight: bold; }
@@ -221,7 +222,10 @@
 <!-- shop panel -->
 <div id="shop-panel">
   <div id="shop-header">
-    <h3>🍯 BEE STORE</h3>
+    <div style="display:flex;align-items:center;justify-content:space-between;">
+      <h3>🍯 BEE STORE</h3>
+      <button id="shop-close" style="background:transparent;border:1px solid #f5c80044;color:#f5c800;font-family:'Courier New',monospace;font-size:0.7rem;cursor:pointer;padding:2px 8px;-webkit-tap-highlight-color:transparent;">✕</button>
+    </div>
     <div id="shop-bps">0.0 bees/sec</div>
   </div>
   <div id="shop-list"></div>
@@ -527,11 +531,27 @@
     hud.classList.remove('visible'); header.classList.remove('visible');
   });
 
+  function closeShop() {
+    shopOpen = false;
+    document.getElementById('shop-panel').classList.remove('open');
+  }
+
   document.getElementById('shop-btn').addEventListener('click', () => {
     shopOpen = !shopOpen;
     document.getElementById('shop-panel').classList.toggle('open', shopOpen);
     if (shopOpen) renderShop();
   });
+
+  document.getElementById('shop-close').addEventListener('click', closeShop);
+
+  // click outside shop panel to close
+  document.addEventListener('click', e => {
+    if (!shopOpen) return;
+    const panel = document.getElementById('shop-panel');
+    const shopBtn = document.getElementById('shop-btn');
+    if (!panel.contains(e.target) && e.target !== shopBtn) closeShop();
+  });
+
   document.getElementById('ach-overlay').addEventListener('click', e => { if (e.target.id==='ach-overlay') closeAch(); });
 
   // =============================================
