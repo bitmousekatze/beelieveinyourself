@@ -585,8 +585,7 @@
     while (virtualMice.length > target) { virtualMice.pop().el.remove(); }
   }
 
-  // restore mice from saved progress on load
-  syncVirtualMice();
+  // syncVirtualMice() called after 'running' is declared below to avoid TDZ
 
   // =============================================
   // AUTO-GENERATION (BPS)
@@ -684,6 +683,7 @@
   // GAME STATE
   // =============================================
   let words=[],spans=[],sentences=[],sentIdx=0,litCount=0,paused=false,running=false;
+  syncVirtualMice(); // safe to call now that 'running' is declared
   let toastTimer=null,nextMilestone=0,voices=[];
 
   function loadVoices() {
