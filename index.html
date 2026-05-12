@@ -244,7 +244,7 @@
     <div class="control-row">
       <label>speed</label>
       <input type="range" id="speed" min="1" max="38" value="12" />
-      <span class="val" id="speed-val">12</span>
+      <span class="val" id="speed-val" style="min-width:52px;text-align:right;">Normal</span>
     </div>
     <div class="control-row">
       <label>pitch</label>
@@ -254,6 +254,15 @@
     <div class="control-row">
       <label>voice</label>
       <select id="voice-select"><option>loading voices...</option></select>
+    </div>
+    <div class="control-row" style="flex-direction:column;align-items:flex-start;gap:4px;">
+      <label style="color:#888;font-size:0.75rem;">elevenlabs api key <span style="color:#666;">(optional — uses browser voice if empty)</span></label>
+      <input type="password" id="elevenlabs-key" maxlength="200" placeholder="sk_..."
+        style="width:100%;background:#333;color:#f5c800;border:1px solid #f5c80044;font-family:'Courier New',monospace;font-size:0.78rem;padding:4px 8px;outline:none;" />
+    </div>
+    <div id="daily-bonus-banner" style="display:none;background:#2a2000;border:1px solid #f5c800;border-radius:4px;padding:10px 16px;text-align:center;width:100%;">
+      <div id="daily-bonus-text" style="color:#f5c800;font-size:0.85rem;margin-bottom:8px;"></div>
+      <button id="daily-claim-btn" style="background:#f5c800;color:#0a0a00;border:none;padding:6px 24px;font-family:'Courier New',monospace;font-size:0.85rem;font-weight:bold;cursor:pointer;letter-spacing:0.1em;-webkit-tap-highlight-color:transparent;">🍯 CLAIM</button>
     </div>
     <button id="start-btn">▶ START FRESH</button>
     <button id="resume-btn" style="background:transparent;border:2px solid #f5c800;color:#f5c800;padding:12px 32px;font-size:1rem;font-family:'Courier New',monospace;font-weight:bold;cursor:pointer;letter-spacing:0.12em;text-transform:uppercase;transition:transform 0.1s,box-shadow 0.1s;-webkit-tap-highlight-color:transparent;touch-action:manipulation;display:none;">⏩ RESUME</button>
@@ -291,7 +300,7 @@
 
 <div id="hud">
   <button id="pause-btn">PAUSE</button>
-  <div id="hud-speed-wrap"><span>spd</span><input type="range" id="live-speed" min="1" max="38" value="12" /></div>
+  <div id="hud-speed-wrap"><span id="spd-label">Normal</span><input type="range" id="live-speed" min="1" max="38" value="12" /></div>
   <div id="progress-wrap"><div id="progress"><div id="progress-bar"></div></div></div>
   <span id="word-count">0 / 0</span>
 </div>
@@ -399,7 +408,7 @@
   if (!progress.loginStreak)      progress.loginStreak = 0;
   if (!progress.lastLoginDate)    progress.lastLoginDate = '';
 
-  // Calculated now, toast shown after showToast is defined below
+  // Daily bonus — calculated on load, claimed via button
   let _dailyBonus = 0, _dailyStreak = 0;
   (function calcDailyBonus() {
     const today = new Date().toISOString().slice(0, 10);
@@ -409,7 +418,6 @@
     progress.lastLoginDate = today;
     _dailyBonus  = 69 * Math.pow(2, progress.loginStreak - 1);
     _dailyStreak = progress.loginStreak;
-    progress.beesTotal += _dailyBonus;
     saveProgress(progress);
   })();
 
@@ -682,7 +690,16 @@
   const toast        = document.getElementById('milestone-toast');
   const saveBtnEl    = document.getElementById('save-btn');
 
-  let playerName    = 'anonymous';
+  let playerName = 'anonymous';
+
+  // Restore saved username and ElevenLabs key
+  const savedName = localStorage.getItem('beelieve_username');
+  if (savedName) { playerNameEl.value = savedName; playerName = savedName; }
+  const elKeyEl = document.getElementById('elevenlabs-key');
+  const savedElKey = localStorage.getItem('beelieve_el_key');
+  if (savedElKey) elKeyEl.value = savedElKey;
+  playerNameEl.addEventListener('input', () => localStorage.setItem('beelieve_username', playerNameEl.value.trim()));
+  elKeyEl.addEventListener('input', () => localStorage.setItem('beelieve_el_key', elKeyEl.value.trim()));
   let beesCollected = progress.beesCaught;
 
   // Leaderboard stubbed out — Supabase integration coming soon
@@ -718,7 +735,18 @@
   }, 250);
 
   function ttsRate() { return 0.5 + (+liveSpeed.value-1)/37*1.5; }
-  speedEl.addEventListener('input', () => { speedVal.textContent = speedEl.value; });
+
+  function speedLabel(v) { return +v === 12 ? 'Normal' : v; }
+  function updateSpdLabel() {
+    const v = liveSpeed.value;
+    const isNormal = +v === 12;
+    const lbl = document.getElementById('spd-label');
+    lbl.textContent = speedLabel(v);
+    lbl.style.color = isNormal ? '#6bff8a' : '#111';
+  }
+
+  speedEl.addEventListener('input', () => { speedVal.textContent = speedLabel(speedEl.value); });
+  liveSpeed.addEventListener('input', updateSpdLabel);
   pitchEl.addEventListener('input', () => { pitchVal.textContent = parseFloat(pitchEl.value).toFixed(2); });
 
   function showToast(text) {
@@ -727,8 +755,18 @@
   }
 
   if (_dailyBonus > 0) {
-    setTimeout(() => showToast(`🍯 Daily bonus: +${fmtN(_dailyBonus)} honey! (day ${_dailyStreak} streak)`), 800);
-    updateCurrencyDisplay();
+    const banner = document.getElementById('daily-bonus-banner');
+    const nextBonus = fmtN(_dailyBonus * 2);
+    document.getElementById('daily-bonus-text').innerHTML =
+      `🍯 Day ${_dailyStreak} login bonus!<br><strong style="font-size:1.1rem;">+${fmtN(_dailyBonus)} honey</strong><br><span style="color:#888;font-size:0.7rem;">come back tomorrow for +${nextBonus}</span>`;
+    banner.style.display = '';
+    document.getElementById('daily-claim-btn').addEventListener('click', () => {
+      progress.beesTotal += _dailyBonus;
+      saveProgress(progress);
+      updateCurrencyDisplay();
+      banner.style.display = 'none';
+      showToast(`🍯 +${fmtN(_dailyBonus)} honey claimed! Day ${_dailyStreak} streak!`);
+    });
   }
 
   function buildMilestones() {
@@ -895,18 +933,62 @@
   let lastBoundaryTime = 0;
   let boundaryFired = false;
 
+  const EL_VOICE_ID = 'EXAVITQu4vr4xnSDxMaL'; // ElevenLabs "Sarah" — a clear, neutral English voice
+  let elAudioCtx = null;
+  let elCurrentSource = null;
+
+  async function speakWithElevenLabs(si) {
+    if (!running || paused || si >= sentences.length) { if (si >= sentences.length) finishScript(); return; }
+    const s = sentences[si];
+    const key = elKeyEl.value.trim();
+    try {
+      const res = await fetch(`https://api.elevenlabs.io/v1/text-to-speech/${EL_VOICE_ID}/stream`, {
+        method: 'POST',
+        headers: { 'xi-api-key': key, 'Content-Type': 'application/json' },
+        body: JSON.stringify({ text: s.text, model_id: 'eleven_turbo_v2', voice_settings: { stability: 0.4, similarity_boost: 0.8 } })
+      });
+      if (!res.ok) { showToast('ElevenLabs error — falling back to browser voice'); elKeyEl.value = ''; localStorage.removeItem('beelieve_el_key'); speakSentence(si); return; }
+      const buf = await res.arrayBuffer();
+      if (!elAudioCtx) elAudioCtx = new (window.AudioContext || window.webkitAudioContext)();
+      const decoded = await elAudioCtx.decodeAudioData(buf);
+      const source = elAudioCtx.createBufferSource();
+      source.buffer = decoded;
+      source.connect(elAudioCtx.destination);
+      elCurrentSource = source;
+      // Use character-rate fallback for word lighting (no boundary events from audio)
+      const rate = ttsRate();
+      const charsPerSec = 13 * rate;
+      let wIdx = s.start;
+      function advanceWord() {
+        if (!running || paused || wIdx >= s.end) return;
+        lightWord(wIdx);
+        const len = words[wIdx] ? words[wIdx].length : 4;
+        wIdx++;
+        if (wIdx < s.end) setTimeout(advanceWord, Math.max(60, (len / charsPerSec) * 1000));
+      }
+      lightWord(s.start);
+      speakWithElevenLabs(si + 1); // pre-queue next
+      setTimeout(advanceWord, 80);
+      source.onended = () => { for (let i = s.start; i < s.end; i++) { if (!spans[i].classList.contains('lit')) lightWord(i); } };
+      source.start();
+    } catch(e) { showToast('ElevenLabs error — falling back to browser voice'); speakSentence(si); }
+  }
+
+  function finishScript() {
+    running = false;
+    progress.completions++;
+    progress.savedLitCount = 0;
+    saveProgress(progress);
+    checkAchievements('runs');
+    saveScore(playerName);
+  }
+
   function speakSentence(si) {
     if (!running||paused||si>=sentences.length) {
-      if (si>=sentences.length) {
-        running=false;
-        progress.completions++;
-        progress.savedLitCount=0;
-        saveProgress(progress);
-        checkAchievements('runs');
-        saveScore(playerName);
-      }
+      if (si>=sentences.length) finishScript();
       return;
     }
+    if (elKeyEl.value.trim()) { speakWithElevenLabs(si); return; }
     const s=sentences[si]; const utt=new SpeechSynthesisUtterance(s.text);
     utt.pitch=parseFloat(pitchEl.value); utt.rate=ttsRate();
     const vi=parseInt(voiceSelect.value); if(voices[vi])utt.voice=voices[vi];
