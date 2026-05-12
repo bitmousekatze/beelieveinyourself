@@ -255,7 +255,8 @@
       <label>voice</label>
       <select id="voice-select"><option>loading voices...</option></select>
     </div>
-    <button id="start-btn">START</button>
+    <button id="start-btn">▶ START FRESH</button>
+    <button id="resume-btn" style="background:transparent;border:2px solid #f5c800;color:#f5c800;padding:12px 32px;font-size:1rem;font-family:'Courier New',monospace;font-weight:bold;cursor:pointer;letter-spacing:0.12em;text-transform:uppercase;transition:transform 0.1s,box-shadow 0.1s;-webkit-tap-highlight-color:transparent;touch-action:manipulation;display:none;">⏩ RESUME</button>
     <button id="landing-ach-btn"
       style="background:transparent;border:1px solid #f5c80066;color:#f5c800;font-family:'Courier New',monospace;font-size:0.8rem;padding:8px 24px;cursor:pointer;letter-spacing:0.1em;">
       🏅 ACHIEVEMENTS
@@ -375,6 +376,12 @@
     { id:'mode_rainbow', cat:'disc', icon:'🌈', name:'Taste the Rainbow',         desc:"Chromatic enlightenment achieved. Roy G. Biv would be proud." },
     { id:'mode_matrix',  cat:'disc', icon:'💊', name:'There Is No Spoon',        desc:"Only bees. Follow the white bee." },
     { id:'mode_chaos',   cat:'disc', icon:'🌀', name:'Chaotic Bee Energy',        desc:"You've unleashed it. There's no going back now." },
+
+    // Script completions
+    { id:'run_1',    cat:'runs', threshold:1,    icon:'🎬', name:'You Watched It',       desc:"You listened to the entire Bee Movie script. Once. It happened." },
+    { id:'run_10',   cat:'runs', threshold:10,   icon:'🔁', name:'Bee On Repeat',        desc:"10 full runs. The script is now part of your DNA." },
+    { id:'run_100',  cat:'runs', threshold:100,  icon:'🧠', name:'Hive Mind',            desc:"100 completions. You know every word. You ARE the Bee Movie." },
+    { id:'run_1000', cat:'runs', threshold:1000, icon:'♾️', name:'According to All Known Laws', desc:"1,000 runs. A bee should not be able to do this. And yet, here you are." },
   ];
 
   const PROGRESS_KEY = 'beelieve_progress';
@@ -387,6 +394,8 @@
   if (!progress.unlocked)         progress.unlocked = {};
   if (!progress.shop)             progress.shop = {};
   if (!progress.beesCaught)       progress.beesCaught = 0;
+  if (!progress.completions)      progress.completions = 0;
+  if (!progress.savedLitCount)    progress.savedLitCount = 0;
 
   let achToastTimer = null;
   function showAchToast(ach) {
@@ -415,6 +424,9 @@
     } else if (type === 'time') {
       const val = progress.listeningSeconds;
       ACHIEVEMENTS.filter(a => a.cat==='time').forEach(a => { if (val >= a.threshold) unlockAch(a.id); });
+    } else if (type === 'runs') {
+      const val = progress.completions;
+      ACHIEVEMENTS.filter(a => a.cat==='runs').forEach(a => { if (val >= a.threshold) unlockAch(a.id); });
     }
   }
 
@@ -434,6 +446,7 @@
     const sections = [
       { key:'bees', label:'🐝 Bee Catching' },
       { key:'time', label:'⏱ Time Listening' },
+      { key:'runs', label:'🎬 Script Completions' },
       { key:'disc', label:'🔍 Discoveries' },
     ];
 
@@ -445,9 +458,11 @@
       ACHIEVEMENTS.filter(a => a.cat===key).forEach(ach => {
         const date = progress.unlocked[ach.id];
         const pct  = key==='bees'
-          ? Math.min(100,(progress.beesTotal/ach.threshold)*100)
+          ? Math.min(100,(progress.beesCaught/ach.threshold)*100)
           : key==='time'
           ? Math.min(100,(progress.listeningSeconds/ach.threshold)*100)
+          : key==='runs'
+          ? Math.min(100,(progress.completions/ach.threshold)*100)
           : (date ? 100 : 0);
         const card = document.createElement('div');
         card.className = 'ach-card' + (date ? ' unlocked' : '');
@@ -526,7 +541,10 @@
   document.getElementById('home-btn').addEventListener('click', async () => {
     speechSynthesis.cancel();
     running = false;
+    progress.savedLitCount = litCount;
+    saveProgress(progress);
     await saveScore(playerName);
+    if (progress.savedLitCount > 0) resumeBtn.style.display = '';
     overlay.style.opacity = '1'; overlay.style.pointerEvents = 'auto';
     hud.classList.remove('visible'); header.classList.remove('visible');
   });
@@ -857,7 +875,17 @@
   let boundaryFired = false;
 
   function speakSentence(si) {
-    if (!running||paused||si>=sentences.length) { if(si>=sentences.length){running=false;saveScore(playerName);} return; }
+    if (!running||paused||si>=sentences.length) {
+      if (si>=sentences.length) {
+        running=false;
+        progress.completions++;
+        progress.savedLitCount=0;
+        saveProgress(progress);
+        checkAchievements('runs');
+        saveScore(playerName);
+      }
+      return;
+    }
     const s=sentences[si]; const utt=new SpeechSynthesisUtterance(s.text);
     utt.pitch=parseFloat(pitchEl.value); utt.rate=ttsRate();
     const vi=parseInt(voiceSelect.value); if(voices[vi])utt.voice=voices[vi];
@@ -974,33 +1002,66 @@
     if (!running||paused) return;
     progress.listeningSeconds++;
     saveProgressTick++;
-    if (saveProgressTick>=10) { saveProgress(progress); saveProgressTick=0; }
+    if (saveProgressTick>=10) {
+      progress.savedLitCount = litCount;
+      saveProgress(progress);
+      saveProgressTick=0;
+    }
     checkAchievements('time');
   },1000);
 
   // =============================================
-  // START
+  // START / RESUME
   // =============================================
-  startBtn.addEventListener('click', async () => {
-    // iOS Safari: prime speechSynthesis synchronously within the gesture handler
-    // before any await, otherwise the browser blocks speech as non-user-initiated
+
+  // Show RESUME button if there's a saved position
+  const resumeBtn = document.getElementById('resume-btn');
+  if (progress.savedLitCount > 0) resumeBtn.style.display = '';
+
+  async function launchGame(resumeFrom) {
     const primer = new SpeechSynthesisUtterance('');
     speechSynthesis.speak(primer);
     speechSynthesis.cancel();
 
-    playerName=playerNameEl.value.trim()||'anonymous';
-    liveSpeed.value=speedEl.value;
-    const res=await fetch(SCRIPT_FILE); if(!res.ok){alert('Could not load vibes.txt');return;}
-    const text=await res.text();
-    words=text.trim().split(/\s+/); wordCount.textContent=`0 / ${words.length.toLocaleString()}`;
+    playerName = playerNameEl.value.trim() || 'anonymous';
+    liveSpeed.value = speedEl.value;
+    const res = await fetch(SCRIPT_FILE); if (!res.ok) { alert('Could not load vibes.txt'); return; }
+    const text = await res.text();
+    words = text.trim().split(/\s+/); wordCount.textContent = `0 / ${words.length.toLocaleString()}`;
     renderAll(); buildSentences(); buildMilestones();
-    overlay.style.opacity='0'; overlay.style.pointerEvents='none';
+    overlay.style.opacity = '0'; overlay.style.pointerEvents = 'none';
     hud.classList.add('visible'); header.classList.add('visible');
     loadLeaderboard();
-    document.querySelectorAll('.bee').forEach(b=>b.classList.add('catchable'));
-    running=true;
+    document.querySelectorAll('.bee').forEach(b => b.classList.add('catchable'));
+    running = true;
     boundaryFired = false;
-    speakSentence(0);
+
+    if (resumeFrom > 0) {
+      // Light all words up to the saved position without speaking them
+      for (let i = 0; i < Math.min(resumeFrom, spans.length); i++) {
+        spans[i].classList.add('lit');
+        spans[i].style.color = getWordColor(i);
+      }
+      litCount = resumeFrom;
+      const pct = litCount / words.length * 100;
+      progressBar.style.width = pct.toFixed(1) + '%';
+      wordCount.textContent = `${litCount.toLocaleString()} / ${words.length.toLocaleString()}`;
+      // Find which sentence to resume from
+      const si = sentences.findIndex(s => s.end > resumeFrom);
+      speakSentence(si >= 0 ? si : 0);
+    } else {
+      speakSentence(0);
+    }
+  }
+
+  startBtn.addEventListener('click', async () => {
+    progress.savedLitCount = 0;
+    saveProgress(progress);
+    await launchGame(0);
+  });
+
+  resumeBtn.addEventListener('click', async () => {
+    await launchGame(progress.savedLitCount);
   });
 
   // initial currency display
