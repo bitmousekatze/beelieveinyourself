@@ -896,6 +896,7 @@
   document.getElementById('home-btn').addEventListener('click', async () => {
     speechSynthesis.cancel();
     running = false;
+    lastUtteranceStart = 0;
     progress.savedLitCount = litCount;
     saveProgress(progress);
     await saveScore(playerName);
@@ -2049,6 +2050,7 @@
   const EL_VOICE_ID = 'EXAVITQu4vr4xnSDxMaL'; // ElevenLabs "Sarah" — a clear, neutral English voice
   let elAudioCtx = null;
   let elCurrentSource = null;
+  let lastUtteranceStart = 0;
 
   async function speakWithElevenLabs(si) {
     if (!running || paused || si >= sentences.length) { if (si >= sentences.length) finishScript(); return; }
@@ -2062,7 +2064,12 @@
       });
       if (!res.ok) { showToast('ElevenLabs error — falling back to browser voice'); elKeyEl.value = ''; localStorage.removeItem('beelieve_el_key'); speakSentence(si); return; }
       const buf = await res.arrayBuffer();
-      if (!elAudioCtx) elAudioCtx = new (window.AudioContext || window.webkitAudioContext)();
+      if (!elAudioCtx) {
+        elAudioCtx = new (window.AudioContext || window.webkitAudioContext)();
+        elAudioCtx.onstatechange = () => {
+          if (elAudioCtx.state === 'suspended' && running && !paused) triggerCheatPause();
+        };
+      }
       const decoded = await elAudioCtx.decodeAudioData(buf);
       const source = elAudioCtx.createBufferSource();
       source.buffer = decoded;
@@ -2089,6 +2096,7 @@
 
   function finishScript() {
     running = false;
+    lastUtteranceStart = 0;
     progress.completions++;
     progress.savedLitCount = 0;
     saveProgress(progress);
@@ -2137,6 +2145,7 @@
     };
 
     utt.onstart=()=>{
+      lastUtteranceStart = Date.now();
       lightWord(s.start);
       speakSentence(si+1);
       // Start fallback timer in case onboundary never fires (iOS Safari)
@@ -2155,6 +2164,14 @@
     speechSynthesis.speak(utt); sentIdx=si+1;
   }
 
+  function triggerCheatPause() {
+    if (!running || paused) return;
+    paused = true;
+    pauseBtn.textContent = 'RESUME';
+    speechSynthesis.pause();
+    showToast('🔇 Audio stopped — unmute and click RESUME to continue');
+  }
+
   // iOS Safari watchdog: speechSynthesis silently stalls, especially after ~30s
   setInterval(() => {
     if (!running || paused) return;
@@ -2164,6 +2181,10 @@
     // If synthesis claims to be speaking but no boundary fired recently, nudge it
     if (speechSynthesis.speaking && boundaryFired && Date.now() - lastBoundaryTime > 8000) {
       speechSynthesis.resume();
+    }
+    // Cheat detection: browser TTS went silent while script should be playing
+    if (!elKeyEl.value.trim() && !speechSynthesis.speaking && lastUtteranceStart > 0 && Date.now() - lastUtteranceStart > 3000) {
+      triggerCheatPause();
     }
   }, 5000);
 
