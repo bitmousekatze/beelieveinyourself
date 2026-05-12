@@ -138,6 +138,25 @@
     a { color: #f5c800; text-decoration: none; }
     a:hover { text-decoration: underline; }
 
+    .tldr {
+      background: #333;
+      border: 1px solid #f5c80055;
+      border-left: 4px solid #f5c800;
+      border-radius: 4px;
+      padding: 20px 24px;
+      margin: 32px 0 48px;
+    }
+
+    .tldr h2 {
+      margin: 0 0 12px;
+      border: none;
+      padding: 0;
+      font-size: 1rem;
+    }
+
+    .tldr ul { margin: 0; }
+    .tldr li { color: #ddd; }
+
     .back-btn {
       display: inline-block;
       margin-bottom: 40px;
@@ -195,6 +214,18 @@
     <span class="tech-tag">Web Speech API</span>
     <span class="tech-tag">GitHub Pages</span>
     <span class="tech-tag">the bee movie (2007)</span>
+  </div>
+
+  <div class="tldr">
+    <h2>// tl;dr</h2>
+    <ul>
+      <li>A single <code>index.html</code> page that reads the entire Bee Movie script aloud, word by word, using the browser's text-to-speech API.</li>
+      <li>Words fill the screen in alternating yellow and black — the whole script eventually covers everything.</li>
+      <li>15 collectible milestone badges tied to exact moments in the script (Barry's first flight, the tennis match, the lawsuit, etc.).</li>
+      <li>A casino panel lets you gamble your accumulated honey 🍯 on blackjack or roulette — you earn honey by listening to the script.</li>
+      <li>Gambling is blocked while the script is paused. Honey persists in localStorage.</li>
+      <li>Entire project is one file, built iteratively through AI conversations, deployed on GitHub Pages.</li>
+    </ul>
   </div>
 
   <h2>// how it started</h2>
