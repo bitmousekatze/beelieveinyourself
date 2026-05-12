@@ -653,6 +653,11 @@
   let fallWorld   = null;
   let fallBodies  = [];   // { body, el, span }
   let fallInited  = false;
+  let fallGround  = null;
+  let fallLeft    = null;
+  let fallRight   = null;
+
+  function groundY() { return window.scrollY + window.innerHeight - 50; }
 
   function initFall() {
     if (fallInited) return;
@@ -662,14 +667,19 @@
     fallWorld  = fallEngine.world;
     fallEngine.gravity.y = 1.2;
 
-    // ground sits below all current content
-    const groundY = Math.max(document.body.scrollHeight, 4000) + 60;
-    document.body.style.minHeight = (groundY + 400) + 'px';
+    const gy = groundY();
+    fallGround = Matter.Bodies.rectangle(window.innerWidth / 2, gy + 30, window.innerWidth * 4, 60, { isStatic: true });
+    fallLeft   = Matter.Bodies.rectangle(-30, gy / 2, 60, gy * 2, { isStatic: true });
+    fallRight  = Matter.Bodies.rectangle(window.innerWidth + 30, gy / 2, 60, gy * 2, { isStatic: true });
+    Matter.World.add(fallWorld, [fallGround, fallLeft, fallRight]);
 
-    const ground    = Matter.Bodies.rectangle(window.innerWidth / 2, groundY + 30, window.innerWidth * 4, 60, { isStatic: true });
-    const leftWall  = Matter.Bodies.rectangle(-30, groundY / 2, 60, groundY * 2, { isStatic: true });
-    const rightWall = Matter.Bodies.rectangle(window.innerWidth + 30, groundY / 2, 60, groundY * 2, { isStatic: true });
-    Matter.World.add(fallWorld, [ground, leftWall, rightWall]);
+    // move ground with scroll so pile tracks the visible bottom
+    window.addEventListener('scroll', () => {
+      const ny = groundY();
+      Matter.Body.setPosition(fallGround, { x: window.innerWidth / 2, y: ny + 30 });
+      Matter.Body.setPosition(fallLeft,   { x: -30,                   y: ny / 2  });
+      Matter.Body.setPosition(fallRight,  { x: window.innerWidth + 30, y: ny / 2 });
+    });
 
     // physics tick
     setInterval(() => Matter.Engine.update(fallEngine, 1000 / 60), 1000 / 60);
@@ -692,6 +702,8 @@
     const rect = span.getBoundingClientRect();
     const docX = rect.left + rect.width  / 2 + window.scrollX;
     const docY = rect.top  + rect.height / 2 + window.scrollY;
+    // clamp start Y so off-screen words don't fall from far away
+    const startY = Math.min(docY, groundY() - 10);
 
     // clone floats in document space
     const el = document.createElement('span');
@@ -705,7 +717,7 @@
     const w = Math.max(el.offsetWidth,  10) + 6;
     const h = Math.max(el.offsetHeight, 10) + 6;
 
-    const body = Matter.Bodies.rectangle(docX, docY, w, h, {
+    const body = Matter.Bodies.rectangle(docX, startY, w, h, {
       restitution: 0.4,
       friction:    0.3,
       frictionAir: 0.012,
@@ -768,7 +780,7 @@
     wordCount.textContent = `${litCount.toLocaleString()} / ${words.length.toLocaleString()}`;
     checkMilestones(pct);
 
-    spans[globalIdx].scrollIntoView({ block: 'center', behavior: 'smooth' });
+    if (!fallMode) spans[globalIdx].scrollIntoView({ block: 'center', behavior: 'smooth' });
 
     // schedule fall after 3s if in fall mode
     if (fallMode) {
