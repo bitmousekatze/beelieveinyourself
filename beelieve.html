@@ -857,6 +857,121 @@
       </p>
     </div>
 
+    <div class="timeline-item">
+      <h3>28. shop flash fix + in-place rendering</h3>
+      <div class="prompt-box">
+        When we open the shop, we hover over what we want to buy and we can't click because it's flashing like we are clicking when we are not. We need to change that ASAP so it only flashes when we click and that it lets us buy upgrades.
+      </div>
+
+      <div class="bug-box">
+        <span class="bug-label">🐛 bug — shop items flash on hover and freeze on click</span>
+        Every purchase called <code>renderShop()</code> which wiped <code>innerHTML</code> and rebuilt
+        all items from scratch. The full DOM teardown/rebuild caused a visible flash. On mobile, touch
+        states were also triggering the hover style on items that couldn't be bought.
+      </div>
+      <div class="fix-box">
+        <span class="fix-label">✅ fix — in-place DOM update</span>
+        <code>renderShop(initial)</code> now uses <code>data-upg</code> attributes to find existing
+        item elements and only updates their cost and count text. Items are created once and reused.
+        The <code>:hover</code> style was scoped to <code>:not(.unaffordable)</code> so grey/locked
+        items never highlight. A brief <code>.buying</code> class (150ms) gives tactile feedback on
+        actual clicks without a full re-render.
+      </div>
+    </div>
+
+    <div class="timeline-item">
+      <h3>29. landing page stats panel</h3>
+      <div class="prompt-box">
+        On the landing page see our total amount of honey and our honey per second as well as a % of how far we are in the script.
+      </div>
+      <p>
+        A dark stats panel was added to the landing page controls, sitting above the Daily Rewards button.
+        It displays three live values read from <code>progress</code> on load:
+      </p>
+      <ul>
+        <li>🍯 <strong>HONEY</strong> — current spendable balance</li>
+        <li>⚡ <strong>PER SECOND</strong> — current BPS from all owned upgrades</li>
+        <li>📜 <strong>PROGRESS</strong> — <code>savedLitCount / 9157 × 100%</code> with a progress bar</li>
+      </ul>
+      <p>
+        Progress is 0% if there is no saved session. All values are calculated via the existing
+        <code>fmtN()</code> and <code>calcBPS()</code> helpers, so they use the same formatting
+        (k/M/B suffixes) as the in-game HUD.
+      </p>
+    </div>
+
+    <div class="timeline-item">
+      <h3>30. uniform landing button styles + hover tooltips</h3>
+      <div class="prompt-box">
+        Resume, achievements, and how this was made should all be the same width and style as the other buttons. When hovering you should see an info box appear so the user gets more info as to what the button does.
+      </div>
+      <p>
+        All landing page buttons — Daily Rewards, Resume, Achievements, How Was This Made, and Start Fresh —
+        were unified to the same style: <code>transparent background · 1px solid #f5c80066 border · full width · centered text</code>.
+        Resume was previously a thicker-border standout button; it now matches the others.
+        The "how was this made?" link was restyled to look like a button while remaining an <code>&lt;a&gt;</code> tag.
+      </p>
+      <p>
+        Each button was wrapped in a <code>.landing-btn-wrap</code> relative container. On hover,
+        the container shows a <code>.landing-tip</code> tooltip above the button with a title and description:
+      </p>
+      <ul>
+        <li><strong>▶ Start Fresh</strong> — clarifies that honey, BPS, and achievements are NOT reset, only script position</li>
+        <li><strong>⏩ Resume</strong> — explains saved word position</li>
+        <li><strong>📖 Daily Rewards</strong> — explains streak doubling and ad retroactive claims</li>
+        <li><strong>🏅 Achievements</strong> — describes the four categories</li>
+        <li><strong>🛠️ How Was This Made</strong> — points to the build log</li>
+      </ul>
+      <p>
+        Hovering any button triggers a <code>scale(1.03)</code> + <code>box-shadow</code> glow identical
+        to the Start Fresh button's existing expand effect. All buttons shrink on click with <code>scale(0.97)</code>.
+      </p>
+
+      <div class="bug-box">
+        <span class="bug-label">🐛 bug — resume button wrapper hidden state</span>
+        The Resume button's <code>display:none</code> was moved to its wrapper div so the tooltip and
+        hover effect don't appear for a button that isn't visible. JS was updated to show/hide the wrapper
+        by ID (<code>resume-wrap</code>) rather than the button itself.
+      </div>
+      <div class="fix-box">
+        <span class="fix-label">✅ fix</span>
+        Added <code>id="resume-wrap"</code> to the wrapper and updated both JS call sites
+        (<code>home-btn</code> handler and initial load check) to target the wrapper.
+      </div>
+    </div>
+
+    <div class="timeline-item">
+      <h3>31. 🎰 bee casino</h3>
+      <div class="prompt-box">
+        Next to the shop button I need you to make a casino button please &gt;:D time to gamble honey.
+      </div>
+      <p>
+        A <strong>🎰 CASINO</strong> button was added to the header next to SHOP. It opens a purple-themed
+        slide-in panel (same pattern as the shop, but styled with deep purple/violet accents) containing
+        three gambling mini-games:
+      </p>
+      <ul>
+        <li>
+          <strong>🎰 Bee Slots</strong> — three animated reels spin with a cascade delay (600ms / 250ms / 250ms).
+          Six weighted symbols: 🐝 (most common) through ⚖️ (rarest). Payouts: pair = 2×, three of a kind = 10×,
+          three 🍯 jackpot = 50× with a panel flash animation.
+        </li>
+        <li>
+          <strong>🪙 Honey Flip</strong> — pick 🐝 BEE or 🌻 FLOWER. 50/50 outcome. Win pays 1.9× (5% house edge).
+        </li>
+        <li>
+          <strong>🎲 High or Low</strong> — roll 1–10. Guess HIGH (6–10) or LOW (1–5). Win pays 1.9×.
+        </li>
+      </ul>
+      <p>
+        All games share quick-bet buttons: fixed amounts (10, 50, 100) and percentage bets (10%, 50%, ALL IN).
+        The ALL IN button sets the bet input to your entire current balance. Bets are floor'd to whole numbers,
+        and the bet is deducted before the animation plays — no double-spending possible.
+        The casino balance display stays live via <code>updateCurrencyDisplay()</code>.
+        Opening the casino auto-closes the shop and vice versa.
+      </p>
+    </div>
+
   </div>
 
   <h2>// local storage schema</h2>
@@ -914,6 +1029,13 @@
     <li>Missed days locked forever → can watch a simulated ad to retroactively claim</li>
     <li>Header buttons crowded left → flex spacer pushes mode/color buttons to right edge</li>
     <li>loginStreak + lastLoginDate → replaced by claimedDates array (old data migrated)</li>
+    <li>Shop re-renders entire list on every purchase → in-place DOM update, items created once and reused</li>
+    <li>Shop hover highlights unaffordable items → scoped to <code>:not(.unaffordable)</code></li>
+    <li>Resume button display:none → wrapper div hidden instead, so tooltip doesn't ghost when hidden</li>
+    <li>Landing buttons all different sizes/styles → unified to same border/padding/width/font</li>
+    <li>"how was this made?" plain link → restyled as matching button-style <code>&lt;a&gt;</code> tag</li>
+    <li>Landing page no context → stats panel shows honey, BPS, and script progress % before you start</li>
+    <li>No hover feedback on landing buttons → scale+glow expand and info tooltip on all buttons</li>
   </ul>
 
   <hr>
