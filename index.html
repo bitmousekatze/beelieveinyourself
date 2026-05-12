@@ -177,7 +177,7 @@
 
     /* ---- casino panel ---- */
     #casino-panel {
-      position: fixed; top: 44px; right: 0; bottom: 0; width: min(320px, 96vw);
+      position: fixed; top: 44px; right: 0; bottom: 0; width: min(480px, 96vw);
       background: #0d0020; border-left: 1px solid #cc44ff44;
       transform: translateX(100%); transition: transform 0.3s ease;
       z-index: 80; display: flex; flex-direction: column; overflow: hidden;
@@ -191,61 +191,115 @@
     #casino-honey { color: #f5c80099; font-size: 0.68rem; text-align: center; margin-top: 3px; }
     #casino-body { flex: 1; overflow-y: auto; padding: 12px; display: flex; flex-direction: column; gap: 14px; }
 
-    /* slots */
-    .casino-card { background: #1a0030; border: 1px solid #cc44ff33; border-radius: 8px; padding: 14px; }
-    .casino-card-title { color: #e080ff; font-size: 0.78rem; font-weight: bold; letter-spacing: 0.12em; margin-bottom: 4px; }
-    .casino-card-desc { color: #888; font-size: 0.62rem; margin-bottom: 12px; line-height: 1.4; }
-    .slot-reels { display: flex; justify-content: center; gap: 6px; margin-bottom: 12px; }
-    .slot-reel {
-      width: 54px; height: 54px; background: #0a0015; border: 2px solid #cc44ff55;
-      border-radius: 8px; display: flex; align-items: center; justify-content: center;
-      font-size: 1.8rem; overflow: hidden; position: relative;
+    /* ---- casino tabs ---- */
+    .casino-tab-row { display:flex; gap:4px; padding:10px 12px 0; flex-shrink:0; }
+    .casino-tab {
+      flex:1; background:transparent; border:1px solid #cc44ff44; color:#cc88ff;
+      font-family:'Courier New',monospace; font-size:0.7rem; padding:6px 4px;
+      cursor:pointer; border-radius:4px; letter-spacing:0.08em;
+      transition:background 0.15s, border-color 0.15s;
     }
-    .slot-reel.spinning { animation: reel-spin 0.12s steps(1) infinite; }
-    @keyframes reel-spin { 0%{opacity:1} 50%{opacity:0.3} 100%{opacity:1} }
-    .casino-bet-row { display: flex; align-items: center; gap: 8px; margin-bottom: 10px; }
-    .casino-bet-row label { color: #cc88ff; font-size: 0.7rem; white-space: nowrap; }
-    .casino-bet-input {
-      flex: 1; background: #0a0015; border: 1px solid #cc44ff55; color: #f5c800;
-      font-family: 'Courier New', monospace; font-size: 0.8rem; padding: 4px 8px; outline: none;
-      border-radius: 4px; min-width: 0;
-    }
-    .casino-bet-quick { display: flex; gap: 4px; flex-wrap: wrap; margin-bottom: 10px; }
-    .casino-bet-quick button {
-      background: #1a0030; border: 1px solid #cc44ff44; color: #cc88ff;
-      font-family: 'Courier New', monospace; font-size: 0.62rem; padding: 3px 7px;
-      cursor: pointer; border-radius: 3px; transition: background 0.1s;
-    }
-    .casino-bet-quick button:hover { background: #2a0050; border-color: #cc44ff; }
-    .casino-play-btn {
-      width: 100%; background: #7700cc; border: none; color: #fff;
-      font-family: 'Courier New', monospace; font-size: 0.82rem; font-weight: bold;
-      padding: 9px; cursor: pointer; border-radius: 5px; letter-spacing: 0.1em;
-      transition: background 0.15s, transform 0.1s;
-    }
-    .casino-play-btn:hover { background: #9900ee; }
-    .casino-play-btn:active { transform: scale(0.97); }
-    .casino-play-btn:disabled { opacity: 0.4; cursor: not-allowed; }
-    .casino-result {
-      text-align: center; font-size: 0.8rem; min-height: 1.4em;
-      margin-top: 8px; letter-spacing: 0.05em; font-weight: bold;
-    }
-    .casino-result.win  { color: #f5c800; }
-    .casino-result.lose { color: #ff4444; }
-    .casino-result.push { color: #888; }
+    .casino-tab:hover { background:#1a0030; border-color:#cc44ff; }
+    .casino-tab.active { background:#2a0050; border-color:#e080ff; color:#fff; }
 
-    /* coin flip */
-    .coin-flip-btn-row { display: flex; gap: 8px; }
-    .coin-choice-btn {
-      flex: 1; background: #1a0030; border: 2px solid #cc44ff44; color: #e080ff;
-      font-family: 'Courier New', monospace; font-size: 0.78rem; padding: 8px;
-      cursor: pointer; border-radius: 5px; transition: background 0.15s, border-color 0.15s;
+    /* ---- blackjack ---- */
+    .bj-section-label { color:#cc88ff; font-size:0.6rem; letter-spacing:0.12em; text-transform:uppercase; margin-bottom:5px; }
+    .bj-card {
+      width:48px; height:70px; flex-shrink:0;
+      background:#100020; border:1.5px solid #cc44ff55;
+      border-radius:7px; position:relative; font-family:'Courier New',monospace;
+      animation:bj-deal-in 0.4s cubic-bezier(.2,.7,.2,1) both;
+      box-shadow:0 2px 8px #00000099;
     }
-    .coin-choice-btn:hover { background: #2a0050; border-color: #cc44ff; }
-    .coin-choice-btn.selected { background: #3a0070; border-color: #e080ff; color: #fff; }
+    .bj-card.hidden { display:flex; align-items:center; justify-content:center; font-size:1.3rem; }
+    .bj-card.red { color:#ff7777; }
+    .bj-card.blk { color:#f5c800; }
+    .bj-card-rank { position:absolute; top:3px; left:4px; font-size:0.58rem; line-height:1.15; font-weight:bold; }
+    .bj-card-suit-br { position:absolute; bottom:3px; right:4px; font-size:1rem; line-height:1; transform:rotate(180deg); }
+    .bj-card.flipping { animation:bj-flip 0.3s cubic-bezier(.25,.46,.45,.94) both; }
+    @keyframes bj-deal-in { 0%{transform:translate(-180px,-120px) rotate(-15deg);opacity:0} 40%{opacity:1} 100%{transform:translate(0,0) rotate(0);opacity:1} }
+    @keyframes bj-flip { 0%{transform:rotateY(90deg)} 100%{transform:rotateY(0deg)} }
+    .bj-hand { display:flex; min-height:70px; padding-left:2px; }
+    .bj-score { font-size:0.68rem; text-align:center; margin-top:3px; color:#cc88ff; font-family:'Courier New',monospace; }
+    .bj-score.bj-win { color:#f5c800; }
+    .bj-score.bj-lose { color:#ff4444; }
+    .bj-score.bj-push { color:#888; }
+    .bj-btn {
+      background:#1a0030; border:1px solid #cc44ff55; color:#cc88ff;
+      font-family:'Courier New',monospace; font-size:0.7rem; padding:6px 12px;
+      cursor:pointer; border-radius:4px; transition:background 0.15s;
+      -webkit-tap-highlight-color:transparent;
+    }
+    .bj-btn:hover { background:#2a0050; border-color:#cc44ff; }
+    .bj-btn:disabled { opacity:0.35; cursor:not-allowed; pointer-events:none; }
+    .bj-btn.primary { background:#7700cc; border-color:#9900ff; color:#fff; }
+    .bj-btn.primary:hover { background:#9900ee; }
+    .bj-msg { text-align:center; font-size:0.75rem; color:#e080ff; min-height:1.2em; margin:7px 0 5px; letter-spacing:0.04em; }
+    .bj-hand-slot {
+      width:48px; height:70px; border-radius:7px; border:1.5px dashed #cc44ff44;
+      background:#0a0015; display:flex; align-items:center; justify-content:center;
+      cursor:pointer; transition:border-color 0.15s, background 0.15s; position:relative;
+      flex-direction:column; gap:2px;
+    }
+    .bj-hand-slot:hover { border-color:#cc44ff88; background:#120025; }
+    .bj-hand-slot.has-bet { border-color:#f5c800; border-style:solid; background:#120025; }
+    .bj-bet-stack { font-size:0.6rem; color:#f5c800; text-align:center; line-height:1.2; }
+    .bj-chip-row { display:flex; gap:4px; flex-wrap:wrap; margin-bottom:8px; align-items:center; }
+    .bj-chip {
+      width:34px; height:34px; border-radius:50%; border:2px solid #cc44ff44;
+      font-family:'Courier New',monospace; font-size:0.58rem; font-weight:bold;
+      cursor:pointer; color:#cc88ff; background:#1a0030; transition:all 0.15s;
+      display:flex; align-items:center; justify-content:center;
+    }
+    .bj-chip.active { border-color:#f5c800; background:#f5c80022; color:#f5c800; box-shadow:0 0 6px #f5c80044; }
+
+    /* ---- roulette ---- */
+    .rl-chips { display:flex; gap:4px; flex-wrap:wrap; margin-bottom:7px; align-items:center; }
+    .rl-chip {
+      width:34px; height:34px; border-radius:50%; border:2px solid #cc44ff44;
+      font-family:'Courier New',monospace; font-size:0.58rem; font-weight:bold;
+      cursor:pointer; color:#cc88ff; background:#1a0030; transition:all 0.15s;
+      display:flex; align-items:center; justify-content:center;
+    }
+    .rl-chip.active { border-color:#f5c800; background:#f5c80022; color:#f5c800; box-shadow:0 0 6px #f5c80044; }
+    .rl-table-wrap { background:#0a1e0e; border-radius:8px; padding:6px; border:2px solid #c8960a55; overflow-x:auto; }
+    .rl-outside {
+      background:#0d3020; border:1px solid #16a34a66; color:#fff; font-size:0.6rem; font-weight:bold;
+      cursor:pointer; border-radius:3px; padding:4px 2px; text-align:center;
+      transition:filter 0.1s; flex:1; font-family:'Courier New',monospace;
+    }
+    .rl-outside.red-bg { background:#6b0000; border-color:#8b000088; }
+    .rl-outside.black-bg { background:#1a1a1a; border-color:#44444488; }
+    .rl-outside:hover { filter:brightness(1.3); }
+    .rl-outside.has-bet { outline:2px solid #f5c800; }
+    .rl-result-badge { text-align:center; padding:5px; border-radius:8px; font-size:1.4rem; font-weight:bold; margin:5px 0; font-family:'Courier New',monospace; }
+    .rl-result-red { background:#6b0000; color:#fff; }
+    .rl-result-black { background:#1a1a1a; color:#fff; border:1px solid #444; }
+    .rl-result-green { background:#16a34a; color:#fff; }
+    .rl-bet-tag {
+      padding:2px 7px; border-radius:12px; background:#f5c80022; color:#f5c800;
+      font-size:0.58rem; border:1px solid #f5c80044; cursor:pointer; transition:background 0.1s;
+      font-family:'Courier New',monospace;
+    }
+    .rl-bet-tag:hover { background:#ff000022; border-color:#ff4444; color:#ff4444; }
+    .rl-spin-btn {
+      flex:1; background:#7700cc; border:none; color:#fff;
+      font-family:'Courier New',monospace; font-size:0.78rem; font-weight:bold;
+      padding:8px; cursor:pointer; border-radius:5px; letter-spacing:0.1em;
+      transition:background 0.15s;
+    }
+    .rl-spin-btn:hover { background:#9900ee; }
+    .rl-spin-btn:disabled { opacity:0.4; cursor:not-allowed; }
+    .rl-ctrl-btn {
+      background:#1a0030; border:1px solid #cc44ff44; color:#cc88ff;
+      font-family:'Courier New',monospace; font-size:0.7rem; padding:7px 10px;
+      cursor:pointer; border-radius:4px; transition:background 0.15s;
+    }
+    .rl-ctrl-btn:hover { background:#2a0050; }
+    .rl-ctrl-btn:disabled { opacity:0.35; cursor:not-allowed; }
 
     @keyframes casino-win-flash { 0%,100%{background:#0d0020} 50%{background:#1a0040} }
-    #casino-panel.jackpot { animation: casino-win-flash 0.3s ease 4; }
+    #casino-panel.jackpot { animation:casino-win-flash 0.3s ease 4; }
 
     /* ---- achievement toast ---- */
     #ach-toast {
@@ -384,81 +438,38 @@
     </div>
     <div id="casino-honey">balance: 🍯 0</div>
   </div>
-  <div id="casino-body">
-
-    <!-- SLOTS -->
-    <div class="casino-card">
-      <div class="casino-card-title">🎰 BEE SLOTS</div>
-      <div class="casino-card-desc">3 matching symbols = 10× · 2 matching = 2× · 🍯🍯🍯 = 50× jackpot</div>
-      <div class="slot-reels">
-        <div class="slot-reel" id="reel-0">🐝</div>
-        <div class="slot-reel" id="reel-1">🐝</div>
-        <div class="slot-reel" id="reel-2">🐝</div>
-      </div>
-      <div class="casino-bet-row">
-        <label>🍯 BET</label>
-        <input class="casino-bet-input" id="slots-bet" type="number" min="1" value="10" />
-      </div>
-      <div class="casino-bet-quick">
-        <button onclick="casinoBetQuick('slots-bet',10)">10</button>
-        <button onclick="casinoBetQuick('slots-bet',50)">50</button>
-        <button onclick="casinoBetQuick('slots-bet',100)">100</button>
-        <button onclick="casinoBetQuick('slots-bet',0.1,'pct')">10%</button>
-        <button onclick="casinoBetQuick('slots-bet',0.5,'pct')">50%</button>
-        <button onclick="casinoBetQuick('slots-bet',1,'pct')">ALL IN</button>
-      </div>
-      <button class="casino-play-btn" id="slots-btn" onclick="playSlots()">▶ SPIN</button>
-      <div class="casino-result" id="slots-result"></div>
+  <div id="casino-body" style="display:flex;flex-direction:column;overflow:hidden;flex:1;">
+    <!-- Game tabs -->
+    <div class="casino-tab-row">
+      <button class="casino-tab active" data-tab="bj" onclick="casinoSetTab('bj')">🃏 BLACKJACK</button>
+      <button class="casino-tab" data-tab="rl" onclick="casinoSetTab('rl')">🎡 ROULETTE</button>
     </div>
 
-    <!-- COIN FLIP -->
-    <div class="casino-card">
-      <div class="casino-card-title">🪙 HONEY FLIP</div>
-      <div class="casino-card-desc">Pick BEE or FLOWER — win 1.9× your bet (house keeps 5%)</div>
-      <div class="casino-bet-row">
-        <label>🍯 BET</label>
-        <input class="casino-bet-input" id="flip-bet" type="number" min="1" value="10" />
+    <!-- BLACKJACK -->
+    <div id="casino-bj" style="flex:1;overflow-y:auto;padding:10px 12px;">
+      <div style="margin-bottom:8px;">
+        <div class="bj-section-label">Dealer</div>
+        <div class="bj-hand" id="bj-dealer-cards" style="flex-wrap:wrap;"></div>
+        <div class="bj-score" id="bj-dealer-score"></div>
       </div>
-      <div class="casino-bet-quick">
-        <button onclick="casinoBetQuick('flip-bet',10)">10</button>
-        <button onclick="casinoBetQuick('flip-bet',50)">50</button>
-        <button onclick="casinoBetQuick('flip-bet',100)">100</button>
-        <button onclick="casinoBetQuick('flip-bet',0.1,'pct')">10%</button>
-        <button onclick="casinoBetQuick('flip-bet',0.5,'pct')">50%</button>
-        <button onclick="casinoBetQuick('flip-bet',1,'pct')">ALL IN</button>
+      <div style="margin-bottom:4px;">
+        <div class="bj-section-label">You</div>
+        <div id="bj-player-section"></div>
       </div>
-      <div class="coin-flip-btn-row" style="margin-bottom:10px;">
-        <button class="coin-choice-btn selected" id="flip-bee" onclick="selectCoin('bee')">🐝 BEE</button>
-        <button class="coin-choice-btn" id="flip-flower" onclick="selectCoin('flower')">🌻 FLOWER</button>
-      </div>
-      <button class="casino-play-btn" id="flip-btn" onclick="playFlip()">▶ FLIP</button>
-      <div class="casino-result" id="flip-result"></div>
+      <div class="bj-msg" id="bj-message">Place your bets and deal!</div>
+      <div id="bj-controls"></div>
     </div>
 
-    <!-- HIGH/LOW -->
-    <div class="casino-card">
-      <div class="casino-card-title">🎲 HIGH OR LOW</div>
-      <div class="casino-card-desc">Guess if the next roll (1–10) is HIGH (6–10) or LOW (1–5). Win 1.9×.</div>
-      <div class="casino-bet-row">
-        <label>🍯 BET</label>
-        <input class="casino-bet-input" id="hl-bet" type="number" min="1" value="10" />
-      </div>
-      <div class="casino-bet-quick">
-        <button onclick="casinoBetQuick('hl-bet',10)">10</button>
-        <button onclick="casinoBetQuick('hl-bet',50)">50</button>
-        <button onclick="casinoBetQuick('hl-bet',100)">100</button>
-        <button onclick="casinoBetQuick('hl-bet',0.5,'pct')">50%</button>
-        <button onclick="casinoBetQuick('hl-bet',1,'pct')">ALL IN</button>
-      </div>
-      <div id="hl-die" style="text-align:center;font-size:2.2rem;margin-bottom:10px;">🎲</div>
-      <div class="coin-flip-btn-row" style="margin-bottom:10px;">
-        <button class="coin-choice-btn selected" id="hl-high" onclick="selectHL('high')">⬆️ HIGH (6-10)</button>
-        <button class="coin-choice-btn" id="hl-low" onclick="selectHL('low')">⬇️ LOW (1-5)</button>
-      </div>
-      <button class="casino-play-btn" id="hl-btn" onclick="playHL()">▶ ROLL</button>
-      <div class="casino-result" id="hl-result"></div>
+    <!-- ROULETTE -->
+    <div id="casino-rl" style="display:none;flex:1;overflow-y:auto;padding:8px 12px;">
+      <div id="rl-wheel-wrap" style="margin-bottom:6px;display:flex;justify-content:center;"></div>
+      <div id="rl-result-badge" class="rl-result-badge" style="display:none;"></div>
+      <div id="rl-message" style="text-align:center;font-size:0.7rem;color:#cc88ff;min-height:1.3em;margin-bottom:6px;font-family:'Courier New',monospace;">Place your bets, then spin!</div>
+      <div id="rl-chips" class="rl-chips"></div>
+      <div class="rl-table-wrap"><div id="rl-table"></div></div>
+      <div id="rl-active-bets"></div>
+      <div id="rl-controls"></div>
     </div>
-
   </div>
 </div>
 
@@ -918,12 +929,7 @@
   // =============================================
   // CASINO
   // =============================================
-  const SLOT_SYMBOLS = ['🐝','🌻','🍯','👑','🎷','⚖️'];
-  const SLOT_WEIGHTS  = [30,  25,   20,   10,   10,   5];
   let casinoOpen = false;
-  let coinChoice = 'bee';
-  let hlChoice   = 'high';
-  let slotsSpinning = false;
 
   function casinoUpdateBalance() {
     document.getElementById('casino-honey').textContent = `balance: 🍯 ${fmtN(progress.beesTotal)}`;
@@ -951,149 +957,529 @@
     if (!panel.contains(e.target) && e.target !== btn) closeCasino();
   });
 
-  function casinoBetQuick(inputId, val, mode) {
-    const el = document.getElementById(inputId);
-    if (mode === 'pct') el.value = Math.max(1, Math.floor(progress.beesTotal * val));
-    else el.value = val;
+  function casinoSetTab(tab) {
+    document.getElementById('casino-bj').style.display = tab==='bj' ? '' : 'none';
+    document.getElementById('casino-rl').style.display = tab==='rl' ? '' : 'none';
+    document.querySelectorAll('.casino-tab').forEach(b => b.classList.toggle('active', b.dataset.tab===tab));
   }
 
-  function casinoDeduct(bet) {
-    if (isNaN(bet) || bet < 1) return false;
-    bet = Math.floor(bet);
-    if (progress.beesTotal < bet) return false;
-    progress.beesTotal -= bet;
-    return bet;
+  // =============================================
+  // BLACKJACK
+  // =============================================
+  const BJ_SUITS = ['♠','♥','♦','♣'];
+  const BJ_RANKS = [
+    {r:'A',v:11},{r:'2',v:2},{r:'3',v:3},{r:'4',v:4},
+    {r:'5',v:5},{r:'6',v:6},{r:'7',v:7},{r:'8',v:8},
+    {r:'9',v:9},{r:'10',v:10},{r:'J',v:10},{r:'Q',v:10},{r:'K',v:10}
+  ];
+  const BJ_NUM_DECKS = 6;
+  const BJ_RESHUFFLE_THRESHOLD = 20;
+  const BJ_CHIPS = [5,10,25,50,100];
+
+  let bjShoe=[], bjHands=[], bjActive=0, bjDealer=[], bjPhase='betting';
+  let bjMessage='Place your bets and deal!';
+  let bjDoubleFaceDown=true, bjReshuffling=false;
+  let bjHandBets=[0,0,0];
+  let bjActiveBets=[];
+  let bjChipAmount=10;
+  let bjDealerRevealed=new Set(), bjFlippingCards=new Set();
+  let bjRevealTimers=[], bjReshuffleTimer=null;
+
+  function bjBuildShoe() {
+    const shoe=[];
+    for (let d=0;d<BJ_NUM_DECKS;d++)
+      for (const s of BJ_SUITS)
+        for (const {r,v} of BJ_RANKS)
+          shoe.push({id:`${d}-${s}-${r}-${Math.random().toString(36).slice(2,7)}`,rank:r,suit:s,value:v});
+    for (let i=shoe.length-1;i>0;i--) { const j=Math.floor(Math.random()*(i+1)); [shoe[i],shoe[j]]=[shoe[j],shoe[i]]; }
+    return shoe;
   }
 
-  function casinoAward(amount) {
-    progress.beesTotal += amount;
-    saveProgress(progress);
-    updateCurrencyDisplay();
-    casinoUpdateBalance();
-    if (casinoOpen) renderShop(false);
+  function bjScore(cards) {
+    let total=cards.reduce((s,c)=>s+c.value,0), aces=cards.filter(c=>c.rank==='A').length;
+    while (total>21&&aces>0) { total-=10; aces--; }
+    return total;
   }
 
-  function weightedRandom(symbols, weights) {
-    const total = weights.reduce((a, b) => a + b, 0);
-    let r = Math.random() * total;
-    for (let i = 0; i < symbols.length; i++) {
-      r -= weights[i];
-      if (r <= 0) return symbols[i];
+  function bjCanSplit(hand) {
+    if (hand.cards.length!==2) return false;
+    const [a,b]=hand.cards;
+    return a.rank===b.rank||(a.value===10&&b.value===10);
+  }
+
+  function bjDraw(shoeArr, delay) {
+    const next=[...shoeArr], c=next.pop();
+    return [{...c,dealDelay:delay},next];
+  }
+
+  function bjDoReshuffle(onDone) {
+    bjReshuffling=true; bjMessage='Reshuffling...'; bjRender();
+    bjReshuffleTimer=setTimeout(()=>{ bjShoe=bjBuildShoe(); bjReshuffling=false; if(onDone)onDone(); else bjRender(); },900);
+  }
+
+  function bjScheduleReveal(cardId, delay) {
+    const t=setTimeout(()=>{
+      bjFlippingCards=new Set([...bjFlippingCards,cardId]);
+      bjDealerRevealed=new Set([...bjDealerRevealed,cardId]);
+      bjRenderDealer();
+    },delay);
+    bjRevealTimers.push(t);
+  }
+
+  function bjStartDealerTurn(currentShoe, currentHands) {
+    bjPhase='dealer';
+    bjRevealTimers.forEach(clearTimeout); bjRevealTimers=[];
+    let d=[...currentShoe];
+    const anyAlive=currentHands.some(h=>bjScore(h.cards)<=21);
+    const dl=[...bjDealer];
+    const HOLE_REVEAL_AT=700, FACE_DOWN_WAIT=1100, POST_FLIP_GAP=400;
+    bjScheduleReveal(dl[1].id, HOLE_REVEAL_AT);
+    let cursor=HOLE_REVEAL_AT+POST_FLIP_GAP;
+    if (anyAlive) {
+      while (bjScore(dl)<17) {
+        const [c,rest]=bjDraw(d,cursor); dl.push(c); d=rest;
+        bjScheduleReveal(c.id, cursor+FACE_DOWN_WAIT);
+        cursor+=FACE_DOWN_WAIT+POST_FLIP_GAP;
+      }
     }
-    return symbols[symbols.length - 1];
+    bjDealer=dl; bjShoe=d; bjRenderDealer();
+    const ds=bjScore(dl);
+    const settled=currentHands.map(h=>{
+      const ps=bjScore(h.cards);
+      if (ps>21) return {...h,done:true,result:'bust'};
+      if (ds>21||ps>ds) return {...h,done:true,result:'win'};
+      if (ps===ds) return {...h,done:true,result:'push'};
+      return {...h,done:true,result:'lose'};
+    });
+    let totalAward=0;
+    settled.forEach((h,i)=>{
+      const bet=bjActiveBets[i]||0;
+      if (h.result==='win') totalAward+=bet*2;
+      else if (h.result==='blackjack') totalAward+=Math.floor(bet*2.5);
+      else if (h.result==='push') totalAward+=bet;
+    });
+    const wins=settled.filter(h=>h.result==='win'||h.result==='blackjack').length;
+    const losses=settled.filter(h=>h.result==='lose'||h.result==='bust').length;
+    const pushes=settled.filter(h=>h.result==='push').length;
+    let msg=settled.length===1
+      ? ({win:'You win! 🎉',blackjack:'Blackjack! 🎉',bust:'Bust! Dealer wins',push:'Push',lose:'Dealer wins'}[settled[0].result])
+      : `W:${wins} L:${losses} P:${pushes}`;
+    const lastFlipAt=cursor-POST_FLIP_GAP;
+    const doneTimer=setTimeout(()=>{
+      bjHands=settled; bjPhase='done'; bjMessage=msg;
+      if (totalAward>0) { progress.beesTotal+=totalAward; saveProgress(progress); updateCurrencyDisplay(); casinoUpdateBalance(); if(casinoOpen)renderShop(false); }
+      bjRender();
+      if (d.length<=BJ_RESHUFFLE_THRESHOLD) setTimeout(()=>bjDoReshuffle(),600);
+    }, lastFlipAt+600);
+    bjRevealTimers.push(doneTimer);
   }
 
-  function playSlots() {
-    if (slotsSpinning) return;
-    const betRaw = parseInt(document.getElementById('slots-bet').value);
-    const bet = casinoDeduct(betRaw);
-    if (!bet) { setResult('slots-result', '❌ Not enough honey!', 'lose'); return; }
-    saveProgress(progress); updateCurrencyDisplay(); casinoUpdateBalance();
-
-    slotsSpinning = true;
-    document.getElementById('slots-btn').disabled = true;
-    setResult('slots-result', '...spinning...', 'push');
-
-    const reels = [0,1,2].map(i => document.getElementById(`reel-${i}`));
-    reels.forEach(r => r.classList.add('spinning'));
-
-    const results = [0,1,2].map(() => weightedRandom(SLOT_SYMBOLS, SLOT_WEIGHTS));
-
-    setTimeout(() => {
-      reels[0].classList.remove('spinning'); reels[0].textContent = results[0];
-      setTimeout(() => {
-        reels[1].classList.remove('spinning'); reels[1].textContent = results[1];
-        setTimeout(() => {
-          reels[2].classList.remove('spinning'); reels[2].textContent = results[2];
-
-          const [a,b,c] = results;
-          let mult = 0, msg = '';
-          if (a==='🍯' && b==='🍯' && c==='🍯') { mult = 50; msg = '🎉 JACKPOT!! 50×!'; document.getElementById('casino-panel').classList.add('jackpot'); setTimeout(()=>document.getElementById('casino-panel').classList.remove('jackpot'),1500); }
-          else if (a===b && b===c)               { mult = 10; msg = `🏆 THREE OF A KIND! 10×`; }
-          else if (a===b || b===c || a===c)      { mult = 2;  msg = `✨ Pair! 2×`; }
-          else                                   { mult = 0;  msg = `💸 No match. Lost 🍯${fmtN(bet)}`; }
-
-          if (mult > 0) {
-            const won = Math.floor(bet * mult);
-            casinoAward(won);
-            setResult('slots-result', `${msg} → +🍯${fmtN(won)}`, 'win');
-          } else {
-            casinoAward(0);
-            setResult('slots-result', msg, 'lose');
-          }
-
-          slotsSpinning = false;
-          document.getElementById('slots-btn').disabled = false;
-        }, 250);
-      }, 250);
-    }, 600);
-  }
-
-  function selectCoin(choice) {
-    coinChoice = choice;
-    document.getElementById('flip-bee').classList.toggle('selected', choice==='bee');
-    document.getElementById('flip-flower').classList.toggle('selected', choice==='flower');
-  }
-
-  function playFlip() {
-    const betRaw = parseInt(document.getElementById('flip-bet').value);
-    const bet = casinoDeduct(betRaw);
-    if (!bet) { setResult('flip-result','❌ Not enough honey!','lose'); return; }
-    saveProgress(progress); updateCurrencyDisplay(); casinoUpdateBalance();
-
-    const outcome = Math.random() < 0.5 ? 'bee' : 'flower';
-    const icon    = outcome === 'bee' ? '🐝' : '🌻';
-    document.getElementById('flip-btn').disabled = true;
-    setResult('flip-result', icon + ' flipping...', 'push');
-    setTimeout(() => {
-      if (outcome === coinChoice) {
-        const won = Math.floor(bet * 1.9);
-        casinoAward(won);
-        setResult('flip-result', `${icon} ${outcome.toUpperCase()}! You win 🍯${fmtN(won)}`, 'win');
-      } else {
-        casinoAward(0);
-        setResult('flip-result', `${icon} ${outcome.toUpperCase()}! Lost 🍯${fmtN(bet)}`, 'lose');
+  function bjAdvanceOrDealer(updatedHands, currentShoe, fromIdx) {
+    for (let i=fromIdx+1;i<updatedHands.length;i++) {
+      if (!updatedHands[i].done) {
+        bjActive=i; bjHands=updatedHands; bjShoe=currentShoe;
+        bjMessage=updatedHands.length>1?`Playing hand ${i+1}`:'Your move';
+        bjRender(); return;
       }
-      document.getElementById('flip-btn').disabled = false;
-    }, 700);
+    }
+    bjHands=updatedHands; bjShoe=currentShoe;
+    bjStartDealerTurn(currentShoe,updatedHands);
   }
 
-  function selectHL(choice) {
-    hlChoice = choice;
-    document.getElementById('hl-high').classList.toggle('selected', choice==='high');
-    document.getElementById('hl-low').classList.toggle('selected', choice==='low');
+  function bjDeal() {
+    if (bjReshuffling) return;
+    const activeBetSlots=bjHandBets.map((b,i)=>b>0?i:-1).filter(i=>i>=0);
+    if (activeBetSlots.length===0) { bjMessage='Place at least one bet!'; bjRender(); return; }
+    const totalBet=bjHandBets.reduce((s,b)=>s+b,0);
+    if (totalBet>progress.beesTotal) { bjMessage='Not enough honey!'; bjRender(); return; }
+    progress.beesTotal-=totalBet; saveProgress(progress); updateCurrencyDisplay(); casinoUpdateBalance();
+    bjActiveBets=activeBetSlots.map(i=>bjHandBets[i]);
+    const NUM_HANDS=activeBetSlots.length;
+    let d=[...bjShoe];
+    const playerCards=Array.from({length:NUM_HANDS},()=>[]);
+    const dealerCards=[];
+    let delay=0;
+    for (let round=0;round<2;round++) {
+      for (let i=0;i<NUM_HANDS;i++) { const [c,rest]=bjDraw(d,delay); playerCards[i].push(c); d=rest; delay+=120; }
+      const [dc,rest]=bjDraw(d,delay); dealerCards.push(dc); d=rest; delay+=120;
+    }
+    const initialHands=playerCards.map(cards=>{ const isBJ=bjScore(cards)===21; return {cards,doubled:false,faceDownIdx:null,done:isBJ,result:isBJ?'blackjack':undefined}; });
+    bjShoe=d; bjDealer=dealerCards;
+    bjDealerRevealed=new Set([dealerCards[0].id]); bjFlippingCards=new Set();
+    const firstActive=initialHands.findIndex(h=>!h.done);
+    bjHands=initialHands;
+    if (firstActive===-1) {
+      bjActive=0; bjPhase='player'; bjRender();
+      setTimeout(()=>bjStartDealerTurn(d,initialHands),600);
+    } else {
+      bjActive=firstActive; bjPhase='player';
+      bjMessage=NUM_HANDS>1?`Playing hand ${firstActive+1}`:'Your move';
+      bjRender();
+    }
   }
 
-  function playHL() {
-    const betRaw = parseInt(document.getElementById('hl-bet').value);
-    const bet = casinoDeduct(betRaw);
-    if (!bet) { setResult('hl-result','❌ Not enough honey!','lose'); return; }
+  function bjHit() {
+    const [c,rest]=bjDraw(bjShoe,0);
+    const updated=bjHands.map((h,i)=>{ if(i!==bjActive)return h; const cards=[...h.cards,c]; return {...h,cards,done:bjScore(cards)>=21}; });
+    bjShoe=rest; bjHands=updated; bjRender();
+    if (updated[bjActive].done) bjAdvanceOrDealer(updated,rest,bjActive);
+  }
+
+  function bjStand() {
+    const updated=bjHands.map((h,i)=>i===bjActive?{...h,done:true}:h);
+    bjAdvanceOrDealer(updated,[...bjShoe],bjActive);
+  }
+
+  function bjDoubleDown() {
+    const h=bjHands[bjActive];
+    if (h.cards.length!==2) return;
+    const bet=bjActiveBets[bjActive]||0;
+    if (bet>progress.beesTotal) { bjMessage='Not enough honey to double!'; bjRender(); return; }
+    progress.beesTotal-=bet; bjActiveBets[bjActive]=bet*2;
     saveProgress(progress); updateCurrencyDisplay(); casinoUpdateBalance();
+    const [c,rest]=bjDraw(bjShoe,0);
+    const newCards=[...h.cards,c];
+    const updated=bjHands.map((hh,i)=>i===bjActive?{...hh,cards:newCards,doubled:true,faceDownIdx:bjDoubleFaceDown?newCards.length-1:null,done:true}:hh);
+    bjAdvanceOrDealer(updated,rest,bjActive);
+  }
 
-    document.getElementById('hl-btn').disabled = true;
-    document.getElementById('hl-die').textContent = '🎲';
-    setResult('hl-result', 'rolling...', 'push');
-    setTimeout(() => {
-      const roll = Math.floor(Math.random() * 10) + 1;
-      const outcome = roll >= 6 ? 'high' : 'low';
-      document.getElementById('hl-die').textContent = roll;
-      if (outcome === hlChoice) {
-        const won = Math.floor(bet * 1.9);
-        casinoAward(won);
-        setResult('hl-result', `Rolled ${roll}! ${outcome.toUpperCase()} ✓ +🍯${fmtN(won)}`, 'win');
+  function bjSplit() {
+    const h=bjHands[bjActive];
+    if (!bjCanSplit(h)) return;
+    const bet=bjActiveBets[bjActive]||0;
+    if (bet>progress.beesTotal) { bjMessage='Not enough honey to split!'; bjRender(); return; }
+    progress.beesTotal-=bet; saveProgress(progress); updateCurrencyDisplay(); casinoUpdateBalance();
+    bjActiveBets.splice(bjActive,1,bet,bet);
+    let d=[...bjShoe];
+    const [c1,c2]=h.cards;
+    const [na,da]=bjDraw(d,0); d=da;
+    const [nb,db]=bjDraw(d,150); d=db;
+    const updated=[...bjHands];
+    updated.splice(bjActive,1,{cards:[c1,na],doubled:false,faceDownIdx:null,done:false,result:undefined},{cards:[c2,nb],doubled:false,faceDownIdx:null,done:false,result:undefined});
+    bjHands=updated; bjShoe=d; bjRender();
+  }
+
+  function bjReset() {
+    bjRevealTimers.forEach(clearTimeout); bjRevealTimers=[];
+    bjHands=[]; bjDealer=[]; bjDealerRevealed=new Set(); bjFlippingCards=new Set();
+    bjActive=0; bjActiveBets=[]; bjHandBets=[0,0,0];
+    bjPhase='betting'; bjMessage='Place your bets and deal!'; bjRender();
+  }
+
+  function bjCardHTML(card, hidden, flipping) {
+    if (hidden) return `<div class="bj-card hidden" style="${card.dealDelay?`animation-delay:${card.dealDelay}ms`:''}">🂠</div>`;
+    const red=card.suit==='♥'||card.suit==='♦';
+    const delay=(!flipping&&card.dealDelay)?`animation-delay:${card.dealDelay}ms`:'';
+    return `<div class="bj-card ${flipping?'flipping':''} ${red?'red':'blk'}" style="${delay}"><div class="bj-card-rank">${card.rank}<br>${card.suit}</div><div class="bj-card-suit-br">${card.suit}</div></div>`;
+  }
+
+  function bjResultClass(result) {
+    if (!result) return '';
+    if (result==='win'||result==='blackjack') return 'bj-win';
+    if (result==='lose'||result==='bust') return 'bj-lose';
+    return 'bj-push';
+  }
+
+  function bjRenderDealer() {
+    const wrap=document.getElementById('bj-dealer-cards');
+    if (!wrap) return;
+    const visible=bjDealer.filter(c=>bjDealerRevealed.has(c.id));
+    wrap.innerHTML=bjDealer.length===0
+      ? `<div class="bj-card" style="border-style:dashed;opacity:0.25;"></div>`
+      : bjDealer.map((c,i)=>`<div style="margin-left:${i===0?0:-28}px;">${bjCardHTML(c,!bjDealerRevealed.has(c.id),bjFlippingCards.has(c.id))}</div>`).join('');
+    const scoreEl=document.getElementById('bj-dealer-score');
+    if (scoreEl) scoreEl.textContent=bjDealer.length>0&&visible.length>0?bjScore(visible):'';
+  }
+
+  function bjRender() {
+    bjRenderDealer();
+    const revealDoubled=bjPhase==='done';
+    const canDouble=bjPhase==='player'&&bjHands[bjActive]&&bjHands[bjActive].cards.length===2;
+    const canSplitNow=bjPhase==='player'&&bjHands[bjActive]&&bjCanSplit(bjHands[bjActive])&&bjHands.length<4;
+    const shoePct=Math.round((bjShoe.length/(BJ_NUM_DECKS*52))*100);
+
+    const playerSection=document.getElementById('bj-player-section');
+    if (playerSection) {
+      if (bjPhase==='betting') {
+        const chipBtns=BJ_CHIPS.map(v=>`<button class="bj-chip${bjChipAmount===v?' active':''}" onclick="bjSetChip(${v})">${v}</button>`).join('');
+        const slots=[0,1,2].map(i=>{
+          const bet=bjHandBets[i];
+          return `<div style="display:flex;flex-direction:column;align-items:center;gap:4px;">
+            <div class="bj-hand-slot${bet>0?' has-bet':''}" onclick="bjSlotClick(${i})" title="${bet>0?'right-click to clear':'click to add chips'}">
+              ${bet>0?`<div style="font-size:1rem;">🍯</div><div class="bj-bet-stack">${fmtN(bet)}</div>`:'<div style="font-size:1.2rem;color:#cc44ff44;">+</div>'}
+            </div>
+            ${bet>0?`<button onclick="bjClearSlot(${i})" style="font-size:0.55rem;color:#ff6666;background:transparent;border:none;cursor:pointer;">clear</button>`:'<div style="height:14px;"></div>'}
+          </div>`;
+        }).join('');
+        playerSection.innerHTML=`<div class="bj-chip-row"><span style="font-size:0.6rem;color:#cc88ff;">Chip:</span>${chipBtns}</div>
+          <div style="display:flex;justify-content:center;gap:18px;margin:8px 0;">${slots}</div>`;
       } else {
-        casinoAward(0);
-        setResult('hl-result', `Rolled ${roll}! ${outcome.toUpperCase()} ✗ Lost 🍯${fmtN(bet)}`, 'lose');
+        const handsHTML=bjHands.map((h,i)=>{
+          const hideDouble=h.doubled&&h.faceDownIdx!==null&&!revealDoubled;
+          const visScore=hideDouble?bjScore(h.cards.filter((_,idx)=>idx!==h.faceDownIdx)):bjScore(h.cards);
+          const isActive=bjPhase==='player'&&i===bjActive;
+          const res=bjPhase==='done'?h.result:undefined;
+          const bet=bjActiveBets[i]||0;
+          const resLabel=res?` <span style="font-size:0.6rem;">${res==='blackjack'?'BJ!':res==='bust'?'bust':res}</span>`:'';
+          const betLabel=bet>0?`<div style="font-size:0.58rem;color:#f5c80099;margin-top:2px;">🍯${fmtN(bet)}</div>`:'';
+          return `<div style="display:flex;flex-direction:column;align-items:center;">
+            <div style="border-radius:8px;padding:3px;${isActive?'outline:2px solid #e080ff;':''}">
+              <div class="bj-hand">${h.cards.map((c,idx)=>`<div style="margin-left:${idx===0?0:-28}px;">${bjCardHTML(c,!revealDoubled&&h.faceDownIdx===idx,bjFlippingCards.has(c.id))}</div>`).join('')}</div>
+            </div>
+            <div class="bj-score ${bjResultClass(res)}">${visScore}${resLabel}</div>
+            ${betLabel}
+          </div>`;
+        }).join('');
+        playerSection.innerHTML=`<div style="display:flex;justify-content:center;gap:14px;flex-wrap:wrap;margin:6px 0;">${handsHTML}</div>`;
       }
-      document.getElementById('hl-btn').disabled = false;
-    }, 600);
+    }
+
+    const msgEl=document.getElementById('bj-message');
+    if (msgEl) msgEl.textContent=bjReshuffling?'Reshuffling the shoe...':bjMessage;
+
+    const ctrlEl=document.getElementById('bj-controls');
+    if (ctrlEl) {
+      let html=`<div style="display:flex;flex-wrap:wrap;gap:6px;justify-content:center;margin-bottom:5px;">`;
+      if (bjPhase==='betting') html+=`<button class="bj-btn primary" onclick="bjDeal()" ${bjReshuffling?'disabled':''}>Deal</button>`;
+      else if (bjPhase==='player') {
+        html+=`<button class="bj-btn primary" onclick="bjHit()">Hit</button>`;
+        html+=`<button class="bj-btn" onclick="bjStand()">Stand</button>`;
+        html+=`<button class="bj-btn" onclick="bjDoubleDown()" ${!canDouble?'disabled':''}>Double</button>`;
+        html+=`<button class="bj-btn" onclick="bjSplit()" ${!canSplitNow?'disabled':''}>Split</button>`;
+      } else if (bjPhase==='done') {
+        html+=`<button class="bj-btn primary" onclick="bjReset()" ${bjReshuffling?'disabled':''}>New Hand</button>`;
+      }
+      html+=`</div>`;
+      if (bjPhase==='player') html+=`<label style="display:flex;align-items:center;gap:5px;font-size:0.6rem;color:#cc88ff;cursor:pointer;justify-content:center;"><input type="checkbox" ${bjDoubleFaceDown?'checked':''} onchange="bjDoubleFaceDown=this.checked" style="accent-color:#e080ff;"> hide double card</label>`;
+      html+=`<div style="text-align:right;font-size:0.55rem;color:#cc44ff44;margin-top:3px;">${BJ_NUM_DECKS} decks · ${bjShoe.length}/${shoePct}%</div>`;
+      ctrlEl.innerHTML=html;
+    }
   }
 
-  function setResult(id, msg, type) {
-    const el = document.getElementById(id);
-    el.textContent = msg;
-    el.className = 'casino-result ' + type;
+  function bjSetChip(v) { bjChipAmount=v; bjRender(); }
+  function bjSlotClick(i) {
+    if (bjHandBets.reduce((s,b)=>s+b,0)+bjChipAmount > progress.beesTotal) return;
+    bjHandBets[i]+=bjChipAmount;
+    bjRender();
   }
+  function bjClearSlot(i) { bjHandBets[i]=0; bjRender(); }
+
+  bjShoe=bjBuildShoe();
+  bjRender();
+
+  // =============================================
+  // ROULETTE
+  // =============================================
+  const RL_RED=new Set([1,3,5,7,9,12,14,16,18,19,21,23,25,27,30,32,34,36]);
+  const RL_WHEEL_ORDER=[0,32,15,19,4,21,2,25,17,34,6,27,13,36,11,30,8,23,10,5,24,16,33,1,20,14,31,9,22,18,29,7,28,12,35,3,26];
+  const RL_N=37, RL_CX=180, RL_CY=180, RL_OUTER_R=172, RL_INNER_R=64;
+  const RL_CHIPS=[5,10,25,50,100];
+  const RL_TABLE_ROWS=[[3,6,9,12,15,18,21,24,27,30,33,36],[2,5,8,11,14,17,20,23,26,29,32,35],[1,4,7,10,13,16,19,22,25,28,31,34]];
+
+  function rlColorOf(n){ return n===0?'green':RL_RED.has(n)?'red':'black'; }
+  function rlBetLabel(k){
+    if(k.startsWith('n:'))return `#${k.slice(2)}`;
+    if(k.startsWith('split:')){const[a,b]=k.split(':').slice(1);return `Split ${a}/${b}`;}
+    if(k.startsWith('corner:'))return `Corner ${k.split(':').slice(1).join('-')}`;
+    if(k.startsWith('street:'))return `Street ${k.split(':').slice(1).join('-')}`;
+    const L={red:'Red',black:'Black',even:'Even',odd:'Odd',low:'1–18',high:'19–36','dozen:1':'1st 12','dozen:2':'2nd 12','dozen:3':'3rd 12','col:1':'Col 1','col:2':'Col 2','col:3':'Col 3'};
+    return L[k]??k;
+  }
+  function rlBetPayout(k){
+    if(k.startsWith('n:'))return 35; if(k.startsWith('split:'))return 17;
+    if(k.startsWith('corner:'))return 8; if(k.startsWith('street:'))return 11;
+    if(k.startsWith('dozen:')||k.startsWith('col:'))return 2; return 1;
+  }
+  function rlBetWins(k,r){
+    if(k.startsWith('split:')||k.startsWith('corner:')||k.startsWith('street:'))return k.split(':').slice(1).map(Number).includes(r);
+    if(r===0)return k==='n:0'; if(k.startsWith('n:'))return k===`n:${r}`;
+    switch(k){case'red':return rlColorOf(r)==='red';case'black':return rlColorOf(r)==='black';case'even':return r%2===0;case'odd':return r%2===1;case'low':return r>=1&&r<=18;case'high':return r>=19&&r<=36;case'dozen:1':return r>=1&&r<=12;case'dozen:2':return r>=13&&r<=24;case'dozen:3':return r>=25&&r<=36;case'col:1':return r%3===1;case'col:2':return r%3===2;case'col:3':return r%3===0;default:return false;}
+  }
+
+  // Precompute crossroads
+  const RL_H_SPLITS=[],RL_V_SPLITS=[],RL_CORNERS=[],RL_STREETS=[];
+  for(let r=0;r<3;r++) for(let c=0;c<12;c++){
+    if(r<2){const a=RL_TABLE_ROWS[r][c],b=RL_TABLE_ROWS[r+1][c];RL_H_SPLITS.push({key:`split:${Math.min(a,b)}:${Math.max(a,b)}`,gridCol:2+c*2,gridRow:2+r*2});}
+    if(c<11){const a=RL_TABLE_ROWS[r][c],b=RL_TABLE_ROWS[r][c+1];RL_V_SPLITS.push({key:`split:${Math.min(a,b)}:${Math.max(a,b)}`,gridCol:3+c*2,gridRow:1+r*2});}
+    if(r<2&&c<11){const nums=[RL_TABLE_ROWS[r][c],RL_TABLE_ROWS[r][c+1],RL_TABLE_ROWS[r+1][c],RL_TABLE_ROWS[r+1][c+1]].sort((a,b)=>a-b);RL_CORNERS.push({key:`corner:${nums.join(':')}`,gridCol:3+c*2,gridRow:2+r*2});}
+  }
+  for(let c=0;c<12;c++){const nums=[RL_TABLE_ROWS[0][c],RL_TABLE_ROWS[1][c],RL_TABLE_ROWS[2][c]].sort((a,b)=>a-b);RL_STREETS.push({key:`street:${nums.join(':')}`,gridCol:2+c*2,gridRow:7});}
+
+  let rlChipAmount=10,rlBets=new Map(),rlResult=null,rlSpinning=false,rlWheelRotation=0;
+  let rlPendingResult=null,rlPendingBets=null,rlLastBets=new Map();
+
+  function rlPlaceBet(k){
+    if(rlSpinning)return;
+    const ct=Array.from(rlBets.values()).reduce((a,b)=>a+b,0);
+    if(rlChipAmount>progress.beesTotal-ct)return;
+    if(k==='red')rlBets.delete('black'); if(k==='black')rlBets.delete('red');
+    rlBets.set(k,(rlBets.get(k)??0)+rlChipAmount);
+    rlRenderTable(); rlRenderActiveBets(); rlRenderControls();
+  }
+  function rlRemoveBet(k){ if(rlSpinning)return; rlBets.delete(k); rlRenderTable(); rlRenderActiveBets(); rlRenderControls(); }
+  function rlRebet(){
+    if(rlSpinning||rlLastBets.size===0)return;
+    const total=Array.from(rlLastBets.values()).reduce((a,b)=>a+b,0);
+    if(total>progress.beesTotal)return;
+    rlBets=new Map(rlLastBets); rlRenderTable(); rlRenderActiveBets(); rlRenderControls();
+  }
+  function rlSetChip(v){ rlChipAmount=v; rlRenderChips(); }
+
+  function rlSpin(){
+    const totalBet=Array.from(rlBets.values()).reduce((a,b)=>a+b,0);
+    if(rlBets.size===0||rlSpinning||totalBet>progress.beesTotal)return;
+    rlLastBets=new Map(rlBets);
+    progress.beesTotal-=totalBet; saveProgress(progress); updateCurrencyDisplay(); casinoUpdateBalance();
+    rlSpinning=true; rlResult=null;
+    const msgEl=document.getElementById('rl-message'); if(msgEl)msgEl.textContent='No more bets...';
+    const badge=document.getElementById('rl-result-badge'); if(badge)badge.style.display='none';
+    const finalResult=Math.floor(Math.random()*37);
+    rlPendingResult=finalResult; rlPendingBets=new Map(rlBets);
+    const resultIdx=RL_WHEEL_ORDER.indexOf(finalResult);
+    const pocketCenter=(resultIdx+0.5)*360/RL_N;
+    const targetOffset=(360-pocketCenter+360)%360;
+    const currentMod=((rlWheelRotation%360)+360)%360;
+    let adj=(targetOffset-currentMod+360)%360;
+    if(adj<60)adj+=360;
+    rlWheelRotation+=(5+Math.floor(Math.random()*3))*360+adj;
+    const disc=document.getElementById('rl-wheel-disc');
+    if(disc){disc.style.transition='transform 4s cubic-bezier(0.17,0.67,0.12,0.99)';disc.style.transform=`rotate(${rlWheelRotation}deg)`;disc.addEventListener('transitionend',rlHandleTransitionEnd,{once:true});}
+    rlRenderControls();
+  }
+
+  function rlHandleTransitionEnd(){
+    if(!rlSpinning)return;
+    rlResult=rlPendingResult; rlSpinning=false;
+    let winnings=0; const winLabels=[];
+    rlPendingBets.forEach((amt,k)=>{ if(rlBetWins(k,rlResult)){winnings+=amt*(rlBetPayout(k)+1);winLabels.push(`${rlBetLabel(k)} (+🍯${fmtN(amt*rlBetPayout(k))})`);}});
+    if(winnings>0){ progress.beesTotal+=winnings; saveProgress(progress); updateCurrencyDisplay(); casinoUpdateBalance(); if(casinoOpen)renderShop(false); }
+    const c=rlColorOf(rlResult), cL=c==='red'?'Red':c==='black'?'Black':'Green';
+    const msgEl=document.getElementById('rl-message');
+    if(msgEl)msgEl.textContent=winnings>0?`${rlResult} ${cL} — ${winLabels.join(' · ')}`:`${rlResult} ${cL}`;
+    const badge=document.getElementById('rl-result-badge');
+    if(badge){badge.textContent=rlResult;badge.className=`rl-result-badge rl-result-${c}`;badge.style.display='';}
+    if(winnings>0)rlFireworks();
+    rlBets=new Map(); rlRenderTable(); rlRenderActiveBets(); rlRenderControls();
+  }
+
+  function rlSectorPath(i){
+    const toRad=d=>(d-90)*Math.PI/180;
+    const s=toRad(i*360/RL_N),e=toRad((i+1)*360/RL_N);
+    const x1=RL_CX+RL_OUTER_R*Math.cos(s),y1=RL_CY+RL_OUTER_R*Math.sin(s);
+    const x2=RL_CX+RL_OUTER_R*Math.cos(e),y2=RL_CY+RL_OUTER_R*Math.sin(e);
+    const ix1=RL_CX+RL_INNER_R*Math.cos(s),iy1=RL_CY+RL_INNER_R*Math.sin(s);
+    const ix2=RL_CX+RL_INNER_R*Math.cos(e),iy2=RL_CY+RL_INNER_R*Math.sin(e);
+    return `M ${ix1} ${iy1} L ${x1} ${y1} A ${RL_OUTER_R} ${RL_OUTER_R} 0 0 1 ${x2} ${y2} L ${ix2} ${iy2} A ${RL_INNER_R} ${RL_INNER_R} 0 0 0 ${ix1} ${iy1} Z`;
+  }
+
+  function rlInitWheel(){
+    const sectors=RL_WHEEL_ORDER.map((num,i)=>{
+      const mr=((i+0.5)*360/RL_N-90)*Math.PI/180, tr=(RL_OUTER_R+RL_INNER_R)/2;
+      return {num,path:rlSectorPath(i),color:num===0?'#16a34a':RL_RED.has(num)?'#dc2626':'#18181b',tx:RL_CX+tr*Math.cos(mr),ty:RL_CY+tr*Math.sin(mr),ta:(i+0.5)*360/RL_N};
+    });
+    const svgSectors=sectors.map(s=>`<g><path d="${s.path}" fill="${s.color}" stroke="#d4af37" stroke-width="1.5"/><text x="${s.tx}" y="${s.ty}" text-anchor="middle" dominant-baseline="middle" fill="white" font-size="9.5" font-weight="bold" transform="rotate(${s.ta},${s.tx},${s.ty})">${s.num}</text></g>`).join('');
+    const wrap=document.getElementById('rl-wheel-wrap');
+    if(!wrap)return;
+    wrap.innerHTML=`<div style="position:relative;display:flex;align-items:center;justify-content:center;">
+      <div style="position:absolute;top:2px;left:50%;transform:translateX(-50%);z-index:10;color:#f5c800;font-size:1.2rem;line-height:1;">▼</div>
+      <div id="rl-wheel-disc" style="transform:rotate(0deg);transition:none;">
+        <svg width="320" height="320" viewBox="0 0 360 360">
+          <circle cx="${RL_CX}" cy="${RL_CY}" r="${RL_OUTER_R+5}" fill="#b8960c"/>
+          <circle cx="${RL_CX}" cy="${RL_CY}" r="${RL_OUTER_R+2}" fill="#1c3a25"/>
+          ${svgSectors}
+          <circle cx="${RL_CX}" cy="${RL_CY}" r="${RL_INNER_R+1}" fill="#1c3a25" stroke="#d4af37" stroke-width="2"/>
+          <circle cx="${RL_CX}" cy="${RL_CY}" r="${RL_INNER_R-4}" fill="#15803d"/>
+          <circle cx="${RL_CX}" cy="${RL_CY}" r="22" fill="#d4af37"/>
+          <circle cx="${RL_CX}" cy="${RL_CY}" r="9" fill="#18181b"/>
+        </svg>
+      </div></div>`;
+  }
+
+  function rlBuildTableHTML(){
+    const gCols='28px repeat(11,1fr 5px) 1fr 32px', gRows='28px 5px 28px 5px 28px 3px 13px';
+    let h=`<div style="display:grid;grid-template-columns:${gCols};grid-template-rows:${gRows};gap:0;">`;
+    const has0=rlBets.has('n:0'),isR0=rlResult===0;
+    h+=`<button onclick="rlPlaceBet('n:0')" style="grid-column:1;grid-row:1/6;writing-mode:vertical-rl;border-radius:4px;background:#16a34a;border:${has0?'2px solid #f5c800':'1px solid #2a6a3a'};color:white;font-size:0.65rem;font-weight:bold;cursor:pointer;position:relative;${isR0?'outline:3px solid #fff;':''}" ${rlSpinning?'disabled':''}>0${has0?`<span style="position:absolute;top:-3px;right:-3px;background:#f5c800;color:#000;font-size:0.5rem;border-radius:50%;width:13px;height:13px;display:flex;align-items:center;justify-content:center;writing-mode:horizontal-tb;">${rlBets.get('n:0')}</span>`:''}</button>`;
+    RL_TABLE_ROWS.forEach((row,ri)=>row.forEach((n,ci)=>{
+      const co=rlColorOf(n),hb=rlBets.has(`n:${n}`),isR=rlResult===n;
+      const bg=co==='red'?'#7a0000':'#1c1c1c',bdr=hb?'2px solid #f5c800':`1px solid ${co==='red'?'#5a0000':'#333'}`;
+      const amt=rlBets.get(`n:${n}`);
+      h+=`<button onclick="rlPlaceBet('n:${n}')" style="grid-column:${2+ci*2};grid-row:${1+ri*2};margin:2px;border-radius:3px;background:${bg};border:${bdr};color:white;font-size:0.58rem;font-weight:bold;cursor:pointer;position:relative;${isR?'outline:3px solid #fff;transform:scale(1.08);z-index:5;':''}" ${rlSpinning?'disabled':''}>${n}${hb?`<span style="position:absolute;top:-3px;right:-3px;background:#f5c800;color:#000;font-size:0.48rem;border-radius:50%;width:11px;height:11px;display:flex;align-items:center;justify-content:center;">${amt>=100?'+':amt}</span>`:''}</button>`;
+    }));
+    [0,1,2].forEach(ri=>{
+      const ck=`col:${3-ri}`,hb=rlBets.has(ck);
+      h+=`<button onclick="rlPlaceBet('${ck}')" style="grid-column:25;grid-row:${1+ri*2};margin:2px;border-radius:3px;background:#0d3020;border:${hb?'2px solid #f5c800':'1px solid #16a34a55'};color:white;font-size:0.55rem;font-weight:bold;cursor:pointer;display:flex;flex-direction:column;align-items:center;justify-content:center;" ${rlSpinning?'disabled':''}>2:1${hb?`<span style="color:#f5c800;font-size:0.5rem;">🍯${rlBets.get(ck)}</span>`:''}</button>`;
+    });
+    [...RL_H_SPLITS,...RL_V_SPLITS,...RL_CORNERS].forEach(cr=>{
+      const active=rlBets.has(cr.key);
+      h+=`<div onclick="rlPlaceBet('${cr.key}')" title="${rlBetLabel(cr.key)}" style="grid-column:${cr.gridCol};grid-row:${cr.gridRow};display:flex;align-items:center;justify-content:center;z-index:20;cursor:pointer;">
+        <div style="width:8px;height:8px;border-radius:50%;border:1px solid #f5c80066;background:${active?'#f5c800':'transparent'};" onmouseenter="this.style.background='#f5c80088'" onmouseleave="this.style.background='${active?'#f5c800':'transparent'}'"></div></div>`;
+    });
+    RL_STREETS.forEach(s=>{
+      const nums=s.key.split(':').slice(1),active=rlBets.has(s.key);
+      h+=`<button onclick="rlPlaceBet('${s.key}')" title="Street ${nums.join('-')} (11:1)" style="grid-column:${s.gridCol};grid-row:${s.gridRow};margin:1px 2px 0;border-radius:2px;font-size:0.48rem;font-weight:bold;cursor:pointer;background:${active?'#f5c800':'#16a34a55'};color:${active?'#000':'#aaa'};border:${active?'1px solid #f5c800':'1px solid transparent'};" ${rlSpinning?'disabled':''}>${active?`🍯${rlBets.get(s.key)}`:nums[0]}</button>`;
+    });
+    h+='</div>';
+    h+=`<div style="display:flex;gap:3px;margin-top:3px;margin-left:32px;">`;
+    [['dozen:1','1st 12'],['dozen:2','2nd 12'],['dozen:3','3rd 12']].forEach(([k,l])=>{
+      const hb=rlBets.has(k);
+      h+=`<button onclick="rlPlaceBet('${k}')" class="rl-outside${hb?' has-bet':''}" ${rlSpinning?'disabled':''}>${l}${hb?`<br><span style="color:#f5c800;font-size:0.52rem;">🍯${rlBets.get(k)}</span>`:''}</button>`;
+    });
+    h+=`<div style="width:36px;flex-shrink:0;"></div></div>`;
+    h+=`<div style="display:flex;gap:3px;margin-top:3px;margin-left:32px;">`;
+    [['low','1–18',''],['even','Even',''],['red','Red','red-bg'],['black','Black','black-bg'],['odd','Odd',''],['high','19–36','']].forEach(([k,l,ex])=>{
+      const hb=rlBets.has(k);
+      h+=`<button onclick="rlPlaceBet('${k}')" class="rl-outside ${ex}${hb?' has-bet':''}" ${rlSpinning?'disabled':''}>${l}${hb?`<br><span style="color:#f5c800;font-size:0.52rem;">🍯${rlBets.get(k)}</span>`:''}</button>`;
+    });
+    h+=`<div style="width:36px;flex-shrink:0;"></div></div>`;
+    return h;
+  }
+
+  function rlRenderTable(){ const el=document.getElementById('rl-table'); if(el)el.innerHTML=rlBuildTableHTML(); }
+  function rlRenderActiveBets(){
+    const el=document.getElementById('rl-active-bets'); if(!el)return;
+    if(rlBets.size===0){el.innerHTML='';return;}
+    el.innerHTML=`<div style="display:flex;flex-wrap:wrap;gap:4px;margin-top:5px;">${Array.from(rlBets.entries()).map(([k,a])=>`<button class="rl-bet-tag" onclick="rlRemoveBet('${k}')">${rlBetLabel(k)} 🍯${a} ×</button>`).join('')}</div>`;
+  }
+  function rlRenderChips(){
+    const el=document.getElementById('rl-chips'); if(!el)return;
+    el.innerHTML=`<span style="font-size:0.6rem;color:#cc88ff;">Chip:</span>`+RL_CHIPS.map(v=>`<button onclick="rlSetChip(${v})" class="rl-chip${rlChipAmount===v?' active':''}">${v}</button>`).join('');
+  }
+  function rlRenderControls(){
+    const el=document.getElementById('rl-controls'); if(!el)return;
+    const tb=Array.from(rlBets.values()).reduce((a,b)=>a+b,0);
+    el.innerHTML=`<div style="display:flex;gap:4px;margin-top:5px;">
+      <button class="rl-ctrl-btn" onclick="rlBets=new Map();rlRenderTable();rlRenderActiveBets();rlRenderControls();" ${rlSpinning||rlBets.size===0?'disabled':''}>Clear</button>
+      <button class="rl-ctrl-btn" onclick="rlRebet()" ${rlSpinning||rlLastBets.size===0?'disabled':''}>Rebet</button>
+      <button class="rl-spin-btn" onclick="rlSpin()" ${rlSpinning||rlBets.size===0?'disabled':''}>${rlSpinning?'Spinning…':`Spin${tb>0?` — 🍯${fmtN(tb)}`:''}`}</button>
+    </div><p style="font-size:0.52rem;color:#cc44ff55;margin-top:3px;">hover between numbers for split/corner · street strip below · 35:1 number · 2:1 dozen/col · 1:1 outside</p>`;
+  }
+
+  function rlFireworks(){
+    const canvas=document.createElement('canvas');
+    canvas.style.cssText='position:fixed;inset:0;pointer-events:none;z-index:999;';
+    canvas.width=window.innerWidth; canvas.height=window.innerHeight;
+    document.body.appendChild(canvas);
+    const ctx=canvas.getContext('2d');
+    const colors=['#f5c800','#ff4444','#44ff88','#4488ff','#cc44ff','#ff88cc','#ffffff','#ffd84a'];
+    const particles=[];
+    for(let b=0;b<8;b++){
+      const bx=Math.random()*canvas.width,by=Math.random()*canvas.height*0.6;
+      for(let i=0;i<60;i++){const ang=Math.random()*Math.PI*2,sp=2+Math.random()*6;particles.push({x:bx,y:by,vx:Math.cos(ang)*sp,vy:Math.sin(ang)*sp-2,color:colors[Math.floor(Math.random()*colors.length)],life:1,size:3+Math.random()*4});}
+    }
+    let alive=true;
+    function frame(){
+      if(!alive)return;
+      ctx.clearRect(0,0,canvas.width,canvas.height);
+      particles.forEach(p=>{p.x+=p.vx;p.y+=p.vy;p.vy+=0.12;p.life-=0.012;ctx.globalAlpha=Math.max(0,p.life);ctx.fillStyle=p.color;ctx.beginPath();ctx.arc(p.x,p.y,p.size,0,Math.PI*2);ctx.fill();});
+      ctx.globalAlpha=1;
+      if(particles.some(p=>p.life>0))requestAnimationFrame(frame);
+      else{alive=false;canvas.remove();}
+    }
+    requestAnimationFrame(frame);
+  }
+
+  rlInitWheel(); rlRenderChips(); rlRenderTable(); rlRenderActiveBets(); rlRenderControls();
 
   // =============================================
   // VIRTUAL MICE
