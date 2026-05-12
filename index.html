@@ -201,8 +201,8 @@
     #daily-overlay { position: fixed; inset: 0; background: #000000cc; display: none; align-items: center; justify-content: center; z-index: 500; }
     #daily-overlay.open { display: flex; }
     #daily-panel {
-      background: #1a1200; border: 2px solid #f5c800; border-radius: 12px;
-      padding: 28px 24px; width: min(420px, 94vw); position: relative;
+      background: #f5e9c0; border: 3px solid #c8960a; border-radius: 12px;
+      padding: 28px 24px; width: min(440px, 94vw); position: relative;
       transform-origin: left center;
       animation: book-open 0.35s cubic-bezier(.4,0,.2,1) both;
     }
@@ -210,31 +210,50 @@
       from { transform: perspective(800px) rotateY(-90deg); opacity: 0; }
       to   { transform: perspective(800px) rotateY(0deg);   opacity: 1; }
     }
-    #daily-panel h2 { color: #f5c800; font-size: 1rem; letter-spacing: 0.15em; text-align: center; margin-bottom: 4px; }
-    #daily-streak-line { color: #888; font-size: 0.72rem; text-align: center; margin-bottom: 18px; }
-    .cal-grid { display: grid; grid-template-columns: repeat(7, 1fr); gap: 6px; margin-bottom: 18px; }
+    #daily-panel h2 { color: #7a5500; font-size: 1.1rem; letter-spacing: 0.15em; text-align: center; margin-bottom: 4px; }
+    #daily-streak-line { color: #5a3a00; font-size: 0.85rem; font-weight: bold; text-align: center; margin-bottom: 18px; }
+    .cal-grid { display: grid; grid-template-columns: repeat(7, 1fr); gap: 8px; margin-bottom: 20px; }
     .cal-day {
-      aspect-ratio: 1; border-radius: 6px; display: flex; flex-direction: column;
-      align-items: center; justify-content: center; font-size: 0.6rem;
-      border: 1px solid #f5c80033; background: #2a2000; color: #888; gap: 2px;
+      aspect-ratio: 1; border-radius: 8px; display: flex; flex-direction: column;
+      align-items: center; justify-content: center;
+      border: 1px solid #c8960a55; background: #e8d48a; color: #5a3a00; gap: 3px;
+      position: relative; overflow: visible;
     }
-    .cal-day.claimed { background: #3a3000; border-color: #f5c80066; color: #f5c800; }
-    .cal-day.today   { border-color: #f5c800; border-width: 2px; }
-    .cal-day.today.unclaimed { background: #4a3800; color: #f5c800; cursor: pointer; }
-    .cal-day.today.unclaimed:hover { background: #5a4800; }
-    .cal-day.future  { opacity: 0.25; }
-    .cal-day-check   { font-size: 0.9rem; line-height: 1; }
-    .cal-day-label   { font-size: 0.55rem; opacity: 0.7; }
+    .cal-day.claimed { background: #c8f0a0; border-color: #4a9a20; }
+    .cal-day.today   { border: 2px solid #c8960a; background: #ffd84a; }
+    .cal-day.today.unclaimed { cursor: pointer; }
+    .cal-day.today.unclaimed:hover { background: #ffe870; }
+    .cal-day.missed  { background: #e8d48a; cursor: pointer; }
+    .cal-day.missed:hover .ad-hint { opacity: 1; }
+    .cal-day.future  { background: #d8c470; opacity: 0.4; }
+    .cal-day-check   { font-size: 1rem; line-height: 1; }
+    .cal-day-label   { font-size: 0.65rem; font-weight: bold; color: #5a3a00; }
+    .ad-hint {
+      position: absolute; bottom: calc(100% + 6px); left: 50%; transform: translateX(-50%);
+      background: #222; color: #f5c800; font-size: 0.6rem; white-space: nowrap;
+      padding: 3px 7px; border-radius: 4px; opacity: 0; pointer-events: none;
+      transition: opacity 0.15s; z-index: 10; font-family: 'Courier New', monospace;
+    }
     #daily-claim-area { text-align: center; }
     #daily-claim-btn {
-      background: #f5c800; color: #0a0a00; border: none; padding: 10px 32px;
+      background: #c8960a; color: #fff; border: none; padding: 10px 32px;
       font-family: 'Courier New', monospace; font-size: 0.95rem; font-weight: bold;
-      cursor: pointer; letter-spacing: 0.1em; border-radius: 4px;
+      cursor: pointer; letter-spacing: 0.1em; border-radius: 6px;
       -webkit-tap-highlight-color: transparent; touch-action: manipulation;
     }
-    #daily-claim-btn:hover { background: #ffd700; }
-    #daily-already { color: #888; font-size: 0.8rem; }
-    #daily-close { position: absolute; top: 12px; right: 14px; background: transparent; border: 1px solid #f5c80044; color: #f5c800; font-family: 'Courier New', monospace; font-size: 0.72rem; cursor: pointer; padding: 2px 8px; }
+    #daily-claim-btn:hover { background: #e0aa10; }
+    #daily-already { color: #5a3a00; font-size: 0.85rem; font-weight: bold; }
+    #daily-close { position: absolute; top: 12px; right: 14px; background: transparent; border: 1px solid #c8960a88; color: #7a5500; font-family: 'Courier New', monospace; font-size: 0.75rem; cursor: pointer; padding: 2px 8px; border-radius: 3px; }
+    /* ad modal */
+    #ad-overlay { position: fixed; inset: 0; background: #000000ee; display: none; align-items: center; justify-content: center; z-index: 600; }
+    #ad-overlay.open { display: flex; }
+    #ad-panel { background: #111; border: 2px solid #f5c800; border-radius: 10px; padding: 32px 28px; width: min(340px,90vw); text-align: center; }
+    #ad-panel h3 { color: #f5c800; font-size: 1rem; letter-spacing: 0.1em; margin-bottom: 8px; }
+    #ad-panel p { color: #aaa; font-size: 0.8rem; margin-bottom: 20px; }
+    #ad-countdown { font-size: 2.5rem; color: #f5c800; font-family: 'Courier New', monospace; margin-bottom: 16px; }
+    #ad-skip-btn { background: #f5c800; color: #0a0a00; border: none; padding: 8px 28px; font-family: 'Courier New', monospace; font-size: 0.85rem; font-weight: bold; cursor: pointer; border-radius: 4px; display: none; }
+    #ad-bar-wrap { height: 6px; background: #333; border-radius: 3px; margin-bottom: 16px; }
+    #ad-bar { height: 100%; background: #f5c800; border-radius: 3px; width: 0%; transition: width 0.2s linear; }
     @keyframes pulse-dot { 0%,100% { transform: scale(1); opacity: 1; } 50% { transform: scale(1.4); opacity: 0.6; } }
   </style>
 </head>
@@ -353,6 +372,17 @@
     <div id="daily-streak-line"></div>
     <div class="cal-grid" id="cal-grid"></div>
     <div id="daily-claim-area"></div>
+  </div>
+</div>
+
+<!-- ad / claim countdown modal -->
+<div id="ad-overlay">
+  <div id="ad-panel">
+    <h3 id="ad-title">🍯 DAILY CLAIM</h3>
+    <p id="ad-desc">Hold on a moment...</p>
+    <div id="ad-bar-wrap"><div id="ad-bar"></div></div>
+    <div id="ad-countdown">5</div>
+    <button id="ad-skip-btn">✓ CLAIM</button>
   </div>
 </div>
 
@@ -850,6 +880,12 @@
   // =============================================
   // DAILY CALENDAR
   // =============================================
+  // adDays tracks which past days were already claimed via ad so you can't double-dip
+  if (!progress.adDays) progress.adDays = [];
+
+  // Missed-day ad reward: 138 * 2^(daysBack-1) — yesterday=138, 2 ago=276, 3 ago=552...
+  function adBonus(daysBack) { return 138 * Math.pow(2, daysBack - 1); }
+
   function renderCalendar() {
     const grid = document.getElementById('cal-grid');
     const claimArea = document.getElementById('daily-claim-area');
@@ -861,55 +897,128 @@
     const bonus = dailyBonus(streak + (claimed ? 0 : 1));
     const nextBonus = dailyBonus(streak + (claimed ? 1 : 2));
 
-    streakLine.textContent = streak > 0
-      ? `🔥 ${streak}-day streak${claimed ? '' : ' — claim today to keep it going!'}`
-      : claimed ? '✅ Claimed today!' : 'claim your first daily reward!';
+    streakLine.innerHTML = streak > 0
+      ? `🔥 <strong>${streak}-day streak</strong>${claimed ? '' : ' — claim today!'}`
+      : claimed ? '✅ Claimed today!' : 'Claim your first daily reward!';
 
-    // Show 7 days: 5 past + today + 1 future
-    for (let i = -5; i <= 1; i++) {
+    // Show 6 past days + today + 1 future
+    for (let i = -6; i <= 1; i++) {
       const d = dateOffset(i);
       const isClaimed = progress.claimedDates.includes(d);
+      const isAdClaimed = progress.adDays.includes(d);
       const isToday = i === 0;
       const isFuture = i > 0;
-      const dayNum = new Date(d).getDate();
+      const isPast = i < 0;
+      const daysBack = Math.abs(i);
+      const dayNum = new Date(d + 'T12:00:00').getDate();
       const div = document.createElement('div');
-      div.className = 'cal-day' +
-        (isClaimed ? ' claimed' : '') +
-        (isToday ? ' today' + (isClaimed ? '' : ' unclaimed') : '') +
-        (isFuture ? ' future' : '');
-      div.innerHTML = `<span class="cal-day-check">${isClaimed ? '✅' : isToday ? '🍯' : isFuture ? '🔒' : '⬜'}</span><span class="cal-day-label">${dayNum}</span>`;
-      if (isToday && !isClaimed) div.addEventListener('click', claimToday);
+
+      let cls = 'cal-day';
+      let icon, label;
+
+      if (isClaimed || isAdClaimed) {
+        cls += ' claimed';
+        icon = '✅'; label = dayNum;
+      } else if (isToday) {
+        cls += ' today unclaimed';
+        icon = '🍯'; label = dayNum;
+      } else if (isFuture) {
+        cls += ' future';
+        icon = '🔒'; label = dayNum;
+      } else {
+        cls += ' missed';
+        icon = '📺'; label = dayNum;
+      }
+
+      div.className = cls;
+      div.innerHTML = `<span class="cal-day-check">${icon}</span><span class="cal-day-label">${label}</span>`;
+
+      if (isPast && !isClaimed && !isAdClaimed) {
+        const reward = adBonus(daysBack);
+        const hint = document.createElement('div');
+        hint.className = 'ad-hint';
+        hint.textContent = `▶ watch ad · +${fmtN(reward)} 🍯`;
+        div.appendChild(hint);
+        div.addEventListener('click', () => watchAdForDay(d, daysBack));
+      } else if (isToday && !claimed) {
+        div.addEventListener('click', () => startClaimCountdown());
+      }
+
       grid.appendChild(div);
     }
 
     if (!claimed) {
-      claimArea.innerHTML = `<div style="color:#f5c800;font-size:0.8rem;margin-bottom:10px;">Today's reward: <strong>+${fmtN(bonus)} 🍯</strong><br><span style="color:#666;font-size:0.68rem;">tomorrow: +${fmtN(nextBonus)}</span></div>`;
+      claimArea.innerHTML = `<div style="color:#5a3a00;font-size:0.88rem;margin-bottom:12px;font-weight:bold;">Today's reward: +${fmtN(bonus)} 🍯<br><span style="color:#7a5500;font-size:0.72rem;font-weight:normal;">tomorrow: +${fmtN(nextBonus)}</span></div>`;
       const btn = document.createElement('button');
       btn.id = 'daily-claim-btn'; btn.textContent = '🍯 CLAIM';
-      btn.addEventListener('click', claimToday);
+      btn.addEventListener('click', startClaimCountdown);
       claimArea.appendChild(btn);
     } else {
       claimArea.innerHTML = `<div id="daily-already">✅ Come back tomorrow for +${fmtN(nextBonus)} 🍯</div>`;
     }
   }
 
-  function claimToday() {
+  // --- countdown / ad modal ---
+  let _countdownReward = 0, _countdownCb = null, _countdownTimer = null;
+
+  function showCountdown(title, desc, seconds, onComplete) {
+    _countdownReward = 0; _countdownCb = onComplete;
+    document.getElementById('ad-title').textContent = title;
+    document.getElementById('ad-desc').textContent = desc;
+    document.getElementById('ad-countdown').textContent = seconds;
+    document.getElementById('ad-bar').style.width = '0%';
+    document.getElementById('ad-skip-btn').style.display = 'none';
+    document.getElementById('ad-overlay').classList.add('open');
+    let elapsed = 0;
+    const total = seconds;
+    clearInterval(_countdownTimer);
+    _countdownTimer = setInterval(() => {
+      elapsed++;
+      const remaining = total - elapsed;
+      document.getElementById('ad-countdown').textContent = remaining > 0 ? remaining : '✓';
+      document.getElementById('ad-bar').style.width = (elapsed / total * 100) + '%';
+      if (elapsed >= total) {
+        clearInterval(_countdownTimer);
+        document.getElementById('ad-skip-btn').style.display = 'inline-block';
+        document.getElementById('ad-skip-btn').onclick = () => {
+          document.getElementById('ad-overlay').classList.remove('open');
+          onComplete();
+        };
+      }
+    }, 1000);
+  }
+
+  function startClaimCountdown() {
     if (todayClaimed()) return;
     const streak = calcStreak();
     const bonus = dailyBonus(streak + 1);
-    progress.claimedDates.push(todayStr());
-    progress.beesTotal += bonus;
-    saveProgress(progress);
-    updateCurrencyDisplay();
-    renderCalendar();
-    document.getElementById('daily-dot').style.display = 'none';
-    document.getElementById('daily-book-btn').style.background = 'transparent';
-    showToast(`🍯 +${fmtN(bonus)} honey! Day ${calcStreak()} streak!`);
+    showCountdown('🍯 DAILY CLAIM', `Claiming +${fmtN(bonus)} honey...`, 3, () => {
+      progress.claimedDates.push(todayStr());
+      progress.beesTotal += bonus;
+      saveProgress(progress);
+      updateCurrencyDisplay();
+      renderCalendar();
+      document.getElementById('daily-dot').style.display = 'none';
+      document.getElementById('daily-book-btn').style.background = 'transparent';
+      showToast(`🍯 +${fmtN(bonus)} honey! Day ${calcStreak()} streak!`);
+    });
+  }
+
+  function watchAdForDay(dateStr, daysBack) {
+    if (progress.adDays.includes(dateStr)) return;
+    const reward = adBonus(daysBack);
+    showCountdown('📺 WATCH AD', `Earn +${fmtN(reward)} 🍯 for missing day ${new Date(dateStr + 'T12:00:00').getDate()}`, 5, () => {
+      progress.adDays.push(dateStr);
+      progress.beesTotal += reward;
+      saveProgress(progress);
+      updateCurrencyDisplay();
+      renderCalendar();
+      showToast(`📺 Ad watched! +${fmtN(reward)} honey!`);
+    });
   }
 
   function openDailyCalendar() {
     renderCalendar();
-    // Re-trigger animation by removing and re-adding the panel
     const panel = document.getElementById('daily-panel');
     panel.style.animation = 'none';
     requestAnimationFrame(() => { panel.style.animation = ''; });
@@ -917,7 +1026,10 @@
   }
 
   document.getElementById('daily-book-btn').addEventListener('click', openDailyCalendar);
-  document.getElementById('daily-close').addEventListener('click', () => document.getElementById('daily-overlay').classList.remove('open'));
+  document.getElementById('daily-close').addEventListener('click', () => {
+    clearInterval(_countdownTimer);
+    document.getElementById('daily-overlay').classList.remove('open');
+  });
   document.getElementById('daily-overlay').addEventListener('click', e => { if (e.target.id === 'daily-overlay') document.getElementById('daily-overlay').classList.remove('open'); });
 
   // Pulse the book button if today's reward is unclaimed
