@@ -382,6 +382,7 @@
   if (!progress.listeningSeconds) progress.listeningSeconds = 0;
   if (!progress.unlocked)         progress.unlocked = {};
   if (!progress.shop)             progress.shop = {};
+  if (!progress.beesCaught)       progress.beesCaught = 0;
 
   let achToastTimer = null;
   function showAchToast(ach) {
@@ -630,7 +631,7 @@
   const saveBtnEl    = document.getElementById('save-btn');
 
   let playerName    = 'anonymous';
-  let beesCollected = 0;
+  let beesCollected = progress.beesCaught;
 
   const BIN_URL     = `https://api.jsonbin.io/v3/b/${CONFIG.JSONBIN_BIN}`;
   const BIN_HEADERS = { 'X-Master-Key': CONFIG.JSONBIN_KEY, 'Content-Type': 'application/json' };
@@ -644,11 +645,16 @@
   }
 
   async function saveScore(name) {
-    const score = Math.floor(progress.beesTotal);
-    if (!name || name === 'anonymous' || score < 1) return;
+    if (!name || name === 'anonymous') return;
+    // Use all-time caught bees as score so spending honey doesn't lower rank
+    const score = progress.beesCaught;
+    if (score < 1) return;
     let scores = await fetchScores();
+    const existing = scores.find(s => s.name === name);
+    // Only update if our current data is better or equal (always keep latest bees count)
+    const newEntry = { name, score: Math.max(score, existing?.score || 0), bees: progress.beesCaught, date: new Date().toISOString().slice(0,10) };
     scores = scores.filter(s => s.name !== name);
-    scores.push({ name, score, bees: beesCollected, date: new Date().toISOString().slice(0,10) });
+    scores.push(newEntry);
     scores.sort((a,b) => b.score - a.score);
     const top50 = scores.slice(0,50);
     try {
@@ -959,6 +965,7 @@
     bee.classList.add('caught');
     beesCollected++;
     progress.beesTotal++;
+    progress.beesCaught++;
     saveProgress(progress);
     checkAchievements('bees');
     updateCurrencyDisplay();
