@@ -296,7 +296,23 @@
       <select id="voice-select"><option>loading voices...</option></select>
     </div>
     <div class="control-row" style="flex-direction:column;align-items:flex-start;gap:4px;">
-      <label style="color:#888;font-size:0.75rem;">elevenlabs api key <span style="color:#666;">(optional — uses browser voice if empty)</span></label>
+      <div style="display:flex;align-items:center;gap:6px;">
+        <label style="color:#ccc;font-size:0.75rem;">elevenlabs api key <span style="color:#999;">(optional)</span></label>
+        <div style="position:relative;display:inline-block;">
+          <span id="el-help-btn" style="display:inline-flex;align-items:center;justify-content:center;width:15px;height:15px;border-radius:50%;border:1px solid #f5c80088;color:#f5c800;font-size:0.6rem;cursor:default;font-family:'Courier New',monospace;line-height:1;">?</span>
+          <div id="el-help-tip" style="display:none;position:absolute;left:50%;bottom:calc(100% + 8px);transform:translateX(-50%);width:240px;background:#1a1a1a;border:1px solid #f5c80066;border-radius:6px;padding:10px 12px;font-size:0.7rem;color:#ccc;line-height:1.5;z-index:600;pointer-events:none;">
+            <div style="color:#f5c800;font-weight:bold;margin-bottom:5px;">🎙️ ElevenLabs TTS</div>
+            Uses ElevenLabs AI voices instead of your browser's built-in voice.<br><br>
+            <strong style="color:#f5c800;">To get a key:</strong><br>
+            1. Go to <span style="color:#f5c800;">elevenlabs.io</span><br>
+            2. Sign up (free tier available)<br>
+            3. Go to Profile → API Keys<br>
+            4. Copy your key and paste it here<br><br>
+            <span style="color:#888;">Your key is saved locally and never sent anywhere except ElevenLabs.</span>
+            <div style="position:absolute;bottom:-5px;left:50%;transform:translateX(-50%);width:8px;height:8px;background:#1a1a1a;border-right:1px solid #f5c80066;border-bottom:1px solid #f5c80066;transform:translateX(-50%) rotate(45deg);"></div>
+          </div>
+        </div>
+      </div>
       <input type="password" id="elevenlabs-key" maxlength="200" placeholder="sk_..."
         style="width:100%;background:#333;color:#f5c800;border:1px solid #f5c80044;font-family:'Courier New',monospace;font-size:0.78rem;padding:4px 8px;outline:none;" />
     </div>
@@ -763,6 +779,10 @@
   if (savedElKey) elKeyEl.value = savedElKey;
   playerNameEl.addEventListener('input', () => localStorage.setItem('beelieve_username', playerNameEl.value.trim()));
   elKeyEl.addEventListener('input', () => localStorage.setItem('beelieve_el_key', elKeyEl.value.trim()));
+  const elHelpBtn = document.getElementById('el-help-btn');
+  const elHelpTip = document.getElementById('el-help-tip');
+  elHelpBtn.addEventListener('mouseenter', () => elHelpTip.style.display = 'block');
+  elHelpBtn.addEventListener('mouseleave', () => elHelpTip.style.display = 'none');
   let beesCollected = progress.beesCaught;
 
   // Leaderboard stubbed out — Supabase integration coming soon
