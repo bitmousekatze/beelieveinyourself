@@ -150,9 +150,10 @@
       transition: background 0.15s, border-color 0.15s;
       background: #2a2000;
     }
-    .shop-item:hover { background: #3a3000; border-color: #f5c80044; }
+    .shop-item:hover:not(.unaffordable) { background: #3a3000; border-color: #f5c80044; }
     .shop-item.unaffordable { opacity: 0.4; cursor: not-allowed; pointer-events: none; }
     .shop-item.unaffordable * { pointer-events: none; }
+    .shop-item.buying { background: #4a4000 !important; border-color: #f5c800 !important; }
     .shop-item-icon { font-size: 1.8rem; flex-shrink: 0; width: 40px; text-align: center; }
     .shop-item-body { flex: 1; min-width: 0; }
     .shop-item-name { color: #f5c800; font-size: 0.8rem; font-weight: bold; }
@@ -335,6 +336,23 @@
       </div>
       <input type="password" id="elevenlabs-key" maxlength="200" placeholder="sk_..."
         style="width:100%;background:#333;color:#f5c800;border:1px solid #f5c80044;font-family:'Courier New',monospace;font-size:0.78rem;padding:4px 8px;outline:none;" />
+    </div>
+    <div id="landing-stats" style="width:100%;background:#33330066;border:1px solid #f5c80022;border-radius:4px;padding:10px 14px;display:flex;flex-direction:column;gap:6px;">
+      <div style="display:flex;justify-content:space-between;align-items:center;">
+        <span style="color:#f5c80099;font-size:0.72rem;letter-spacing:0.08em;">🍯 HONEY</span>
+        <span id="landing-honey" style="color:#f5c800;font-size:0.85rem;font-weight:bold;">0</span>
+      </div>
+      <div style="display:flex;justify-content:space-between;align-items:center;">
+        <span style="color:#c8e80099;font-size:0.72rem;letter-spacing:0.08em;">⚡ PER SECOND</span>
+        <span id="landing-bps" style="color:#c8e800;font-size:0.85rem;font-weight:bold;">0/s</span>
+      </div>
+      <div style="display:flex;justify-content:space-between;align-items:center;gap:8px;">
+        <span style="color:#f5c80099;font-size:0.72rem;letter-spacing:0.08em;">📜 PROGRESS</span>
+        <span id="landing-pct" style="color:#f5c800;font-size:0.85rem;font-weight:bold;">0%</span>
+      </div>
+      <div style="height:4px;background:#333;border-radius:2px;overflow:hidden;">
+        <div id="landing-prog-bar" style="height:100%;background:#f5c800;border-radius:2px;width:0%;transition:width 0.3s;"></div>
+      </div>
     </div>
     <div style="position:relative;width:100%;">
       <button id="daily-book-btn" title="daily rewards" style="background:transparent;border:1px solid #f5c80066;color:#f5c800;font-family:'Courier New',monospace;font-size:0.85rem;padding:8px 20px;cursor:pointer;letter-spacing:0.1em;-webkit-tap-highlight-color:transparent;touch-action:manipulation;width:100%;text-align:center;">📖 DAILY REWARDS</button>
@@ -639,37 +657,47 @@
       bps > 0 ? fmtN(bps) + ' bees/sec total' : 'buy upgrades to auto-catch bees';
   }
 
-  function renderShop() {
+  function renderShop(initial) {
     const list = document.getElementById('shop-list');
-    list.innerHTML = '';
+    if (initial) list.innerHTML = '';
+
     UPGRADES.forEach(upg => {
       const owned = (progress.shop[upg.id] || 0);
       const cost  = upgradeCost(upg);
       const canAfford = progress.beesTotal >= cost;
-      const item = document.createElement('div');
-      item.className = 'shop-item' + (canAfford ? '' : ' unaffordable');
-      item.innerHTML = `
-        <div class="shop-item-icon">${upg.icon}</div>
-        <div class="shop-item-body">
-          <div class="shop-item-name">${upg.name}</div>
-          <div class="shop-item-cost">🍯 ${fmtN(cost)}  ·  ${upg.bps}/s each</div>
-          <div class="shop-item-desc">${upg.desc}</div>
-        </div>
-        <div class="shop-item-owned">${owned}</div>
-      `;
-      if (canAfford) {
+
+      let item = list.querySelector(`[data-upg="${upg.id}"]`);
+      if (!item) {
+        item = document.createElement('div');
+        item.dataset.upg = upg.id;
+        item.innerHTML = `
+          <div class="shop-item-icon">${upg.icon}</div>
+          <div class="shop-item-body">
+            <div class="shop-item-name">${upg.name}</div>
+            <div class="shop-item-cost"></div>
+            <div class="shop-item-desc">${upg.desc}</div>
+          </div>
+          <div class="shop-item-owned"></div>
+        `;
         item.addEventListener('click', () => {
+          if (item.classList.contains('unaffordable')) return;
           const c = upgradeCost(upg);
           if (progress.beesTotal < c) return;
           progress.beesTotal -= c;
           progress.shop[upg.id] = (progress.shop[upg.id] || 0) + 1;
           saveProgress(progress);
           if (upg.visual) syncVirtualMice();
-          renderShop();
+          item.classList.add('buying');
+          setTimeout(() => item.classList.remove('buying'), 150);
+          renderShop(false);
           updateCurrencyDisplay();
         });
+        list.appendChild(item);
       }
-      list.appendChild(item);
+
+      item.className = 'shop-item' + (canAfford ? '' : ' unaffordable');
+      item.querySelector('.shop-item-cost').textContent = `🍯 ${fmtN(cost)}  ·  ${upg.bps}/s each`;
+      item.querySelector('.shop-item-owned').textContent = owned;
     });
     updateCurrencyDisplay();
   }
@@ -694,7 +722,7 @@
   document.getElementById('shop-btn').addEventListener('click', () => {
     shopOpen = !shopOpen;
     document.getElementById('shop-panel').classList.toggle('open', shopOpen);
-    if (shopOpen) renderShop();
+    if (shopOpen) renderShop(true);
   });
 
   document.getElementById('shop-close').addEventListener('click', closeShop);
@@ -777,7 +805,7 @@
       progress.beesTotal += gained;
       checkAchievements('bees');
       updateCurrencyDisplay();
-      if (shopOpen) renderShop();
+      if (shopOpen) renderShop(false);
     }
   }, 100);
 
@@ -1346,7 +1374,7 @@
     saveProgress(progress);
     checkAchievements('bees');
     updateCurrencyDisplay();
-    if (shopOpen) renderShop();
+    if (shopOpen) renderShop(false);
     activeBeeCount--;
     setTimeout(() => {
       bee.remove();
@@ -1390,6 +1418,17 @@
   // Show RESUME button if there's a saved position
   const resumeBtn = document.getElementById('resume-btn');
   if (progress.savedLitCount > 0) resumeBtn.style.display = '';
+
+  function updateLandingStats() {
+    const bps = calcBPS();
+    document.getElementById('landing-honey').textContent = fmtN(progress.beesTotal);
+    document.getElementById('landing-bps').textContent = (bps > 0 ? (bps < 1 ? bps.toFixed(1) : fmtN(bps)) : '0') + '/s';
+    const totalWords = 9157;
+    const pct = progress.savedLitCount > 0 ? Math.min(100, (progress.savedLitCount / totalWords) * 100) : 0;
+    document.getElementById('landing-pct').textContent = pct.toFixed(1) + '%';
+    document.getElementById('landing-prog-bar').style.width = pct + '%';
+  }
+  updateLandingStats();
 
   async function launchGame(resumeFrom) {
     const primer = new SpeechSynthesisUtterance('');
