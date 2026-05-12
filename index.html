@@ -188,6 +188,78 @@
       text-align: center; padding: 2px 6px; border-radius: 3px; flex-shrink: 0;
     }
 
+    /* ---- casino panel ---- */
+    #casino-panel {
+      position: fixed; top: 44px; right: 0; bottom: 0; width: min(320px, 96vw);
+      background: #0d0020; border-left: 1px solid #cc44ff44;
+      transform: translateX(100%); transition: transform 0.3s ease;
+      z-index: 80; display: flex; flex-direction: column; overflow: hidden;
+    }
+    #casino-panel.open { transform: translateX(0); }
+    #casino-header {
+      background: #1a0030; border-bottom: 1px solid #cc44ff44;
+      padding: 12px 14px; flex-shrink: 0;
+    }
+    #casino-header h3 { color: #e080ff; font-size: 0.85rem; letter-spacing: 0.15em; text-align: center; }
+    #casino-honey { color: #f5c80099; font-size: 0.68rem; text-align: center; margin-top: 3px; }
+    #casino-body { flex: 1; overflow-y: auto; padding: 12px; display: flex; flex-direction: column; gap: 14px; }
+
+    /* slots */
+    .casino-card { background: #1a0030; border: 1px solid #cc44ff33; border-radius: 8px; padding: 14px; }
+    .casino-card-title { color: #e080ff; font-size: 0.78rem; font-weight: bold; letter-spacing: 0.12em; margin-bottom: 4px; }
+    .casino-card-desc { color: #888; font-size: 0.62rem; margin-bottom: 12px; line-height: 1.4; }
+    .slot-reels { display: flex; justify-content: center; gap: 6px; margin-bottom: 12px; }
+    .slot-reel {
+      width: 54px; height: 54px; background: #0a0015; border: 2px solid #cc44ff55;
+      border-radius: 8px; display: flex; align-items: center; justify-content: center;
+      font-size: 1.8rem; overflow: hidden; position: relative;
+    }
+    .slot-reel.spinning { animation: reel-spin 0.12s steps(1) infinite; }
+    @keyframes reel-spin { 0%{opacity:1} 50%{opacity:0.3} 100%{opacity:1} }
+    .casino-bet-row { display: flex; align-items: center; gap: 8px; margin-bottom: 10px; }
+    .casino-bet-row label { color: #cc88ff; font-size: 0.7rem; white-space: nowrap; }
+    .casino-bet-input {
+      flex: 1; background: #0a0015; border: 1px solid #cc44ff55; color: #f5c800;
+      font-family: 'Courier New', monospace; font-size: 0.8rem; padding: 4px 8px; outline: none;
+      border-radius: 4px; min-width: 0;
+    }
+    .casino-bet-quick { display: flex; gap: 4px; flex-wrap: wrap; margin-bottom: 10px; }
+    .casino-bet-quick button {
+      background: #1a0030; border: 1px solid #cc44ff44; color: #cc88ff;
+      font-family: 'Courier New', monospace; font-size: 0.62rem; padding: 3px 7px;
+      cursor: pointer; border-radius: 3px; transition: background 0.1s;
+    }
+    .casino-bet-quick button:hover { background: #2a0050; border-color: #cc44ff; }
+    .casino-play-btn {
+      width: 100%; background: #7700cc; border: none; color: #fff;
+      font-family: 'Courier New', monospace; font-size: 0.82rem; font-weight: bold;
+      padding: 9px; cursor: pointer; border-radius: 5px; letter-spacing: 0.1em;
+      transition: background 0.15s, transform 0.1s;
+    }
+    .casino-play-btn:hover { background: #9900ee; }
+    .casino-play-btn:active { transform: scale(0.97); }
+    .casino-play-btn:disabled { opacity: 0.4; cursor: not-allowed; }
+    .casino-result {
+      text-align: center; font-size: 0.8rem; min-height: 1.4em;
+      margin-top: 8px; letter-spacing: 0.05em; font-weight: bold;
+    }
+    .casino-result.win  { color: #f5c800; }
+    .casino-result.lose { color: #ff4444; }
+    .casino-result.push { color: #888; }
+
+    /* coin flip */
+    .coin-flip-btn-row { display: flex; gap: 8px; }
+    .coin-choice-btn {
+      flex: 1; background: #1a0030; border: 2px solid #cc44ff44; color: #e080ff;
+      font-family: 'Courier New', monospace; font-size: 0.78rem; padding: 8px;
+      cursor: pointer; border-radius: 5px; transition: background 0.15s, border-color 0.15s;
+    }
+    .coin-choice-btn:hover { background: #2a0050; border-color: #cc44ff; }
+    .coin-choice-btn.selected { background: #3a0070; border-color: #e080ff; color: #fff; }
+
+    @keyframes casino-win-flash { 0%,100%{background:#0d0020} 50%{background:#1a0040} }
+    #casino-panel.jackpot { animation: casino-win-flash 0.3s ease 4; }
+
     /* ---- achievement toast ---- */
     #ach-toast {
       position: fixed; bottom: 80px; right: 20px;
@@ -289,6 +361,7 @@
   <span id="bee-bps">0/s</span>
   <div style="flex:1;min-width:8px;"></div>
   <button class="header-btn" id="shop-btn">🛒 SHOP</button>
+  <button class="header-btn" id="casino-btn">🎰 CASINO</button>
   <button class="header-btn" id="save-btn">SAVE</button>
   <button class="header-btn" id="header-ach-btn">ACHIEVEMENTS</button>
   <div class="header-sep"></div>
@@ -313,6 +386,93 @@
     <div id="shop-bps">0.0 bees/sec</div>
   </div>
   <div id="shop-list"></div>
+</div>
+
+<!-- casino panel -->
+<div id="casino-panel">
+  <div id="casino-header">
+    <div style="display:flex;align-items:center;justify-content:space-between;">
+      <h3>🎰 BEE CASINO</h3>
+      <button id="casino-close" style="background:transparent;border:1px solid #cc44ff44;color:#e080ff;font-family:'Courier New',monospace;font-size:0.7rem;cursor:pointer;padding:2px 8px;-webkit-tap-highlight-color:transparent;">✕</button>
+    </div>
+    <div id="casino-honey">balance: 🍯 0</div>
+  </div>
+  <div id="casino-body">
+
+    <!-- SLOTS -->
+    <div class="casino-card">
+      <div class="casino-card-title">🎰 BEE SLOTS</div>
+      <div class="casino-card-desc">3 matching symbols = 10× · 2 matching = 2× · 🍯🍯🍯 = 50× jackpot</div>
+      <div class="slot-reels">
+        <div class="slot-reel" id="reel-0">🐝</div>
+        <div class="slot-reel" id="reel-1">🐝</div>
+        <div class="slot-reel" id="reel-2">🐝</div>
+      </div>
+      <div class="casino-bet-row">
+        <label>🍯 BET</label>
+        <input class="casino-bet-input" id="slots-bet" type="number" min="1" value="10" />
+      </div>
+      <div class="casino-bet-quick">
+        <button onclick="casinoBetQuick('slots-bet',10)">10</button>
+        <button onclick="casinoBetQuick('slots-bet',50)">50</button>
+        <button onclick="casinoBetQuick('slots-bet',100)">100</button>
+        <button onclick="casinoBetQuick('slots-bet',0.1,'pct')">10%</button>
+        <button onclick="casinoBetQuick('slots-bet',0.5,'pct')">50%</button>
+        <button onclick="casinoBetQuick('slots-bet',1,'pct')">ALL IN</button>
+      </div>
+      <button class="casino-play-btn" id="slots-btn" onclick="playSlots()">▶ SPIN</button>
+      <div class="casino-result" id="slots-result"></div>
+    </div>
+
+    <!-- COIN FLIP -->
+    <div class="casino-card">
+      <div class="casino-card-title">🪙 HONEY FLIP</div>
+      <div class="casino-card-desc">Pick BEE or FLOWER — win 1.9× your bet (house keeps 5%)</div>
+      <div class="casino-bet-row">
+        <label>🍯 BET</label>
+        <input class="casino-bet-input" id="flip-bet" type="number" min="1" value="10" />
+      </div>
+      <div class="casino-bet-quick">
+        <button onclick="casinoBetQuick('flip-bet',10)">10</button>
+        <button onclick="casinoBetQuick('flip-bet',50)">50</button>
+        <button onclick="casinoBetQuick('flip-bet',100)">100</button>
+        <button onclick="casinoBetQuick('flip-bet',0.1,'pct')">10%</button>
+        <button onclick="casinoBetQuick('flip-bet',0.5,'pct')">50%</button>
+        <button onclick="casinoBetQuick('flip-bet',1,'pct')">ALL IN</button>
+      </div>
+      <div class="coin-flip-btn-row" style="margin-bottom:10px;">
+        <button class="coin-choice-btn selected" id="flip-bee" onclick="selectCoin('bee')">🐝 BEE</button>
+        <button class="coin-choice-btn" id="flip-flower" onclick="selectCoin('flower')">🌻 FLOWER</button>
+      </div>
+      <button class="casino-play-btn" id="flip-btn" onclick="playFlip()">▶ FLIP</button>
+      <div class="casino-result" id="flip-result"></div>
+    </div>
+
+    <!-- HIGH/LOW -->
+    <div class="casino-card">
+      <div class="casino-card-title">🎲 HIGH OR LOW</div>
+      <div class="casino-card-desc">Guess if the next roll (1–10) is HIGH (6–10) or LOW (1–5). Win 1.9×.</div>
+      <div class="casino-bet-row">
+        <label>🍯 BET</label>
+        <input class="casino-bet-input" id="hl-bet" type="number" min="1" value="10" />
+      </div>
+      <div class="casino-bet-quick">
+        <button onclick="casinoBetQuick('hl-bet',10)">10</button>
+        <button onclick="casinoBetQuick('hl-bet',50)">50</button>
+        <button onclick="casinoBetQuick('hl-bet',100)">100</button>
+        <button onclick="casinoBetQuick('hl-bet',0.5,'pct')">50%</button>
+        <button onclick="casinoBetQuick('hl-bet',1,'pct')">ALL IN</button>
+      </div>
+      <div id="hl-die" style="text-align:center;font-size:2.2rem;margin-bottom:10px;">🎲</div>
+      <div class="coin-flip-btn-row" style="margin-bottom:10px;">
+        <button class="coin-choice-btn selected" id="hl-high" onclick="selectHL('high')">⬆️ HIGH (6-10)</button>
+        <button class="coin-choice-btn" id="hl-low" onclick="selectHL('low')">⬇️ LOW (1-5)</button>
+      </div>
+      <button class="casino-play-btn" id="hl-btn" onclick="playHL()">▶ ROLL</button>
+      <div class="casino-result" id="hl-result"></div>
+    </div>
+
+  </div>
 </div>
 
 <!-- landing page -->
@@ -688,6 +848,8 @@
     bpsEl.style.display = 'inline';
     document.getElementById('shop-bps').textContent =
       bps > 0 ? fmtN(bps) + ' bees/sec total' : 'buy upgrades to auto-catch bees';
+    const casinoHoney = document.getElementById('casino-honey');
+    if (casinoHoney) casinoHoney.textContent = `balance: 🍯 ${fmtN(progress.beesTotal)}`;
   }
 
   function renderShop(initial) {
@@ -769,6 +931,186 @@
   });
 
   document.getElementById('ach-overlay').addEventListener('click', e => { if (e.target.id==='ach-overlay') closeAch(); });
+
+  // =============================================
+  // CASINO
+  // =============================================
+  const SLOT_SYMBOLS = ['🐝','🌻','🍯','👑','🎷','⚖️'];
+  const SLOT_WEIGHTS  = [30,  25,   20,   10,   10,   5];
+  let casinoOpen = false;
+  let coinChoice = 'bee';
+  let hlChoice   = 'high';
+  let slotsSpinning = false;
+
+  function casinoUpdateBalance() {
+    document.getElementById('casino-honey').textContent = `balance: 🍯 ${fmtN(progress.beesTotal)}`;
+  }
+
+  function openCasino() {
+    casinoOpen = true;
+    if (shopOpen) closeShop();
+    document.getElementById('casino-panel').classList.add('open');
+    casinoUpdateBalance();
+  }
+  function closeCasino() {
+    casinoOpen = false;
+    document.getElementById('casino-panel').classList.remove('open');
+  }
+
+  document.getElementById('casino-btn').addEventListener('click', () => {
+    casinoOpen ? closeCasino() : openCasino();
+  });
+  document.getElementById('casino-close').addEventListener('click', closeCasino);
+  document.addEventListener('click', e => {
+    if (!casinoOpen) return;
+    const panel = document.getElementById('casino-panel');
+    const btn   = document.getElementById('casino-btn');
+    if (!panel.contains(e.target) && e.target !== btn) closeCasino();
+  });
+
+  function casinoBetQuick(inputId, val, mode) {
+    const el = document.getElementById(inputId);
+    if (mode === 'pct') el.value = Math.max(1, Math.floor(progress.beesTotal * val));
+    else el.value = val;
+  }
+
+  function casinoDeduct(bet) {
+    if (isNaN(bet) || bet < 1) return false;
+    bet = Math.floor(bet);
+    if (progress.beesTotal < bet) return false;
+    progress.beesTotal -= bet;
+    return bet;
+  }
+
+  function casinoAward(amount) {
+    progress.beesTotal += amount;
+    saveProgress(progress);
+    updateCurrencyDisplay();
+    casinoUpdateBalance();
+    if (casinoOpen) renderShop(false);
+  }
+
+  function weightedRandom(symbols, weights) {
+    const total = weights.reduce((a, b) => a + b, 0);
+    let r = Math.random() * total;
+    for (let i = 0; i < symbols.length; i++) {
+      r -= weights[i];
+      if (r <= 0) return symbols[i];
+    }
+    return symbols[symbols.length - 1];
+  }
+
+  function playSlots() {
+    if (slotsSpinning) return;
+    const betRaw = parseInt(document.getElementById('slots-bet').value);
+    const bet = casinoDeduct(betRaw);
+    if (!bet) { setResult('slots-result', '❌ Not enough honey!', 'lose'); return; }
+    saveProgress(progress); updateCurrencyDisplay(); casinoUpdateBalance();
+
+    slotsSpinning = true;
+    document.getElementById('slots-btn').disabled = true;
+    setResult('slots-result', '...spinning...', 'push');
+
+    const reels = [0,1,2].map(i => document.getElementById(`reel-${i}`));
+    reels.forEach(r => r.classList.add('spinning'));
+
+    const results = [0,1,2].map(() => weightedRandom(SLOT_SYMBOLS, SLOT_WEIGHTS));
+
+    setTimeout(() => {
+      reels[0].classList.remove('spinning'); reels[0].textContent = results[0];
+      setTimeout(() => {
+        reels[1].classList.remove('spinning'); reels[1].textContent = results[1];
+        setTimeout(() => {
+          reels[2].classList.remove('spinning'); reels[2].textContent = results[2];
+
+          const [a,b,c] = results;
+          let mult = 0, msg = '';
+          if (a==='🍯' && b==='🍯' && c==='🍯') { mult = 50; msg = '🎉 JACKPOT!! 50×!'; document.getElementById('casino-panel').classList.add('jackpot'); setTimeout(()=>document.getElementById('casino-panel').classList.remove('jackpot'),1500); }
+          else if (a===b && b===c)               { mult = 10; msg = `🏆 THREE OF A KIND! 10×`; }
+          else if (a===b || b===c || a===c)      { mult = 2;  msg = `✨ Pair! 2×`; }
+          else                                   { mult = 0;  msg = `💸 No match. Lost 🍯${fmtN(bet)}`; }
+
+          if (mult > 0) {
+            const won = Math.floor(bet * mult);
+            casinoAward(won);
+            setResult('slots-result', `${msg} → +🍯${fmtN(won)}`, 'win');
+          } else {
+            casinoAward(0);
+            setResult('slots-result', msg, 'lose');
+          }
+
+          slotsSpinning = false;
+          document.getElementById('slots-btn').disabled = false;
+        }, 250);
+      }, 250);
+    }, 600);
+  }
+
+  function selectCoin(choice) {
+    coinChoice = choice;
+    document.getElementById('flip-bee').classList.toggle('selected', choice==='bee');
+    document.getElementById('flip-flower').classList.toggle('selected', choice==='flower');
+  }
+
+  function playFlip() {
+    const betRaw = parseInt(document.getElementById('flip-bet').value);
+    const bet = casinoDeduct(betRaw);
+    if (!bet) { setResult('flip-result','❌ Not enough honey!','lose'); return; }
+    saveProgress(progress); updateCurrencyDisplay(); casinoUpdateBalance();
+
+    const outcome = Math.random() < 0.5 ? 'bee' : 'flower';
+    const icon    = outcome === 'bee' ? '🐝' : '🌻';
+    document.getElementById('flip-btn').disabled = true;
+    setResult('flip-result', icon + ' flipping...', 'push');
+    setTimeout(() => {
+      if (outcome === coinChoice) {
+        const won = Math.floor(bet * 1.9);
+        casinoAward(won);
+        setResult('flip-result', `${icon} ${outcome.toUpperCase()}! You win 🍯${fmtN(won)}`, 'win');
+      } else {
+        casinoAward(0);
+        setResult('flip-result', `${icon} ${outcome.toUpperCase()}! Lost 🍯${fmtN(bet)}`, 'lose');
+      }
+      document.getElementById('flip-btn').disabled = false;
+    }, 700);
+  }
+
+  function selectHL(choice) {
+    hlChoice = choice;
+    document.getElementById('hl-high').classList.toggle('selected', choice==='high');
+    document.getElementById('hl-low').classList.toggle('selected', choice==='low');
+  }
+
+  function playHL() {
+    const betRaw = parseInt(document.getElementById('hl-bet').value);
+    const bet = casinoDeduct(betRaw);
+    if (!bet) { setResult('hl-result','❌ Not enough honey!','lose'); return; }
+    saveProgress(progress); updateCurrencyDisplay(); casinoUpdateBalance();
+
+    document.getElementById('hl-btn').disabled = true;
+    document.getElementById('hl-die').textContent = '🎲';
+    setResult('hl-result', 'rolling...', 'push');
+    setTimeout(() => {
+      const roll = Math.floor(Math.random() * 10) + 1;
+      const outcome = roll >= 6 ? 'high' : 'low';
+      document.getElementById('hl-die').textContent = roll;
+      if (outcome === hlChoice) {
+        const won = Math.floor(bet * 1.9);
+        casinoAward(won);
+        setResult('hl-result', `Rolled ${roll}! ${outcome.toUpperCase()} ✓ +🍯${fmtN(won)}`, 'win');
+      } else {
+        casinoAward(0);
+        setResult('hl-result', `Rolled ${roll}! ${outcome.toUpperCase()} ✗ Lost 🍯${fmtN(bet)}`, 'lose');
+      }
+      document.getElementById('hl-btn').disabled = false;
+    }, 600);
+  }
+
+  function setResult(id, msg, type) {
+    const el = document.getElementById(id);
+    el.textContent = msg;
+    el.className = 'casino-result ' + type;
+  }
 
   // =============================================
   // VIRTUAL MICE
