@@ -24,273 +24,178 @@
 
     /* ---- header ---- */
     #header {
-      position: fixed;
-      top: 0; left: 0; right: 0;
-      height: 44px;
-      background: #3a3a3a;
-      border-bottom: 1px solid #f5c80033;
-      display: none;
-      align-items: center;
-      padding: 0 14px;
-      gap: 10px;
-      z-index: 90;
+      position: fixed; top: 0; left: 0; right: 0; height: 44px;
+      background: #3a3a3a; border-bottom: 1px solid #f5c80033;
+      display: none; align-items: center; padding: 0 14px; gap: 10px; z-index: 90;
     }
     #header.visible { display: flex; }
-
     .header-title { color: #f5c800; font-size: 0.75rem; letter-spacing: 0.1em; }
-
-    #bee-counter { color: #f5c800; font-size: 0.72rem; letter-spacing: 0.05em; flex: 1; white-space: nowrap; }
-
+    .bee-stat {
+      color: #f5c800; font-size: 0.78rem; letter-spacing: 0.05em;
+      white-space: nowrap; cursor: default;
+    }
+    #bee-bps { color: #c8e800; font-size: 0.78rem; letter-spacing: 0.05em; white-space: nowrap; cursor: default; }
     .header-btn {
-      background: transparent;
-      border: 1px solid #f5c80066;
-      color: #f5c800;
-      padding: 4px 12px;
-      font-family: 'Courier New', monospace;
-      font-size: 0.72rem;
-      cursor: pointer;
-      letter-spacing: 0.1em;
-      transition: background 0.15s, border-color 0.15s;
-      flex-shrink: 0;
+      background: transparent; border: 1px solid #f5c80066; color: #f5c800;
+      padding: 4px 12px; font-family: 'Courier New', monospace; font-size: 0.72rem;
+      cursor: pointer; letter-spacing: 0.1em;
+      transition: background 0.15s, border-color 0.15s; flex-shrink: 0;
     }
     .header-btn:hover { background: #f5c80022; border-color: #f5c800; }
     .header-btn:active { transform: scale(0.96); }
-
     .mode-btn  { opacity: 0.45; }
     .cmode-btn { opacity: 0.45; }
     .mode-btn.active, .cmode-btn.active { opacity: 1; background: #f5c80018; border-color: #f5c800; }
-
     .header-sep { width: 1px; height: 20px; background: #f5c80044; flex-shrink: 0; }
 
     /* ---- overlay ---- */
     #overlay {
-      position: fixed; inset: 0;
-      background: #555;
+      position: fixed; inset: 0; background: #555;
       display: flex; flex-direction: column; align-items: center; justify-content: center;
-      gap: 24px; z-index: 100;
-      transition: opacity 0.6s ease;
+      gap: 24px; z-index: 100; transition: opacity 0.6s ease;
     }
-    #overlay h1 {
-      font-size: clamp(2rem, 6vw, 4rem);
-      letter-spacing: 0.1em; text-align: center;
-      text-shadow: 0 0 30px #f5c800aa;
-    }
+    #overlay h1 { font-size: clamp(2rem,6vw,4rem); letter-spacing: 0.1em; text-align: center; text-shadow: 0 0 30px #f5c800aa; }
     #overlay > p { color: #111; font-size: 1rem; }
-
-    .controls {
-      display: flex; flex-direction: column; align-items: center;
-      gap: 14px; width: 320px;
-    }
-    .control-row {
-      display: flex; align-items: center; justify-content: space-between;
-      width: 100%; gap: 10px; color: #111; font-size: 0.85rem;
-    }
+    .controls { display: flex; flex-direction: column; align-items: center; gap: 14px; width: 320px; }
+    .control-row { display: flex; align-items: center; justify-content: space-between; width: 100%; gap: 10px; color: #111; font-size: 0.85rem; }
     .control-row label { min-width: 50px; color: #111; }
     .control-row input[type=range] { flex: 1; accent-color: #f5c800; cursor: pointer; }
-    .control-row select {
-      flex: 1; background: #444; color: #f5c800;
-      border: 1px solid #f5c800; font-family: 'Courier New', monospace;
-      font-size: 0.8rem; padding: 4px 6px; cursor: pointer; outline: none;
-    }
+    .control-row select { flex: 1; background: #444; color: #f5c800; border: 1px solid #f5c800; font-family: 'Courier New', monospace; font-size: 0.8rem; padding: 4px 6px; cursor: pointer; outline: none; }
     .control-row .val { min-width: 30px; text-align: right; color: #f5c800; font-size: 0.8rem; }
-
-    #start-btn {
-      background: #f5c800; color: #0a0a00; border: none;
-      padding: 16px 48px; font-size: 1.4rem;
-      font-family: 'Courier New', monospace; font-weight: bold;
-      cursor: pointer; letter-spacing: 0.15em; text-transform: uppercase;
-      transition: transform 0.1s, box-shadow 0.1s;
-      box-shadow: 0 0 20px #f5c80066; margin-top: 8px;
-    }
+    #start-btn { background: #f5c800; color: #0a0a00; border: none; padding: 16px 48px; font-size: 1.4rem; font-family: 'Courier New', monospace; font-weight: bold; cursor: pointer; letter-spacing: 0.15em; text-transform: uppercase; transition: transform 0.1s, box-shadow 0.1s; box-shadow: 0 0 20px #f5c80066; margin-top: 8px; }
     #start-btn:hover { transform: scale(1.05); box-shadow: 0 0 40px #f5c800aa; }
     #start-btn:active { transform: scale(0.97); }
 
     /* ---- words ---- */
-    #words {
-      padding: 64px 5vw 200px;
-      font-size: clamp(0.9rem, 2vw, 1.15rem);
-      line-height: 1.9; word-spacing: 0.25em; max-width: 100%;
-    }
+    #words { padding: 64px 5vw 200px; font-size: clamp(0.9rem,2vw,1.15rem); line-height: 1.9; word-spacing: 0.25em; max-width: 100%; }
     .word { display: inline; color: #555; transition: color 0.08s ease; }
 
     /* ---- fly-word clones ---- */
-    .fly-word {
-      font-family: 'Courier New', monospace;
-      font-size: clamp(0.9rem, 2vw, 1.15rem);
-      pointer-events: none; z-index: 5;
-      white-space: nowrap; line-height: 1; transform-origin: center center;
-    }
-    @keyframes float-up {
-      0%   { transform: translateY(0) scale(1);    opacity: 1; }
-      100% { transform: translateY(-50vh) scale(0.7); opacity: 0; }
-    }
+    .fly-word { font-family: 'Courier New', monospace; font-size: clamp(0.9rem,2vw,1.15rem); pointer-events: none; z-index: 5; white-space: nowrap; line-height: 1; transform-origin: center center; }
+    @keyframes float-up { 0% { transform: translateY(0) scale(1); opacity: 1; } 100% { transform: translateY(-50vh) scale(0.7); opacity: 0; } }
 
     /* ---- HUD ---- */
-    #hud {
-      position: fixed; bottom: 0; left: 0; right: 0;
-      padding: 12px 24px 16px;
-      background: linear-gradient(transparent, #555555dd 40%, #555);
-      display: flex; align-items: center; gap: 16px;
-      z-index: 50; opacity: 0; pointer-events: none; transition: opacity 0.4s;
-    }
+    #hud { position: fixed; bottom: 0; left: 0; right: 0; padding: 12px 24px 16px; background: linear-gradient(transparent,#555555dd 40%,#555); display: flex; align-items: center; gap: 16px; z-index: 50; opacity: 0; pointer-events: none; transition: opacity 0.4s; }
     #hud.visible { opacity: 1; pointer-events: all; }
-
-    #pause-btn {
-      background: transparent; border: 1px solid #f5c800; color: #f5c800;
-      padding: 6px 20px; font-family: 'Courier New', monospace; font-size: 0.85rem;
-      cursor: pointer; letter-spacing: 0.1em; transition: background 0.15s; flex-shrink: 0;
-    }
+    #pause-btn { background: transparent; border: 1px solid #f5c800; color: #f5c800; padding: 6px 20px; font-family: 'Courier New', monospace; font-size: 0.85rem; cursor: pointer; letter-spacing: 0.1em; transition: background 0.15s; flex-shrink: 0; }
     #pause-btn:hover { background: #f5c80022; }
-
     #hud-speed-wrap { display: flex; align-items: center; gap: 6px; flex-shrink: 0; color: #111; font-size: 0.75rem; }
     #live-speed { accent-color: #f5c800; width: 100px; cursor: pointer; }
     #progress-wrap { flex: 1; display: flex; flex-direction: column; gap: 4px; }
     #progress { position: relative; height: 6px; background: #333; border-radius: 3px; }
     #progress-bar { height: 100%; background: #f5c800; width: 0%; border-radius: 3px; transition: width 0.3s linear; }
-
-    .milestone {
-      position: absolute; top: 50%; transform: translate(-50%, -50%);
-      width: 10px; height: 10px; background: #fff;
-      border-radius: 50%; border: 2px solid #333; cursor: pointer; z-index: 2;
-    }
+    .milestone { position: absolute; top: 50%; transform: translate(-50%,-50%); width: 10px; height: 10px; background: #fff; border-radius: 50%; border: 2px solid #333; cursor: pointer; z-index: 2; }
     .milestone.reached { background: #f5c800; border-color: #f5c800; }
-    .milestone-label {
-      position: absolute; bottom: 14px; transform: translateX(-50%);
-      background: #222; color: #f5c800; font-size: 0.65rem;
-      font-family: 'Courier New', monospace; white-space: nowrap;
-      padding: 3px 6px; border-radius: 3px; pointer-events: none;
-      opacity: 0; transition: opacity 0.2s;
-    }
-    .milestone:hover .milestone-label,
-    .milestone.reached:hover .milestone-label { opacity: 1; }
-
+    .milestone-label { position: absolute; bottom: 14px; transform: translateX(-50%); background: #222; color: #f5c800; font-size: 0.65rem; font-family: 'Courier New', monospace; white-space: nowrap; padding: 3px 6px; border-radius: 3px; pointer-events: none; opacity: 0; transition: opacity 0.2s; }
+    .milestone:hover .milestone-label, .milestone.reached:hover .milestone-label { opacity: 1; }
     #word-count { color: #333; font-size: 0.75rem; min-width: 90px; text-align: right; flex-shrink: 0; }
-
-    #milestone-toast {
-      position: fixed; top: 60px; left: 50%;
-      transform: translateX(-50%) translateY(-80px);
-      background: #111; color: #f5c800;
-      font-family: 'Courier New', monospace; font-size: 0.9rem;
-      padding: 10px 20px; border: 1px solid #f5c800; border-radius: 4px;
-      z-index: 200; transition: transform 0.3s ease, opacity 0.3s ease;
-      opacity: 0; pointer-events: none; text-align: center; max-width: 80vw;
-    }
+    #milestone-toast { position: fixed; top: 60px; left: 50%; transform: translateX(-50%) translateY(-80px); background: #111; color: #f5c800; font-family: 'Courier New', monospace; font-size: 0.9rem; padding: 10px 20px; border: 1px solid #f5c800; border-radius: 4px; z-index: 200; transition: transform 0.3s ease, opacity 0.3s ease; opacity: 0; pointer-events: none; text-align: center; max-width: 80vw; }
     #milestone-toast.show { transform: translateX(-50%) translateY(0); opacity: 1; }
 
     /* ---- leaderboard ---- */
-    #leaderboard {
-      width: 320px; background: #44444466;
-      border: 1px solid #f5c80033; border-radius: 4px;
-      padding: 14px 16px; font-size: 0.75rem;
-    }
+    #leaderboard { width: 320px; background: #44444466; border: 1px solid #f5c80033; border-radius: 4px; padding: 14px 16px; font-size: 0.75rem; }
     #leaderboard h3 { color: #f5c800; font-size: 0.8rem; letter-spacing: 0.1em; margin-bottom: 12px; text-align: center; }
     .lb-row { display: flex; justify-content: space-between; align-items: center; padding: 4px 0; border-bottom: 1px solid #ffffff11; gap: 6px; }
     .lb-row:last-child { border-bottom: none; }
-    .lb-rank  { color: #f5c800; min-width: 18px; }
-    .lb-name  { color: #ddd; flex: 1; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+    .lb-rank { color: #f5c800; min-width: 18px; }
+    .lb-name { color: #ddd; flex: 1; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
     .lb-score { color: #f5c800; text-align: right; min-width: 40px; }
-    .lb-bees  { color: #f5c800; text-align: right; min-width: 32px; font-size: 0.68rem; }
+    .lb-bees { color: #f5c800; text-align: right; min-width: 32px; font-size: 0.68rem; }
     .lb-row.me .lb-name, .lb-row.me .lb-score, .lb-row.me .lb-bees { color: #fff; font-weight: bold; }
 
     /* ---- bees ---- */
-    .bee {
-      position: fixed; pointer-events: none; z-index: 10; image-rendering: pixelated;
-      transition: transform 0.25s ease, opacity 0.25s ease;
-    }
+    .bee { position: fixed; pointer-events: none; z-index: 10; image-rendering: pixelated; transition: transform 0.25s ease, opacity 0.25s ease; }
     .bee.catchable { pointer-events: auto; cursor: pointer; }
     .bee.caught { transform: scale(0) !important; opacity: 0 !important; }
+    @keyframes fly-right { from { transform: translateX(-120px) scaleX(1); } to { transform: translateX(calc(100vw + 120px)) scaleX(1); } }
+    @keyframes fly-left  { from { transform: translateX(calc(100vw + 120px)) scaleX(-1); } to { transform: translateX(-120px) scaleX(-1); } }
+    @keyframes wobble { 0%,100% { margin-top: 0; } 50% { margin-top: 18px; } }
 
-    @keyframes fly-right {
-      from { transform: translateX(-120px) scaleX(1); }
-      to   { transform: translateX(calc(100vw + 120px)) scaleX(1); }
+    /* ---- virtual mouse ---- */
+    .vmouse {
+      position: fixed; font-size: 22px; pointer-events: none; z-index: 15;
+      transition: left 0.65s cubic-bezier(.4,0,.2,1), top 0.65s cubic-bezier(.4,0,.2,1);
+      filter: drop-shadow(0 0 4px #f5c80088);
     }
-    @keyframes fly-left {
-      from { transform: translateX(calc(100vw + 120px)) scaleX(-1); }
-      to   { transform: translateX(-120px) scaleX(-1); }
+    @keyframes mouse-click { 0%,100% { transform: scale(1); } 50% { transform: scale(0.6); } }
+    .vmouse.clicking { animation: mouse-click 0.2s ease; }
+
+    /* ---- shop panel ---- */
+    #shop-panel {
+      position: fixed; top: 44px; right: 0; bottom: 0; width: 300px;
+      background: #1a1500; border-left: 1px solid #f5c80033;
+      transform: translateX(100%); transition: transform 0.3s ease;
+      z-index: 80; display: flex; flex-direction: column; overflow: hidden;
     }
-    @keyframes wobble {
-      0%,100% { margin-top: 0; }
-      50%      { margin-top: 18px; }
+    #shop-panel.open { transform: translateX(0); }
+    #shop-header {
+      background: #2a2000; border-bottom: 1px solid #f5c80033;
+      padding: 12px 14px; flex-shrink: 0;
+    }
+    #shop-header h3 { color: #f5c800; font-size: 0.85rem; letter-spacing: 0.15em; text-align: center; }
+    #shop-bps { color: #f5c80088; font-size: 0.68rem; text-align: center; margin-top: 3px; }
+    #shop-list { flex: 1; overflow-y: auto; padding: 8px; }
+    .shop-item {
+      display: flex; align-items: center; gap: 10px;
+      padding: 8px 10px; border-radius: 4px; cursor: pointer;
+      border: 1px solid transparent; margin-bottom: 4px;
+      transition: background 0.15s, border-color 0.15s;
+      background: #2a2000;
+    }
+    .shop-item:hover { background: #3a3000; border-color: #f5c80044; }
+    .shop-item.unaffordable { opacity: 0.4; cursor: not-allowed; }
+    .shop-item-icon { font-size: 1.8rem; flex-shrink: 0; width: 40px; text-align: center; }
+    .shop-item-body { flex: 1; min-width: 0; }
+    .shop-item-name { color: #f5c800; font-size: 0.8rem; font-weight: bold; }
+    .shop-item-cost { color: #f5c80099; font-size: 0.68rem; margin-top: 1px; }
+    .shop-item-desc { color: #888; font-size: 0.62rem; margin-top: 2px; line-height: 1.3; }
+    .shop-item-owned {
+      background: #f5c80022; border: 1px solid #f5c80044;
+      color: #f5c800; font-size: 0.75rem; min-width: 32px;
+      text-align: center; padding: 2px 6px; border-radius: 3px; flex-shrink: 0;
     }
 
     /* ---- achievement toast ---- */
     #ach-toast {
       position: fixed; bottom: 80px; right: 20px;
-      background: #222; border: 1px solid #f5c800;
-      color: #f5c800; font-family: 'Courier New', monospace;
-      padding: 12px 16px; border-radius: 6px; z-index: 300;
-      max-width: 260px; opacity: 0; pointer-events: none;
-      transform: translateX(30px);
+      background: #222; border: 1px solid #f5c800; color: #f5c800;
+      font-family: 'Courier New', monospace; padding: 12px 16px;
+      border-radius: 6px; z-index: 300; max-width: 260px;
+      opacity: 0; pointer-events: none; transform: translateX(30px);
       transition: opacity 0.4s, transform 0.4s;
     }
     #ach-toast.show { opacity: 1; transform: translateX(0); }
-    #ach-toast .ach-toast-icon { font-size: 1.4rem; }
-    #ach-toast .ach-toast-name { font-size: 0.85rem; font-weight: bold; margin-top: 2px; }
-    #ach-toast .ach-toast-desc { font-size: 0.7rem; color: #aaa; margin-top: 3px; }
+    .ach-toast-icon { font-size: 1.4rem; }
+    .ach-toast-name { font-size: 0.85rem; font-weight: bold; margin-top: 2px; }
+    .ach-toast-desc { font-size: 0.7rem; color: #aaa; margin-top: 3px; }
 
     /* ---- achievements modal ---- */
-    #ach-overlay {
-      position: fixed; inset: 0;
-      background: #000000cc;
-      display: none; align-items: center; justify-content: center;
-      z-index: 500;
-    }
+    #ach-overlay { position: fixed; inset: 0; background: #000000cc; display: none; align-items: center; justify-content: center; z-index: 500; }
     #ach-overlay.open { display: flex; }
-
-    #ach-panel {
-      background: #2a2a2a; border: 1px solid #f5c80055;
-      border-radius: 8px; padding: 28px 24px;
-      width: min(780px, 96vw); max-height: 85vh;
-      overflow-y: auto; position: relative;
-    }
-    #ach-panel h2 {
-      color: #f5c800; font-size: 1.1rem; letter-spacing: 0.15em;
-      text-align: center; margin-bottom: 6px;
-    }
-    #ach-panel .ach-subtitle {
-      color: #777; font-size: 0.72rem; text-align: center; margin-bottom: 22px;
-    }
-    .ach-section-title {
-      color: #f5c80077; font-size: 0.7rem; letter-spacing: 0.15em;
-      text-transform: uppercase; margin: 18px 0 10px;
-      border-bottom: 1px solid #f5c80022; padding-bottom: 6px;
-    }
-    .ach-grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
-      gap: 10px;
-    }
-    .ach-card {
-      background: #333; border: 1px solid #44440022;
-      border-radius: 6px; padding: 12px 14px;
-      opacity: 0.35; transition: opacity 0.2s;
-    }
+    #ach-panel { background: #2a2a2a; border: 1px solid #f5c80055; border-radius: 8px; padding: 28px 24px; width: min(820px,96vw); max-height: 85vh; overflow-y: auto; position: relative; }
+    #ach-panel h2 { color: #f5c800; font-size: 1.1rem; letter-spacing: 0.15em; text-align: center; margin-bottom: 6px; }
+    .ach-subtitle { color: #777; font-size: 0.72rem; text-align: center; margin-bottom: 22px; }
+    .ach-section-title { color: #f5c80077; font-size: 0.7rem; letter-spacing: 0.15em; text-transform: uppercase; margin: 18px 0 10px; border-bottom: 1px solid #f5c80022; padding-bottom: 6px; }
+    .ach-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(190px,1fr)); gap: 10px; }
+    .ach-card { background: #333; border: 1px solid #44440022; border-radius: 6px; padding: 12px 14px; opacity: 0.35; transition: opacity 0.2s; }
     .ach-card.unlocked { opacity: 1; border-color: #f5c80033; background: #3a3500; }
     .ach-card-icon { font-size: 1.5rem; margin-bottom: 4px; }
     .ach-card-name { color: #f5c800; font-size: 0.78rem; font-weight: bold; }
     .ach-card-desc { color: #888; font-size: 0.68rem; margin-top: 4px; line-height: 1.4; }
     .ach-card-date { color: #f5c80077; font-size: 0.6rem; margin-top: 6px; }
-
-    #ach-close {
-      position: absolute; top: 14px; right: 16px;
-      background: transparent; border: 1px solid #f5c80044;
-      color: #f5c800; font-family: 'Courier New', monospace;
-      font-size: 0.75rem; cursor: pointer; padding: 3px 10px;
-    }
-    #ach-close:hover { background: #f5c80022; }
-
-    .ach-progress-bar {
-      height: 3px; background: #444; border-radius: 2px; margin-top: 8px;
-    }
+    .ach-progress-bar { height: 3px; background: #444; border-radius: 2px; margin-top: 8px; }
     .ach-progress-fill { height: 100%; background: #f5c800; border-radius: 2px; }
+    #ach-close { position: absolute; top: 14px; right: 16px; background: transparent; border: 1px solid #f5c80044; color: #f5c800; font-family: 'Courier New', monospace; font-size: 0.75rem; cursor: pointer; padding: 3px 10px; }
+    #ach-close:hover { background: #f5c80022; }
   </style>
 </head>
 <body>
 
-<!-- header — visible only during gameplay -->
 <div id="header">
-  <span class="header-title">🐝 beelieveInYourself</span>
-  <span id="bee-counter">  collected: 0</span>
+  <span class="header-title">🐝</span>
+  <span id="bee-currency" class="bee-stat">🍯 0</span>
+  <span id="bee-bps">0/s</span>
+  <button class="header-btn" id="shop-btn">🛒 SHOP</button>
   <button class="header-btn" id="save-btn">SAVE</button>
   <button class="header-btn" id="header-ach-btn">ACHIEVEMENTS</button>
   <div class="header-sep"></div>
@@ -305,6 +210,15 @@
   <button class="header-btn cmode-btn"        id="cmode-chaos">CHAOS</button>
 </div>
 
+<!-- shop panel -->
+<div id="shop-panel">
+  <div id="shop-header">
+    <h3>🍯 BEE STORE</h3>
+    <div id="shop-bps">0.0 bees/sec</div>
+  </div>
+  <div id="shop-list"></div>
+</div>
+
 <!-- landing page -->
 <div id="overlay">
   <h1>🐝 beelieveInYourself</h1>
@@ -313,8 +227,7 @@
     <div class="control-row">
       <label>name</label>
       <input type="text" id="player-name" maxlength="20" placeholder="enter your name"
-        style="flex:1; background:#444; color:#f5c800; border:1px solid #f5c800;
-               font-family:'Courier New',monospace; font-size:0.85rem; padding:4px 8px; outline:none;" />
+        style="flex:1;background:#444;color:#f5c800;border:1px solid #f5c800;font-family:'Courier New',monospace;font-size:0.85rem;padding:4px 8px;outline:none;" />
     </div>
     <div class="control-row">
       <label>speed</label>
@@ -332,13 +245,10 @@
     </div>
     <button id="start-btn">START</button>
     <button id="landing-ach-btn"
-      style="background:transparent; border:1px solid #f5c80066; color:#f5c800;
-             font-family:'Courier New',monospace; font-size:0.8rem; padding:8px 24px;
-             cursor:pointer; letter-spacing:0.1em;">
+      style="background:transparent;border:1px solid #f5c80066;color:#f5c800;font-family:'Courier New',monospace;font-size:0.8rem;padding:8px 24px;cursor:pointer;letter-spacing:0.1em;">
       🏅 ACHIEVEMENTS
     </button>
-    <a href="beelieve.html" style="color:#111; font-size:0.75rem; letter-spacing:0.1em; text-decoration:none; margin-top:4px;">how was this made? →</a>
-
+    <a href="beelieve.html" style="color:#111;font-size:0.75rem;letter-spacing:0.1em;text-decoration:none;margin-top:4px;">how was this made? →</a>
     <div id="leaderboard">
       <h3>🏆 leaderboard</h3>
       <div id="lb-rows"><div style="color:#666;text-align:center;padding:8px">loading...</div></div>
@@ -356,7 +266,6 @@
   </div>
 </div>
 
-<!-- achievement unlock toast -->
 <div id="ach-toast">
   <div class="ach-toast-icon" id="ach-toast-icon"></div>
   <div class="ach-toast-name" id="ach-toast-name"></div>
@@ -369,13 +278,8 @@
 
 <div id="hud">
   <button id="pause-btn">PAUSE</button>
-  <div id="hud-speed-wrap">
-    <span>spd</span>
-    <input type="range" id="live-speed" min="1" max="38" value="12" />
-  </div>
-  <div id="progress-wrap">
-    <div id="progress"><div id="progress-bar"></div></div>
-  </div>
+  <div id="hud-speed-wrap"><span>spd</span><input type="range" id="live-speed" min="1" max="38" value="12" /></div>
+  <div id="progress-wrap"><div id="progress"><div id="progress-bar"></div></div></div>
   <span id="word-count">0 / 0</span>
 </div>
 
@@ -383,175 +287,335 @@
   const SCRIPT_FILE = 'vibes.txt';
 
   const MILESTONES = [
-    { pct:  0.5, icon: '🐝', label: 'Yellow, black. Yellow, black.' },
-    { pct:  3.3, icon: '🎓', label: 'Graduation Day' },
-    { pct:  7.6, icon: '🌻', label: 'Pollen Jocks!' },
-    { pct: 23.9, icon: '🌸', label: 'She saved my life' },
-    { pct: 24.6, icon: '🎷', label: 'You like jazz?' },
-    { pct: 34.1, icon: '🧠', label: 'Thinking bee!' },
-    { pct: 41.1, icon: '🍯', label: 'Honey Farms discovered' },
-    { pct: 54.6, icon: '⚖️',  label: 'The trial begins' },
-    { pct: 58.9, icon: '🎤', label: 'Mr. Sting takes the stand' },
-    { pct: 74.4, icon: '✊', label: 'FREE THE BEES!' },
-    { pct: 74.6, icon: '🏆', label: 'The bees win!' },
-    { pct: 79.5, icon: '🌺', label: 'Flowers are dying...' },
-    { pct: 88.9, icon: '✈️',  label: 'Barry flies the plane' },
-    { pct: 95.7, icon: '🛬', label: 'Barry, we did it!' },
-    { pct: 100,  icon: '🎬', label: 'No rehearsal for that.' },
+    { pct:  0.5, icon:'🐝', label:'Yellow, black. Yellow, black.' },
+    { pct:  3.3, icon:'🎓', label:'Graduation Day' },
+    { pct:  7.6, icon:'🌻', label:'Pollen Jocks!' },
+    { pct: 23.9, icon:'🌸', label:'She saved my life' },
+    { pct: 24.6, icon:'🎷', label:'You like jazz?' },
+    { pct: 34.1, icon:'🧠', label:'Thinking bee!' },
+    { pct: 41.1, icon:'🍯', label:'Honey Farms discovered' },
+    { pct: 54.6, icon:'⚖️', label:'The trial begins' },
+    { pct: 58.9, icon:'🎤', label:'Mr. Sting takes the stand' },
+    { pct: 74.4, icon:'✊', label:'FREE THE BEES!' },
+    { pct: 74.6, icon:'🏆', label:'The bees win!' },
+    { pct: 79.5, icon:'🌺', label:'Flowers are dying...' },
+    { pct: 88.9, icon:'✈️', label:'Barry flies the plane' },
+    { pct: 95.7, icon:'🛬', label:'Barry, we did it!' },
+    { pct: 100,  icon:'🎬', label:'No rehearsal for that.' },
   ];
+
+  // =============================================
+  // SHOP UPGRADES
+  // =============================================
+  const UPGRADES = [
+    { id:'mouse',  icon:'🖱️', name:'Virtual Mouse',    desc:'A tiny cursor hunts bees so you don\'t have to.',            baseCost:25,     bps:0.1,  visual:true },
+    { id:'drone',  icon:'🚁', name:'Bee Drone',         desc:'An autonomous drone that herds bees into your collection.',  baseCost:100,    bps:0.5  },
+    { id:'hive',   icon:'🐝', name:'Mini Hive',         desc:'A cozy hive that passively recruits wandering bees.',        baseCost:500,    bps:2    },
+    { id:'farm',   icon:'🌻', name:'Pollen Farm',       desc:'Maximum pollen output. The bees have no choice.',           baseCost:2000,   bps:8    },
+    { id:'trap',   icon:'🍯', name:'Honey Distillery',  desc:'Bees cannot resist. They arrive willingly.',                baseCost:10000,  bps:40   },
+    { id:'lawyer', icon:'⚖️', name:'Barry\'s Lawyer',   desc:'Legally compelled bee delivery. Very official.',            baseCost:50000,  bps:200  },
+    { id:'studio', icon:'🎬', name:'Bee Movie Studio',  desc:'Manufacturing bees wholesale since 2007.',                  baseCost:250000, bps:1000 },
+  ];
+
+  function upgradeCost(upg) {
+    const owned = (progress.shop || {})[upg.id] || 0;
+    return Math.floor(upg.baseCost * Math.pow(1.15, owned));
+  }
+
+  function calcBPS() {
+    return UPGRADES.reduce((sum, upg) => {
+      return sum + upg.bps * ((progress.shop || {})[upg.id] || 0);
+    }, 0);
+  }
+
+  function fmtN(n) {
+    if (n >= 1e9)  return (n/1e9).toFixed(1) + 'B';
+    if (n >= 1e6)  return (n/1e6).toFixed(1) + 'M';
+    if (n >= 1000) return (n/1000).toFixed(1) + 'k';
+    return Math.floor(n).toLocaleString();
+  }
 
   // =============================================
   // ACHIEVEMENTS
   // =============================================
   const ACHIEVEMENTS = [
-    // --- bee catching ---
-    { id: 'bee_1',       cat: 'bees', threshold: 1,        icon: '🐝', name: 'First Sting',           desc: "You caught your first bee. They said it couldn't be done." },
-    { id: 'bee_50',      cat: 'bees', threshold: 50,       icon: '🫙', name: 'Amateur Beekeeper',      desc: "50 bees. You're getting the hang of this." },
-    { id: 'bee_100',     cat: 'bees', threshold: 100,      icon: '🍯', name: 'Hive Thief',             desc: "100 bees caught. The colony is getting suspicious." },
-    { id: 'bee_1000',    cat: 'bees', threshold: 1000,     icon: '🦺', name: 'Bee Wrangler',           desc: "1,000 bees. You have a problem and you know it." },
-    { id: 'bee_10000',   cat: 'bees', threshold: 10000,    icon: '🚔', name: 'Bee Criminal',           desc: "10,000 bees. Interpol has been notified." },
-    { id: 'bee_50000',   cat: 'bees', threshold: 50000,    icon: '⚡', name: 'Bee God',                desc: "50,000 bees. You are beyond mortal comprehension." },
-    { id: 'bee_100000',  cat: 'bees', threshold: 100000,   icon: '👑', name: 'Bee Yourself',           desc: "100,000 bees. A fitting end to your journey." },
-    { id: 'bee_1000000', cat: 'bees', threshold: 1000000,  icon: '🎬', name: 'Bee Movie',              desc: "1,000,000 bees. According to all known laws of aviation..." },
-    // --- time listening ---
-    { id: 'time_1m',     cat: 'time', threshold: 60,       icon: '⏱️', name: 'Still Here?',            desc: "1 minute of listening. This is fine." },
-    { id: 'time_10m',    cat: 'time', threshold: 600,      icon: '🎧', name: 'Barry Fan',              desc: "10 minutes. You are genuinely invested in this." },
-    { id: 'time_1h',     cat: 'time', threshold: 3600,     icon: '🌻', name: "That's Honey Time",      desc: "1 hour of Bee Movie. Please consider going outside." },
-    { id: 'time_10h',    cat: 'time', threshold: 36000,    icon: '💃', name: 'Waggle Dancer',          desc: "10 hours. Your friends are starting to worry." },
-    { id: 'time_24h',    cat: 'time', threshold: 86400,    icon: '🌍', name: 'One Full Rotation',      desc: "24 hours. You have experienced a full Earth rotation of Bee Movie." },
-    { id: 'time_72h',    cat: 'time', threshold: 259200,   icon: '😵', name: 'Sleep Is for the Weak',  desc: "72 hours. Three days. Are you doing okay in there?" },
-    { id: 'time_1week',  cat: 'time', threshold: 604800,   icon: '🧘', name: 'The Bee Whisperer',      desc: "One full week. You have transcended. Barry is proud of you." },
+    // bee catching
+    { id:'bee_1',       cat:'bees', threshold:1,        icon:'🐝', name:'First Sting',             desc:"You caught your first bee. They said it couldn't be done." },
+    { id:'bee_50',      cat:'bees', threshold:50,       icon:'🫙', name:'Amateur Beekeeper',        desc:"50 bees. You're getting the hang of this." },
+    { id:'bee_100',     cat:'bees', threshold:100,      icon:'🍯', name:'Hive Thief',               desc:"100 bees caught. The colony is getting suspicious." },
+    { id:'bee_1000',    cat:'bees', threshold:1000,     icon:'🦺', name:'Bee Wrangler',             desc:"1,000 bees. You have a problem and you know it." },
+    { id:'bee_10000',   cat:'bees', threshold:10000,    icon:'🚔', name:'Bee Criminal',             desc:"10,000 bees. Interpol has been notified." },
+    { id:'bee_50000',   cat:'bees', threshold:50000,    icon:'⚡', name:'Bee God',                  desc:"50,000 bees. You are beyond mortal comprehension." },
+    { id:'bee_100000',  cat:'bees', threshold:100000,   icon:'👑', name:'Bee Yourself',             desc:"100,000 bees. A fitting end to your journey." },
+    { id:'bee_1000000', cat:'bees', threshold:1000000,  icon:'🎬', name:'Bee Movie',                desc:"1,000,000 bees. According to all known laws of aviation..." },
+    // time
+    { id:'time_1m',   cat:'time', threshold:60,      icon:'⏱️', name:'Still Here?',              desc:"1 minute of listening. This is fine." },
+    { id:'time_10m',  cat:'time', threshold:600,     icon:'🎧', name:'Barry Fan',                desc:"10 minutes. You are genuinely invested in this." },
+    { id:'time_1h',   cat:'time', threshold:3600,    icon:'🌻', name:"That's Honey Time",        desc:"1 hour of Bee Movie. Please consider going outside." },
+    { id:'time_10h',  cat:'time', threshold:36000,   icon:'💃', name:'Waggle Dancer',            desc:"10 hours. Your friends are starting to worry." },
+    { id:'time_24h',  cat:'time', threshold:86400,   icon:'🌍', name:'One Full Rotation',        desc:"24 hours. You've experienced a full Earth rotation of Bee Movie." },
+    { id:'time_72h',  cat:'time', threshold:259200,  icon:'😵', name:'Sleep Is for the Weak',   desc:"72 hours. Three days. Are you doing okay in there?" },
+    { id:'time_1w',   cat:'time', threshold:604800,  icon:'🧘', name:'The Bee Whisperer',        desc:"One full week. You have transcended. Barry is proud." },
+    // mode discoveries
+    { id:'mode_fall',    cat:'disc', icon:'⬇️', name:'Gravitationally Challenged', desc:"Discovered FALL mode. Isaac Newton nods approvingly." },
+    { id:'mode_float',   cat:'disc', icon:'⬆️', name:'Let It Bee',                desc:"Words float away. Like your responsibilities." },
+    { id:'mode_bounce',  cat:'disc', icon:'🏀', name:'Bumble Rumble',             desc:"Everything bounces. Physics has entered the chat." },
+    { id:'mode_rainbow', cat:'disc', icon:'🌈', name:'Taste the Rainbow',         desc:"Chromatic enlightenment achieved. Roy G. Biv would be proud." },
+    { id:'mode_matrix',  cat:'disc', icon:'💊', name:'There Is No Spoon',        desc:"Only bees. Follow the white bee." },
+    { id:'mode_chaos',   cat:'disc', icon:'🌀', name:'Chaotic Bee Energy',        desc:"You've unleashed it. There's no going back now." },
   ];
 
   const PROGRESS_KEY = 'beelieve_progress';
+  function loadProgress() { try { return JSON.parse(localStorage.getItem(PROGRESS_KEY)||'{}'); } catch { return {}; } }
+  function saveProgress(p) { localStorage.setItem(PROGRESS_KEY, JSON.stringify(p)); }
 
-  function loadProgress() {
-    try { return JSON.parse(localStorage.getItem(PROGRESS_KEY) || '{}'); }
-    catch { return {}; }
-  }
-
-  function saveProgress(p) {
-    localStorage.setItem(PROGRESS_KEY, JSON.stringify(p));
-  }
-
-  // persistent totals across sessions
   let progress = loadProgress();
-  if (!progress.beesTotal)       progress.beesTotal = 0;
+  if (!progress.beesTotal)        progress.beesTotal = 0;
   if (!progress.listeningSeconds) progress.listeningSeconds = 0;
-  if (!progress.unlocked)        progress.unlocked = {};
+  if (!progress.unlocked)         progress.unlocked = {};
+  if (!progress.shop)             progress.shop = {};
 
   let achToastTimer = null;
-
   function showAchToast(ach) {
-    const el   = document.getElementById('ach-toast');
+    const el = document.getElementById('ach-toast');
     document.getElementById('ach-toast-icon').textContent = ach.icon;
-    document.getElementById('ach-toast-name').textContent = `UNLOCKED: ${ach.name}`;
+    document.getElementById('ach-toast-name').textContent = 'UNLOCKED: ' + ach.name;
     document.getElementById('ach-toast-desc').textContent = ach.desc;
     el.classList.add('show');
     clearTimeout(achToastTimer);
-    achToastTimer = setTimeout(() => el.classList.remove('show'), 4000);
+    achToastTimer = setTimeout(() => el.classList.remove('show'), 4500);
+  }
+
+  function unlockAch(id) {
+    if (progress.unlocked[id]) return;
+    const ach = ACHIEVEMENTS.find(a => a.id === id);
+    if (!ach) return;
+    progress.unlocked[id] = new Date().toISOString().slice(0,10);
+    saveProgress(progress);
+    showAchToast(ach);
   }
 
   function checkAchievements(type) {
-    const val = type === 'bees' ? progress.beesTotal : progress.listeningSeconds;
-    ACHIEVEMENTS.filter(a => a.cat === type).forEach(ach => {
-      if (!progress.unlocked[ach.id] && val >= ach.threshold) {
-        progress.unlocked[ach.id] = new Date().toISOString().slice(0, 10);
-        saveProgress(progress);
-        showAchToast(ach);
-      }
-    });
+    if (type === 'bees') {
+      const val = progress.beesTotal;
+      ACHIEVEMENTS.filter(a => a.cat==='bees').forEach(a => { if (val >= a.threshold) unlockAch(a.id); });
+    } else if (type === 'time') {
+      const val = progress.listeningSeconds;
+      ACHIEVEMENTS.filter(a => a.cat==='time').forEach(a => { if (val >= a.threshold) unlockAch(a.id); });
+    }
+  }
+
+  function formatTime(s) {
+    if (s < 60)   return s + 's';
+    if (s < 3600) return Math.floor(s/60) + 'm';
+    return Math.floor(s/3600) + 'h ' + Math.floor((s%3600)/60) + 'm';
   }
 
   function renderAchievements() {
     const content  = document.getElementById('ach-content');
     const subtitle = document.getElementById('ach-subtitle');
-    const total    = ACHIEVEMENTS.length;
     const unlocked = Object.keys(progress.unlocked).length;
-    subtitle.textContent = `${unlocked} / ${total} unlocked  ·  🐝 ${progress.beesTotal.toLocaleString()} total  ·  ⏱ ${formatTime(progress.listeningSeconds)} listened`;
-
+    subtitle.textContent = `${unlocked} / ${ACHIEVEMENTS.length} unlocked  ·  🍯 ${fmtN(progress.beesTotal)} total  ·  ⏱ ${formatTime(progress.listeningSeconds)} listened`;
     content.innerHTML = '';
 
-    ['bees', 'time'].forEach(cat => {
+    const sections = [
+      { key:'bees', label:'🐝 Bee Catching' },
+      { key:'time', label:'⏱ Time Listening' },
+      { key:'disc', label:'🔍 Discoveries' },
+    ];
+
+    sections.forEach(({ key, label }) => {
       const title = document.createElement('div');
-      title.className = 'ach-section-title';
-      title.textContent = cat === 'bees' ? '🐝 Bee Catching' : '⏱ Time Listening';
+      title.className = 'ach-section-title'; title.textContent = label;
       content.appendChild(title);
-
-      const grid = document.createElement('div');
-      grid.className = 'ach-grid';
-
-      ACHIEVEMENTS.filter(a => a.cat === cat).forEach(ach => {
-        const date     = progress.unlocked[ach.id];
-        const card     = document.createElement('div');
+      const grid = document.createElement('div'); grid.className = 'ach-grid';
+      ACHIEVEMENTS.filter(a => a.cat===key).forEach(ach => {
+        const date = progress.unlocked[ach.id];
+        const pct  = key==='bees'
+          ? Math.min(100,(progress.beesTotal/ach.threshold)*100)
+          : key==='time'
+          ? Math.min(100,(progress.listeningSeconds/ach.threshold)*100)
+          : (date ? 100 : 0);
+        const card = document.createElement('div');
         card.className = 'ach-card' + (date ? ' unlocked' : '');
-
-        const pct = cat === 'bees'
-          ? Math.min(100, (progress.beesTotal / ach.threshold) * 100)
-          : Math.min(100, (progress.listeningSeconds / ach.threshold) * 100);
-
         card.innerHTML = `
           <div class="ach-card-icon">${date ? ach.icon : '🔒'}</div>
           <div class="ach-card-name">${ach.name}</div>
           <div class="ach-card-desc">${ach.desc}</div>
-          ${date ? `<div class="ach-card-date">unlocked ${date}</div>` : `
-            <div class="ach-progress-bar">
-              <div class="ach-progress-fill" style="width:${pct.toFixed(1)}%"></div>
-            </div>`}
+          ${date
+            ? `<div class="ach-card-date">unlocked ${date}</div>`
+            : `<div class="ach-progress-bar"><div class="ach-progress-fill" style="width:${pct.toFixed(1)}%"></div></div>`}
         `;
         grid.appendChild(card);
       });
-
       content.appendChild(grid);
     });
   }
 
-  function formatTime(s) {
-    if (s < 60)   return `${s}s`;
-    if (s < 3600) return `${Math.floor(s/60)}m`;
-    return `${Math.floor(s/3600)}h ${Math.floor((s%3600)/60)}m`;
-  }
-
-  // achievements modal open/close
-  function openAch() { renderAchievements(); document.getElementById('ach-overlay').classList.add('open'); }
+  function openAch()  { renderAchievements(); document.getElementById('ach-overlay').classList.add('open'); }
   function closeAch() { document.getElementById('ach-overlay').classList.remove('open'); }
-
   document.getElementById('landing-ach-btn').addEventListener('click', openAch);
   document.getElementById('header-ach-btn').addEventListener('click', openAch);
   document.getElementById('ach-close').addEventListener('click', closeAch);
-  document.getElementById('ach-overlay').addEventListener('click', e => { if (e.target.id === 'ach-overlay') closeAch(); });
+  document.getElementById('ach-overlay').addEventListener('click', e => { if (e.target.id==='ach-overlay') closeAch(); });
 
   // =============================================
-  // ELEMENT REFS
+  // SHOP
   // =============================================
-  const lbRows        = document.getElementById('lb-rows');
-  const playerNameEl  = document.getElementById('player-name');
-  const overlay       = document.getElementById('overlay');
-  const wordsEl       = document.getElementById('words');
-  const hud           = document.getElementById('hud');
-  const header        = document.getElementById('header');
-  const pauseBtn      = document.getElementById('pause-btn');
-  const speedEl       = document.getElementById('speed');
-  const speedVal      = document.getElementById('speed-val');
-  const pitchEl       = document.getElementById('pitch');
-  const pitchVal      = document.getElementById('pitch-val');
-  const voiceSelect   = document.getElementById('voice-select');
-  const liveSpeed     = document.getElementById('live-speed');
-  const progressBar   = document.getElementById('progress-bar');
-  const progressEl    = document.getElementById('progress');
-  const wordCount     = document.getElementById('word-count');
-  const startBtn      = document.getElementById('start-btn');
-  const toast         = document.getElementById('milestone-toast');
-  const saveBtnEl     = document.getElementById('save-btn');
-  const beeCounterEl  = document.getElementById('bee-counter');
+  let virtualMice = []; // { el }
 
-  let playerName    = 'anonymous';
-  let scoreSaved    = false;
-  let beesCollected = 0; // this session only (for leaderboard)
+  function updateCurrencyDisplay() {
+    const bps = calcBPS();
+    document.getElementById('bee-currency').textContent = `🍯 ${fmtN(progress.beesTotal)}`;
+    const bpsEl = document.getElementById('bee-bps');
+    bpsEl.textContent = bps > 0 ? (bps < 1 ? bps.toFixed(1) : fmtN(bps)) + '/s' : '0/s';
+    bpsEl.style.display = 'inline';
+    document.getElementById('shop-bps').textContent =
+      bps > 0 ? fmtN(bps) + ' bees/sec total' : 'buy upgrades to auto-catch bees';
+  }
+
+  function renderShop() {
+    const list = document.getElementById('shop-list');
+    list.innerHTML = '';
+    UPGRADES.forEach(upg => {
+      const owned = (progress.shop[upg.id] || 0);
+      const cost  = upgradeCost(upg);
+      const canAfford = progress.beesTotal >= cost;
+      const item = document.createElement('div');
+      item.className = 'shop-item' + (canAfford ? '' : ' unaffordable');
+      item.innerHTML = `
+        <div class="shop-item-icon">${upg.icon}</div>
+        <div class="shop-item-body">
+          <div class="shop-item-name">${upg.name}</div>
+          <div class="shop-item-cost">🍯 ${fmtN(cost)}  ·  ${upg.bps}/s each</div>
+          <div class="shop-item-desc">${upg.desc}</div>
+        </div>
+        <div class="shop-item-owned">${owned}</div>
+      `;
+      if (canAfford) {
+        item.addEventListener('click', () => {
+          const c = upgradeCost(upg);
+          if (progress.beesTotal < c) return;
+          progress.beesTotal -= c;
+          progress.shop[upg.id] = (progress.shop[upg.id] || 0) + 1;
+          saveProgress(progress);
+          if (upg.visual) syncVirtualMice();
+          renderShop();
+          updateCurrencyDisplay();
+        });
+      }
+      list.appendChild(item);
+    });
+    updateCurrencyDisplay();
+  }
+
+  let shopOpen = false;
+  document.getElementById('shop-btn').addEventListener('click', () => {
+    shopOpen = !shopOpen;
+    document.getElementById('shop-panel').classList.toggle('open', shopOpen);
+    if (shopOpen) renderShop();
+  });
+  document.getElementById('ach-overlay').addEventListener('click', e => { if (e.target.id==='ach-overlay') closeAch(); });
+
+  // =============================================
+  // VIRTUAL MICE
+  // =============================================
+  function spawnVirtualMouse() {
+    const el = document.createElement('div');
+    el.className = 'vmouse';
+    el.textContent = '🖱️';
+    el.style.left = Math.random() * window.innerWidth + 'px';
+    el.style.top  = (44 + Math.random() * (window.innerHeight - 100)) + 'px';
+    document.body.appendChild(el);
+
+    function hunt() {
+      if (!el.isConnected) return;
+      const bees = Array.from(document.querySelectorAll('.bee.catchable'));
+      const visible = bees.filter(b => {
+        const r = b.getBoundingClientRect();
+        return r.right > 0 && r.left < window.innerWidth && r.top > 44;
+      });
+
+      let tx, ty;
+      if (visible.length) {
+        const target = visible[Math.floor(Math.random() * visible.length)];
+        const r = target.getBoundingClientRect();
+        tx = r.left + r.width  / 2 - 11;
+        ty = r.top  + r.height / 2 - 11;
+      } else {
+        tx = 50 + Math.random() * (window.innerWidth  - 100);
+        ty = 60 + Math.random() * (window.innerHeight - 120);
+      }
+
+      el.style.left = Math.max(0, Math.min(window.innerWidth  - 28, tx)) + 'px';
+      el.style.top  = Math.max(44, Math.min(window.innerHeight - 28, ty)) + 'px';
+
+      setTimeout(() => {
+        el.classList.add('clicking');
+        setTimeout(() => el.classList.remove('clicking'), 200);
+        setTimeout(hunt, 300 + Math.random() * 500);
+      }, 700);
+    }
+
+    hunt();
+    return { el };
+  }
+
+  function syncVirtualMice() {
+    const target = (progress.shop.mouse || 0);
+    while (virtualMice.length < target) virtualMice.push(spawnVirtualMouse());
+    while (virtualMice.length > target) { virtualMice.pop().el.remove(); }
+  }
+
+  // restore mice from saved progress on load
+  syncVirtualMice();
+
+  // =============================================
+  // AUTO-GENERATION (BPS)
+  // =============================================
+  let beeAccum = 0;
+  setInterval(() => {
+    const bps = calcBPS();
+    if (bps <= 0) return;
+    beeAccum += bps / 10; // 100ms tick = 1/10 sec
+    if (beeAccum >= 1) {
+      const gained = Math.floor(beeAccum);
+      beeAccum -= gained;
+      progress.beesTotal += gained;
+      // save periodically (done by the time tracker too)
+      checkAchievements('bees');
+      updateCurrencyDisplay();
+      if (shopOpen) renderShop();
+    }
+  }, 100);
 
   // =============================================
   // LEADERBOARD
   // =============================================
+  const lbRows       = document.getElementById('lb-rows');
+  const playerNameEl = document.getElementById('player-name');
+  const overlay      = document.getElementById('overlay');
+  const wordsEl      = document.getElementById('words');
+  const hud          = document.getElementById('hud');
+  const header       = document.getElementById('header');
+  const pauseBtn     = document.getElementById('pause-btn');
+  const speedEl      = document.getElementById('speed');
+  const speedVal     = document.getElementById('speed-val');
+  const pitchEl      = document.getElementById('pitch');
+  const pitchVal     = document.getElementById('pitch-val');
+  const voiceSelect  = document.getElementById('voice-select');
+  const liveSpeed    = document.getElementById('live-speed');
+  const progressBar  = document.getElementById('progress-bar');
+  const progressEl   = document.getElementById('progress');
+  const wordCount    = document.getElementById('word-count');
+  const startBtn     = document.getElementById('start-btn');
+  const toast        = document.getElementById('milestone-toast');
+  const saveBtnEl    = document.getElementById('save-btn');
+
+  let playerName    = 'anonymous';
+  let scoreSaved    = false;
+  let beesCollected = 0;
+
   const BIN_URL     = `https://api.jsonbin.io/v3/b/${CONFIG.JSONBIN_BIN}`;
   const BIN_HEADERS = { 'X-Master-Key': CONFIG.JSONBIN_KEY, 'Content-Type': 'application/json' };
 
@@ -570,137 +634,86 @@
     const existing = scores.find(s => s.name === name);
     if (existing && existing.score >= score) return;
     scores = scores.filter(s => s.name !== name);
-    scores.push({ name, score, bees: beesCollected, date: new Date().toISOString().slice(0, 10) });
-    scores.sort((a, b) => b.score - a.score);
-    const top50 = scores.slice(0, 50);
+    scores.push({ name, score, bees: beesCollected, date: new Date().toISOString().slice(0,10) });
+    scores.sort((a,b) => b.score - a.score);
+    const top50 = scores.slice(0,50);
     try {
-      await fetch(BIN_URL, {
-        method: 'PUT', headers: BIN_HEADERS,
-        body: JSON.stringify({ scores: top50 }), keepalive: true
-      });
+      await fetch(BIN_URL, { method:'PUT', headers:BIN_HEADERS, body:JSON.stringify({scores:top50}), keepalive:true });
       renderLeaderboard(top50, name);
     } catch {}
   }
 
   function renderLeaderboard(scores, highlightName) {
     lbRows.innerHTML = '';
-    const top10 = scores.slice(0, 10);
-    top10.forEach((s, i) => {
+    const top10 = scores.slice(0,10);
+    top10.forEach((s,i) => {
       const row = document.createElement('div');
-      row.className = 'lb-row' + (s.name === highlightName ? ' me' : '');
-      row.innerHTML = `
-        <span class="lb-rank">${i + 1}</span>
-        <span class="lb-name">${s.name}</span>
-        <span class="lb-score">${s.score.toLocaleString()}</span>
-        <span class="lb-bees">🐝${s.bees || 0}</span>
-      `;
+      row.className = 'lb-row' + (s.name===highlightName ? ' me' : '');
+      row.innerHTML = `<span class="lb-rank">${i+1}</span><span class="lb-name">${s.name}</span><span class="lb-score">${s.score.toLocaleString()}</span><span class="lb-bees">🐝${s.bees||0}</span>`;
       lbRows.appendChild(row);
     });
     if (!top10.length) lbRows.innerHTML = '<div style="color:#666;text-align:center;padding:8px">no scores yet</div>';
   }
 
-  async function loadLeaderboard() {
-    const scores = await fetchScores();
-    renderLeaderboard(scores, playerName);
-  }
-
+  async function loadLeaderboard() { const s = await fetchScores(); renderLeaderboard(s, playerName); }
   loadLeaderboard();
-  window.addEventListener('beforeunload', () => {
-    if (running || litCount > 0) saveScore(playerName, litCount);
-  });
+  window.addEventListener('beforeunload', () => { if (running||litCount>0) saveScore(playerName,litCount); });
 
   // =============================================
   // GAME STATE
   // =============================================
-  let words         = [];
-  let spans         = [];
-  let sentences     = [];
-  let sentIdx       = 0;
-  let litCount      = 0;
-  let paused        = false;
-  let running       = false;
-  let toastTimer    = null;
-  let nextMilestone = 0;
-  let voices        = [];
+  let words=[],spans=[],sentences=[],sentIdx=0,litCount=0,paused=false,running=false;
+  let toastTimer=null,nextMilestone=0,voices=[];
 
-  // --- voices ---
   function loadVoices() {
     const all = speechSynthesis.getVoices();
     voices = all.filter(v => v.lang.startsWith('en'));
     voiceSelect.innerHTML = '';
     if (!voices.length) { voiceSelect.innerHTML = '<option>no voices found</option>'; return; }
-    voices.forEach((v, i) => {
+    voices.forEach((v,i) => {
       const opt = document.createElement('option');
-      opt.value = i;
-      opt.textContent = `${v.name} (${v.lang})`;
-      if (v.default || v.lang === 'en-US') opt.selected = true;
+      opt.value = i; opt.textContent = `${v.name} (${v.lang})`;
+      if (v.default||v.lang==='en-US') opt.selected = true;
       voiceSelect.appendChild(opt);
     });
   }
-  speechSynthesis.onvoiceschanged = loadVoices;
-  loadVoices();
-  let voiceRetries = 0;
-  const voiceRetryTimer = setInterval(() => {
-    if (voices.length || voiceRetries++ > 10) { clearInterval(voiceRetryTimer); return; }
-    loadVoices();
-  }, 300);
+  speechSynthesis.onvoiceschanged = loadVoices; loadVoices();
+  let voiceRetries=0;
+  const voiceRetryTimer = setInterval(() => { if (voices.length||voiceRetries++>10) { clearInterval(voiceRetryTimer); return; } loadVoices(); }, 300);
 
-  function ttsRate() { return 0.5 + (+liveSpeed.value - 1) / 37 * 1.5; }
-
+  function ttsRate() { return 0.5 + (+liveSpeed.value-1)/37*1.5; }
   speedEl.addEventListener('input', () => { speedVal.textContent = speedEl.value; });
   pitchEl.addEventListener('input', () => { pitchVal.textContent = parseFloat(pitchEl.value).toFixed(2); });
 
-  // --- toast ---
   function showToast(text) {
-    clearTimeout(toastTimer);
-    toast.textContent = text;
-    toast.classList.add('show');
+    clearTimeout(toastTimer); toast.textContent = text; toast.classList.add('show');
     toastTimer = setTimeout(() => toast.classList.remove('show'), 2800);
   }
 
-  // --- milestones ---
   function buildMilestones() {
-    MILESTONES.forEach((m, i) => {
-      const dot = document.createElement('div');
-      dot.className = 'milestone'; dot.id = `ms-${i}`; dot.style.left = m.pct + '%';
-      const lbl = document.createElement('div');
-      lbl.className = 'milestone-label';
-      lbl.textContent = `${m.icon} ${m.label}`;
-      dot.appendChild(lbl);
-      progressEl.appendChild(dot);
+    MILESTONES.forEach((m,i) => {
+      const dot = document.createElement('div'); dot.className='milestone'; dot.id=`ms-${i}`; dot.style.left=m.pct+'%';
+      const lbl = document.createElement('div'); lbl.className='milestone-label'; lbl.textContent=`${m.icon} ${m.label}`;
+      dot.appendChild(lbl); progressEl.appendChild(dot);
     });
   }
-
   function checkMilestones(pct) {
-    while (nextMilestone < MILESTONES.length && pct >= MILESTONES[nextMilestone].pct) {
-      const m = MILESTONES[nextMilestone];
+    while (nextMilestone<MILESTONES.length && pct>=MILESTONES[nextMilestone].pct) {
+      const m=MILESTONES[nextMilestone];
       document.getElementById(`ms-${nextMilestone}`)?.classList.add('reached');
-      showToast(`${m.icon} ${m.label}`);
-      nextMilestone++;
+      showToast(`${m.icon} ${m.label}`); nextMilestone++;
     }
   }
 
-  // --- pre-render / sentences ---
-  function renderAll() {
-    words.forEach(w => {
-      const span = document.createElement('span');
-      span.className = 'word'; span.textContent = w + ' ';
-      wordsEl.appendChild(span); spans.push(span);
-    });
-  }
+  function renderAll() { words.forEach(w => { const s=document.createElement('span'); s.className='word'; s.textContent=w+' '; wordsEl.appendChild(s); spans.push(s); }); }
 
   function buildSentences() {
-    const end = /[.!?]$/; let start = 0;
-    for (let i = 0; i < words.length; i++) {
-      if (end.test(words[i]) || i === words.length - 1) {
-        const slice = words.slice(start, i + 1);
-        const charMap = []; let pos = 0;
-        slice.forEach((w, wi) => {
-          for (let c = 0; c < w.length; c++) charMap[pos + c] = start + wi;
-          pos += w.length + 1;
-        });
-        sentences.push({ start, end: i + 1, text: slice.join(' '), charMap });
-        start = i + 1;
+    const end=/[.!?]$/; let start=0;
+    for (let i=0;i<words.length;i++) {
+      if (end.test(words[i])||i===words.length-1) {
+        const slice=words.slice(start,i+1); const charMap=[]; let pos=0;
+        slice.forEach((w,wi) => { for (let c=0;c<w.length;c++) charMap[pos+c]=start+wi; pos+=w.length+1; });
+        sentences.push({start,end:i+1,text:slice.join(' '),charMap}); start=i+1;
       }
     }
   }
@@ -708,194 +721,150 @@
   // =============================================
   // DISPLAY MODES
   // =============================================
-  let displayMode = 'list';
-
-  // declared before masterRAF IIFE to avoid TDZ errors
-  let bouncingWords = [];
-  let fallBodies    = [];
+  let displayMode='list';
+  let bouncingWords=[], fallBodies=[];
 
   (function masterRAF() {
     requestAnimationFrame(masterRAF);
-    fallBodies.forEach(({ body, el }) => {
-      el.style.left      = (body.position.x - el.offsetWidth  / 2) + 'px';
-      el.style.top       = (body.position.y - el.offsetHeight / 2) + 'px';
-      el.style.transform = `rotate(${body.angle}rad)`;
+    fallBodies.forEach(({body,el}) => {
+      el.style.left=(body.position.x-el.offsetWidth/2)+'px';
+      el.style.top=(body.position.y-el.offsetHeight/2)+'px';
+      el.style.transform=`rotate(${body.angle}rad)`;
     });
     bouncingWords.forEach(bw => {
-      bw.x += bw.vx; bw.y += bw.vy;
-      const w = bw.el.offsetWidth, h = bw.el.offsetHeight;
-      if (bw.x < 0)                      { bw.x = 0;                      bw.vx =  Math.abs(bw.vx); }
-      if (bw.x + w > window.innerWidth)  { bw.x = window.innerWidth - w;  bw.vx = -Math.abs(bw.vx); }
-      if (bw.y < 44)                     { bw.y = 44;                     bw.vy =  Math.abs(bw.vy); }
-      if (bw.y + h > window.innerHeight) { bw.y = window.innerHeight - h; bw.vy = -Math.abs(bw.vy); }
-      bw.el.style.left = bw.x + 'px'; bw.el.style.top = bw.y + 'px';
+      bw.x+=bw.vx; bw.y+=bw.vy;
+      const w=bw.el.offsetWidth,h=bw.el.offsetHeight;
+      if (bw.x<0)                     {bw.x=0;                    bw.vx= Math.abs(bw.vx);}
+      if (bw.x+w>window.innerWidth)   {bw.x=window.innerWidth-w;  bw.vx=-Math.abs(bw.vx);}
+      if (bw.y<44)                    {bw.y=44;                    bw.vy= Math.abs(bw.vy);}
+      if (bw.y+h>window.innerHeight)  {bw.y=window.innerHeight-h; bw.vy=-Math.abs(bw.vy);}
+      bw.el.style.left=bw.x+'px'; bw.el.style.top=bw.y+'px';
     });
   })();
 
-  // --- FALL ---
-  let fallEngine = null, fallWorld = null, fallInited = false;
-  let fallGround = null, fallLeft = null, fallRight = null, fallFloorY = 0;
-
-  function viewportBottom() { return window.scrollY + window.innerHeight - 50; }
-
+  let fallEngine=null,fallWorld=null,fallInited=false,fallGround=null,fallLeft=null,fallRight=null,fallFloorY=0;
+  function viewportBottom() { return window.scrollY+window.innerHeight-50; }
   function initFall() {
-    if (fallInited) return; fallInited = true;
-    fallFloorY = viewportBottom();
-    fallEngine = Matter.Engine.create(); fallWorld = fallEngine.world;
-    fallEngine.gravity.y = 1.2;
-    fallGround = Matter.Bodies.rectangle(window.innerWidth / 2, fallFloorY + 30, window.innerWidth * 4, 60, { isStatic: true });
-    fallLeft   = Matter.Bodies.rectangle(-30, fallFloorY / 2, 60, fallFloorY * 2, { isStatic: true });
-    fallRight  = Matter.Bodies.rectangle(window.innerWidth + 30, fallFloorY / 2, 60, fallFloorY * 2, { isStatic: true });
-    Matter.World.add(fallWorld, [fallGround, fallLeft, fallRight]);
-    window.addEventListener('scroll', () => {
-      const ny = viewportBottom(); if (ny <= fallFloorY) return; fallFloorY = ny;
-      Matter.Body.setPosition(fallGround, { x: window.innerWidth / 2, y: fallFloorY + 30 });
-      Matter.Body.setPosition(fallLeft,   { x: -30,                    y: fallFloorY / 2  });
-      Matter.Body.setPosition(fallRight,  { x: window.innerWidth + 30, y: fallFloorY / 2  });
+    if (fallInited) return; fallInited=true; fallFloorY=viewportBottom();
+    fallEngine=Matter.Engine.create(); fallWorld=fallEngine.world; fallEngine.gravity.y=1.2;
+    fallGround=Matter.Bodies.rectangle(window.innerWidth/2,fallFloorY+30,window.innerWidth*4,60,{isStatic:true});
+    fallLeft  =Matter.Bodies.rectangle(-30,fallFloorY/2,60,fallFloorY*2,{isStatic:true});
+    fallRight =Matter.Bodies.rectangle(window.innerWidth+30,fallFloorY/2,60,fallFloorY*2,{isStatic:true});
+    Matter.World.add(fallWorld,[fallGround,fallLeft,fallRight]);
+    window.addEventListener('scroll',()=>{
+      const ny=viewportBottom(); if (ny<=fallFloorY) return; fallFloorY=ny;
+      Matter.Body.setPosition(fallGround,{x:window.innerWidth/2,y:fallFloorY+30});
+      Matter.Body.setPosition(fallLeft,  {x:-30,                 y:fallFloorY/2 });
+      Matter.Body.setPosition(fallRight, {x:window.innerWidth+30,y:fallFloorY/2 });
     });
-    setInterval(() => Matter.Engine.update(fallEngine, 1000 / 60), 1000 / 60);
+    setInterval(()=>Matter.Engine.update(fallEngine,1000/60),1000/60);
   }
 
   function dropFall(span) {
-    if (span._dispatched) return; span._dispatched = true; initFall();
-    const rect = span.getBoundingClientRect();
-    const docX = rect.left + rect.width / 2 + window.scrollX;
-    const docY = rect.top + rect.height / 2 + window.scrollY;
-    const startY = Math.min(docY, fallFloorY - 20);
-    const el = document.createElement('span');
-    el.className = 'fly-word'; el.style.position = 'absolute';
-    el.style.left = '-9999px'; el.style.top = '-9999px';
-    el.textContent = span.textContent.trim(); el.style.color = span.style.color || '#f5c800';
+    if (span._dispatched) return; span._dispatched=true; initFall();
+    const rect=span.getBoundingClientRect();
+    const docX=rect.left+rect.width/2+window.scrollX;
+    const docY=rect.top+rect.height/2+window.scrollY;
+    const startY=Math.min(docY,fallFloorY-20);
+    const el=document.createElement('span'); el.className='fly-word'; el.style.position='absolute'; el.style.left='-9999px'; el.style.top='-9999px';
+    el.textContent=span.textContent.trim(); el.style.color=span.style.color||'#f5c800';
     document.body.appendChild(el);
-    const w = Math.max(el.offsetWidth, 10) + 6, h = Math.max(el.offsetHeight, 10) + 6;
-    const body = Matter.Bodies.rectangle(docX, startY, w, h, { restitution: 0.4, friction: 0.3, frictionAir: 0.012, angle: (Math.random() - 0.5) * 0.4 });
-    Matter.Body.setVelocity(body, { x: (Math.random() - 0.5) * 4, y: 2 + Math.random() * 2 });
-    Matter.World.add(fallWorld, body); fallBodies.push({ body, el, span });
-    span.style.visibility = 'hidden';
+    const w=Math.max(el.offsetWidth,10)+6, h=Math.max(el.offsetHeight,10)+6;
+    const body=Matter.Bodies.rectangle(docX,startY,w,h,{restitution:0.4,friction:0.3,frictionAir:0.012,angle:(Math.random()-0.5)*0.4});
+    Matter.Body.setVelocity(body,{x:(Math.random()-0.5)*4,y:2+Math.random()*2});
+    Matter.World.add(fallWorld,body); fallBodies.push({body,el,span}); span.style.visibility='hidden';
   }
-
-  // --- FLOAT ---
   function dropFloat(span) {
-    if (span._dispatched) return; span._dispatched = true;
-    const rect = span.getBoundingClientRect();
-    const el = document.createElement('span');
-    el.className = 'fly-word'; el.style.position = 'fixed';
-    el.style.left = rect.left + 'px'; el.style.top = rect.top + 'px';
-    el.style.color = span.style.color || '#f5c800';
-    el.style.animation = `float-up ${2 + Math.random()}s ease-in forwards`;
-    el.textContent = span.textContent.trim();
-    document.body.appendChild(el); span.style.visibility = 'hidden';
-    setTimeout(() => el.remove(), 3200);
+    if (span._dispatched) return; span._dispatched=true;
+    const rect=span.getBoundingClientRect();
+    const el=document.createElement('span'); el.className='fly-word'; el.style.position='fixed';
+    el.style.left=rect.left+'px'; el.style.top=rect.top+'px'; el.style.color=span.style.color||'#f5c800';
+    el.style.animation=`float-up ${2+Math.random()}s ease-in forwards`; el.textContent=span.textContent.trim();
+    document.body.appendChild(el); span.style.visibility='hidden'; setTimeout(()=>el.remove(),3200);
   }
-
-  // --- BOUNCE ---
   function dropBounce(span) {
-    if (span._dispatched) return; span._dispatched = true;
-    const rect = span.getBoundingClientRect();
-    const el = document.createElement('span');
-    el.className = 'fly-word'; el.style.position = 'fixed';
-    el.style.left = rect.left + 'px'; el.style.top = rect.top + 'px';
-    el.style.color = span.style.color || '#f5c800';
-    el.textContent = span.textContent.trim();
-    document.body.appendChild(el); span.style.visibility = 'hidden';
-    const speed = 2.5 + Math.random() * 4, angle = Math.random() * Math.PI * 2;
-    bouncingWords.push({ el, x: rect.left, y: rect.top, vx: Math.cos(angle) * speed, vy: Math.sin(angle) * speed });
+    if (span._dispatched) return; span._dispatched=true;
+    const rect=span.getBoundingClientRect();
+    const el=document.createElement('span'); el.className='fly-word'; el.style.position='fixed';
+    el.style.left=rect.left+'px'; el.style.top=rect.top+'px'; el.style.color=span.style.color||'#f5c800';
+    el.textContent=span.textContent.trim(); document.body.appendChild(el); span.style.visibility='hidden';
+    const speed=2.5+Math.random()*4, angle=Math.random()*Math.PI*2;
+    bouncingWords.push({el,x:rect.left,y:rect.top,vx:Math.cos(angle)*speed,vy:Math.sin(angle)*speed});
   }
 
   function dropWord(span) {
-    if (displayMode === 'fall')   dropFall(span);
-    else if (displayMode === 'float')  dropFloat(span);
-    else if (displayMode === 'bounce') dropBounce(span);
+    if (displayMode==='fall')   dropFall(span);
+    else if (displayMode==='float')  dropFloat(span);
+    else if (displayMode==='bounce') dropBounce(span);
   }
+  function dropAllLit() { spans.forEach(s=>{if(s.classList.contains('lit')&&!s._dispatched)dropWord(s);}); }
 
-  function dropAllLit() {
-    spans.forEach(span => { if (span.classList.contains('lit') && !span._dispatched) dropWord(span); });
-  }
-
-  // --- mode buttons ---
   const modeBtns = document.querySelectorAll('.mode-btn');
   modeBtns.forEach(btn => {
     btn.addEventListener('click', () => {
-      displayMode = btn.id.replace('mode-', '');
-      modeBtns.forEach(b => b.classList.remove('active')); btn.classList.add('active');
-      if (displayMode !== 'list' && running) dropAllLit();
+      displayMode = btn.id.replace('mode-','');
+      modeBtns.forEach(b=>b.classList.remove('active')); btn.classList.add('active');
+      if (displayMode!=='list'&&running) dropAllLit();
+      // mode discovery achievement
+      const achId = 'mode_' + displayMode;
+      if (ACHIEVEMENTS.find(a=>a.id===achId)) unlockAch(achId);
     });
   });
 
-  // --- color modes ---
-  let colorMode = 'bee';
-  const RAINBOW_COLORS = ['#ff3333','#ff8800','#ffee00','#33dd55','#3399ff','#aa44ff','#ff44cc'];
-
+  let colorMode='bee';
+  const RAINBOW_COLORS=['#ff3333','#ff8800','#ffee00','#33dd55','#3399ff','#aa44ff','#ff44cc'];
   function getWordColor(i) {
-    switch (colorMode) {
-      case 'rainbow': return RAINBOW_COLORS[i % RAINBOW_COLORS.length];
-      case 'matrix':  return `hsl(120,100%,${35 + (i % 6) * 6}%)`;
-      case 'chaos':   return `hsl(${Math.round(i * 137.508) % 360},90%,62%)`;
-      default:        return i % 2 === 0 ? '#f5c800' : '#111111';
+    switch(colorMode) {
+      case 'rainbow': return RAINBOW_COLORS[i%RAINBOW_COLORS.length];
+      case 'matrix':  return `hsl(120,100%,${35+(i%6)*6}%)`;
+      case 'chaos':   return `hsl(${Math.round(i*137.508)%360},90%,62%)`;
+      default:        return i%2===0?'#f5c800':'#111111';
     }
   }
 
   const cmodeButtons = document.querySelectorAll('.cmode-btn');
   cmodeButtons.forEach(btn => {
     btn.addEventListener('click', () => {
-      colorMode = btn.id.replace('cmode-', '');
-      cmodeButtons.forEach(b => b.classList.remove('active')); btn.classList.add('active');
-      spans.forEach((span, i) => { if (span.classList.contains('lit')) span.style.color = getWordColor(i); });
+      colorMode = btn.id.replace('cmode-','');
+      cmodeButtons.forEach(b=>b.classList.remove('active')); btn.classList.add('active');
+      spans.forEach((s,i)=>{if(s.classList.contains('lit'))s.style.color=getWordColor(i);});
+      // color mode discovery achievement
+      const achId = 'mode_' + colorMode;
+      if (ACHIEVEMENTS.find(a=>a.id===achId)) unlockAch(achId);
     });
   });
 
-  // --- save button ---
   saveBtnEl.addEventListener('click', () => {
-    if (litCount > 0) {
-      scoreSaved = false; saveScore(playerName, litCount);
-      saveBtnEl.textContent = 'SAVED!';
-      setTimeout(() => { saveBtnEl.textContent = 'SAVE'; }, 1800);
-    }
+    if (litCount>0) { scoreSaved=false; saveScore(playerName,litCount); saveBtnEl.textContent='SAVED!'; setTimeout(()=>{saveBtnEl.textContent='SAVE';},1800); }
   });
 
-  // --- light up a word ---
   function lightWord(globalIdx) {
-    if (globalIdx >= spans.length) return;
-    spans[globalIdx].classList.add('lit');
-    spans[globalIdx].style.color = getWordColor(globalIdx);
-    litCount = Math.max(litCount, globalIdx + 1);
-    const pct = litCount / words.length * 100;
-    progressBar.style.width = pct.toFixed(1) + '%';
-    wordCount.textContent   = `${litCount.toLocaleString()} / ${words.length.toLocaleString()}`;
+    if (globalIdx>=spans.length) return;
+    spans[globalIdx].classList.add('lit'); spans[globalIdx].style.color=getWordColor(globalIdx);
+    litCount=Math.max(litCount,globalIdx+1);
+    const pct=litCount/words.length*100;
+    progressBar.style.width=pct.toFixed(1)+'%';
+    wordCount.textContent=`${litCount.toLocaleString()} / ${words.length.toLocaleString()}`;
     checkMilestones(pct);
-    if (displayMode === 'list') {
-      spans[globalIdx].scrollIntoView({ block: 'center', behavior: 'smooth' });
-    } else {
-      const captured = spans[globalIdx];
-      setTimeout(() => { if (!captured._dispatched) dropWord(captured); }, 3000);
-    }
+    if (displayMode==='list') { spans[globalIdx].scrollIntoView({block:'center',behavior:'smooth'}); }
+    else { const c=spans[globalIdx]; setTimeout(()=>{if(!c._dispatched)dropWord(c);},3000); }
   }
 
-  // --- speak a sentence ---
   function speakSentence(si) {
-    if (!running || paused || si >= sentences.length) {
-      if (si >= sentences.length) { running = false; saveScore(playerName, litCount); }
-      return;
-    }
-    const s = sentences[si];
-    const utt = new SpeechSynthesisUtterance(s.text);
-    utt.pitch = parseFloat(pitchEl.value); utt.rate = ttsRate();
-    const vi = parseInt(voiceSelect.value);
-    if (voices[vi]) utt.voice = voices[vi];
-    utt.onboundary = (e) => {
-      if (e.name !== 'word') return;
-      const idx = s.charMap[e.charIndex]; if (idx !== undefined) lightWord(idx);
-    };
-    utt.onstart = () => { lightWord(s.start); speakSentence(si + 1); };
-    utt.onend   = () => { for (let i = s.start; i < s.end; i++) { if (!spans[i].classList.contains('lit')) lightWord(i); } };
-    speechSynthesis.speak(utt); sentIdx = si + 1;
+    if (!running||paused||si>=sentences.length) { if(si>=sentences.length){running=false;saveScore(playerName,litCount);} return; }
+    const s=sentences[si]; const utt=new SpeechSynthesisUtterance(s.text);
+    utt.pitch=parseFloat(pitchEl.value); utt.rate=ttsRate();
+    const vi=parseInt(voiceSelect.value); if(voices[vi])utt.voice=voices[vi];
+    utt.onboundary=(e)=>{ if(e.name!=='word')return; const idx=s.charMap[e.charIndex]; if(idx!==undefined)lightWord(idx); };
+    utt.onstart=()=>{ lightWord(s.start); speakSentence(si+1); };
+    utt.onend=()=>{ for(let i=s.start;i<s.end;i++){if(!spans[i].classList.contains('lit'))lightWord(i);} };
+    speechSynthesis.speak(utt); sentIdx=si+1;
   }
 
-  // --- pause / resume ---
   pauseBtn.addEventListener('click', () => {
-    paused = !paused; pauseBtn.textContent = paused ? 'RESUME' : 'PAUSE';
-    if (paused) { speechSynthesis.pause(); if (litCount > 0) saveScore(playerName, litCount); }
-    else { scoreSaved = false; speechSynthesis.resume(); }
+    paused=!paused; pauseBtn.textContent=paused?'RESUME':'PAUSE';
+    if(paused){speechSynthesis.pause();if(litCount>0)saveScore(playerName,litCount);}
+    else{scoreSaved=false;speechSynthesis.resume();}
   });
 
   // =============================================
@@ -905,88 +874,65 @@
   let activeBeeCount = 0;
   const TARGET_BEES  = 22;
 
-  function spawnBee() {
-    const bee     = document.createElement('img');
-    bee.src       = 'bee.png';
-    bee.className = 'bee';
-    const goRight = Math.random() > 0.5;
-    const size    = 108 + Math.random() * 216;
-    const topPct  = 2 + Math.random() * 88;
-    const dur     = 6 + Math.random() * 18;
-    const delay   = -(Math.random() * dur);
-    const wob     = 1.2 + Math.random() * 1.8;
-
-    bee.style.cssText = `
-      width: ${size}px; top: ${topPct}vh;
-      animation:
-        ${goRight ? 'fly-right' : 'fly-left'} ${dur}s ${delay}s linear infinite,
-        wobble ${wob}s ease-in-out infinite;
-      opacity: ${0.55 + Math.random() * 0.45};
-    `;
-
-    bee.addEventListener('click', () => {
-      if (!running) return;
-      bee.classList.add('caught');
-      beesCollected++;
-      beeCounterEl.textContent = `  collected: ${beesCollected}`;
-
-      // persistent total + achievement check
-      progress.beesTotal++;
-      saveProgress(progress);
-      checkAchievements('bees');
-
-      activeBeeCount--;
-      setTimeout(() => {
-        bee.remove();
-        // respawn after a short delay to keep count at TARGET_BEES
-        setTimeout(() => { spawnBee(); activeBeeCount++; }, 800 + Math.random() * 1200);
-      }, 300);
-    });
-
-    if (running) bee.classList.add('catchable');
-    beeContainer.appendChild(bee);
-    activeBeeCount++;
+  function catchBee(bee) {
+    if (bee._caught) return; bee._caught=true;
+    bee.classList.add('caught');
+    beesCollected++;
+    progress.beesTotal++;
+    saveProgress(progress);
+    checkAchievements('bees');
+    updateCurrencyDisplay();
+    if (shopOpen) renderShop();
+    activeBeeCount--;
+    setTimeout(() => {
+      bee.remove();
+      setTimeout(() => { spawnBee(); activeBeeCount++; }, 800+Math.random()*1200);
+    }, 300);
   }
 
-  // initial swarm
-  for (let i = 0; i < TARGET_BEES; i++) spawnBee();
+  function spawnBee() {
+    const bee=document.createElement('img'); bee.src='bee.png'; bee.className='bee';
+    const goRight=Math.random()>0.5, size=108+Math.random()*216, topPct=2+Math.random()*88;
+    const dur=6+Math.random()*18, delay=-(Math.random()*dur), wob=1.2+Math.random()*1.8;
+    bee.style.cssText=`width:${size}px;top:${topPct}vh;animation:${goRight?'fly-right':'fly-left'} ${dur}s ${delay}s linear infinite,wobble ${wob}s ease-in-out infinite;opacity:${0.55+Math.random()*0.45};`;
+    bee.addEventListener('click',()=>{ if(!running)return; catchBee(bee); });
+    if (running) bee.classList.add('catchable');
+    beeContainer.appendChild(bee); activeBeeCount++;
+  }
+
+  for (let i=0;i<TARGET_BEES;i++) spawnBee();
 
   // =============================================
   // TIME TRACKING
   // =============================================
-  let saveProgressTick = 0;
-  setInterval(() => {
-    if (!running || paused) return;
+  let saveProgressTick=0;
+  setInterval(()=>{
+    if (!running||paused) return;
     progress.listeningSeconds++;
     saveProgressTick++;
-    if (saveProgressTick >= 10) { saveProgress(progress); saveProgressTick = 0; }
+    if (saveProgressTick>=10) { saveProgress(progress); saveProgressTick=0; }
     checkAchievements('time');
-  }, 1000);
+  },1000);
 
   // =============================================
   // START
   // =============================================
   startBtn.addEventListener('click', async () => {
-    playerName = playerNameEl.value.trim() || 'anonymous';
-    liveSpeed.value = speedEl.value;
-
-    const res = await fetch(SCRIPT_FILE);
-    if (!res.ok) { alert('Could not load vibes.txt'); return; }
-    const text = await res.text();
-
-    words = text.trim().split(/\s+/);
-    wordCount.textContent = `0 / ${words.length.toLocaleString()}`;
-
+    playerName=playerNameEl.value.trim()||'anonymous';
+    liveSpeed.value=speedEl.value;
+    const res=await fetch(SCRIPT_FILE); if(!res.ok){alert('Could not load vibes.txt');return;}
+    const text=await res.text();
+    words=text.trim().split(/\s+/); wordCount.textContent=`0 / ${words.length.toLocaleString()}`;
     renderAll(); buildSentences(); buildMilestones();
-
-    overlay.style.opacity = '0'; overlay.style.pointerEvents = 'none';
+    overlay.style.opacity='0'; overlay.style.pointerEvents='none';
     hud.classList.add('visible'); header.classList.add('visible');
     loadLeaderboard();
-
-    document.querySelectorAll('.bee').forEach(b => b.classList.add('catchable'));
-
-    running = true; speakSentence(0);
+    document.querySelectorAll('.bee').forEach(b=>b.classList.add('catchable'));
+    running=true; speakSentence(0);
   });
+
+  // initial currency display
+  updateCurrencyDisplay();
 </script>
 </body>
 </html>
