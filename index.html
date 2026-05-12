@@ -2214,9 +2214,7 @@
       const buf = await res.arrayBuffer();
       if (!elAudioCtx) {
         elAudioCtx = new (window.AudioContext || window.webkitAudioContext)();
-        elAudioCtx.onstatechange = () => {
-          if (elAudioCtx.state === 'suspended' && running && !paused) triggerCheatPause();
-        };
+        elAudioCtx.onstatechange = () => {};
       }
       const decoded = await elAudioCtx.decodeAudioData(buf);
       const source = elAudioCtx.createBufferSource();
@@ -2312,14 +2310,6 @@
     speechSynthesis.speak(utt); sentIdx=si+1;
   }
 
-  function triggerCheatPause() {
-    if (!running || paused) return;
-    paused = true;
-    pauseBtn.textContent = 'RESUME';
-    speechSynthesis.pause();
-    showToast('🔇 Audio stopped — unmute and click RESUME to continue');
-  }
-
   // iOS Safari watchdog: speechSynthesis silently stalls, especially after ~30s
   setInterval(() => {
     if (!running || paused) return;
@@ -2330,16 +2320,32 @@
     if (speechSynthesis.speaking && boundaryFired && Date.now() - lastBoundaryTime > 8000) {
       speechSynthesis.resume();
     }
-    // Cheat detection: browser TTS went silent while script should be playing
-    if (!elKeyEl.value.trim() && !speechSynthesis.speaking && lastUtteranceStart > 0 && Date.now() - lastUtteranceStart > 3000) {
-      triggerCheatPause();
-    }
   }, 5000);
 
+  let autoPaused = false;
+
   pauseBtn.addEventListener('click', () => {
+    autoPaused = false;
     paused=!paused; pauseBtn.textContent=paused?'RESUME':'PAUSE';
     if(paused){speechSynthesis.pause();saveScore(playerName);}
     else{speechSynthesis.resume();}
+  });
+
+  document.addEventListener('visibilitychange', () => {
+    if (!running) return;
+    if (document.hidden && !paused) {
+      paused = true;
+      autoPaused = true;
+      pauseBtn.textContent = 'RESUME';
+      speechSynthesis.pause();
+      if (elCurrentSource) { try { elCurrentSource.stop(); } catch(e) {} elCurrentSource = null; }
+      saveScore(playerName);
+    } else if (!document.hidden && autoPaused) {
+      paused = false;
+      autoPaused = false;
+      pauseBtn.textContent = 'PAUSE';
+      speechSynthesis.resume();
+    }
   });
 
   // =============================================

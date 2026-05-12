@@ -29,7 +29,6 @@ you press start. the words come. they do not stop. yellow. black. yellow. black.
 - ✅ **virtual mice** — animated cursors that hunt and click bees automatically
 - ✅ **🎰 bee casino** — full blackjack (6-deck shoe, split, double, insurance, 3:1 BJ) and roulette (SVG wheel, full betting table, fireworks on wins)
 - ✅ **gambling gated** — casino is locked while the script is paused; you have to listen to play
-- ✅ **cheat detection** — auto-pauses if speech synthesis goes silent unexpectedly (e.g. audio muted via OS mixer)
 - ✅ **achievements** — bee catching, time listening, display/color mode discoveries, script completions
 - ✅ **daily rewards** — 69 🍯 base, doubles each consecutive day; book-open animation, 3-second claim countdown
 - ✅ **trivia for missed days** — answer a Bee Movie trivia question to retroactively claim a missed daily reward; reward doubles the further back in time; wrong answer means no honey
