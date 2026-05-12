@@ -26,8 +26,10 @@
     #header {
       position: fixed; top: 0; left: 0; right: 0; height: 44px;
       background: #3a3a3a; border-bottom: 1px solid #f5c80033;
-      display: none; align-items: center; padding: 0 14px; gap: 10px; z-index: 90;
+      display: none; align-items: center; padding: 0 8px; gap: 6px; z-index: 90;
+      overflow-x: auto; -webkit-overflow-scrolling: touch; scrollbar-width: none;
     }
+    #header::-webkit-scrollbar { display: none; }
     #header.visible { display: flex; }
     .header-title { color: #f5c800; font-size: 0.75rem; letter-spacing: 0.1em; }
     .bee-stat {
@@ -37,9 +39,10 @@
     #bee-bps { color: #c8e800; font-size: 0.78rem; letter-spacing: 0.05em; white-space: nowrap; cursor: default; }
     .header-btn {
       background: transparent; border: 1px solid #f5c80066; color: #f5c800;
-      padding: 4px 12px; font-family: 'Courier New', monospace; font-size: 0.72rem;
-      cursor: pointer; letter-spacing: 0.1em;
+      padding: 4px 10px; font-family: 'Courier New', monospace; font-size: 0.72rem;
+      cursor: pointer; letter-spacing: 0.08em;
       transition: background 0.15s, border-color 0.15s; flex-shrink: 0;
+      -webkit-tap-highlight-color: transparent; touch-action: manipulation;
     }
     .header-btn:hover { background: #f5c80022; border-color: #f5c800; }
     .header-btn:active { transform: scale(0.96); }
@@ -47,22 +50,27 @@
     .cmode-btn { opacity: 0.45; }
     .mode-btn.active, .cmode-btn.active { opacity: 1; background: #f5c80018; border-color: #f5c800; }
     .header-sep { width: 1px; height: 20px; background: #f5c80044; flex-shrink: 0; }
+    @media (max-width: 500px) {
+      .bee-stat { font-size: 0.72rem; }
+      #bee-bps  { font-size: 0.72rem; }
+    }
 
     /* ---- overlay ---- */
     #overlay {
       position: fixed; inset: 0; background: #555;
       display: flex; flex-direction: column; align-items: center; justify-content: center;
-      gap: 24px; z-index: 100; transition: opacity 0.6s ease;
+      gap: 16px; z-index: 100; transition: opacity 0.6s ease;
+      overflow-y: auto; -webkit-overflow-scrolling: touch; padding: 20px 0;
     }
-    #overlay h1 { font-size: clamp(2rem,6vw,4rem); letter-spacing: 0.1em; text-align: center; text-shadow: 0 0 30px #f5c800aa; }
+    #overlay h1 { font-size: clamp(1.4rem,6vw,4rem); letter-spacing: 0.1em; text-align: center; text-shadow: 0 0 30px #f5c800aa; }
     #overlay > p { color: #111; font-size: 1rem; }
-    .controls { display: flex; flex-direction: column; align-items: center; gap: 14px; width: 320px; }
+    .controls { display: flex; flex-direction: column; align-items: center; gap: 14px; width: min(320px, 90vw); }
     .control-row { display: flex; align-items: center; justify-content: space-between; width: 100%; gap: 10px; color: #111; font-size: 0.85rem; }
     .control-row label { min-width: 50px; color: #111; }
     .control-row input[type=range] { flex: 1; accent-color: #f5c800; cursor: pointer; }
     .control-row select { flex: 1; background: #444; color: #f5c800; border: 1px solid #f5c800; font-family: 'Courier New', monospace; font-size: 0.8rem; padding: 4px 6px; cursor: pointer; outline: none; }
     .control-row .val { min-width: 30px; text-align: right; color: #f5c800; font-size: 0.8rem; }
-    #start-btn { background: #f5c800; color: #0a0a00; border: none; padding: 16px 48px; font-size: 1.4rem; font-family: 'Courier New', monospace; font-weight: bold; cursor: pointer; letter-spacing: 0.15em; text-transform: uppercase; transition: transform 0.1s, box-shadow 0.1s; box-shadow: 0 0 20px #f5c80066; margin-top: 8px; }
+    #start-btn { background: #f5c800; color: #0a0a00; border: none; padding: 16px 48px; font-size: 1.4rem; font-family: 'Courier New', monospace; font-weight: bold; cursor: pointer; letter-spacing: 0.15em; text-transform: uppercase; transition: transform 0.1s, box-shadow 0.1s; box-shadow: 0 0 20px #f5c80066; margin-top: 8px; -webkit-tap-highlight-color: transparent; touch-action: manipulation; }
     #start-btn:hover { transform: scale(1.05); box-shadow: 0 0 40px #f5c800aa; }
     #start-btn:active { transform: scale(0.97); }
 
@@ -77,7 +85,7 @@
     /* ---- HUD ---- */
     #hud { position: fixed; bottom: 0; left: 0; right: 0; padding: 12px 24px 16px; background: linear-gradient(transparent,#555555dd 40%,#555); display: flex; align-items: center; gap: 16px; z-index: 50; opacity: 0; pointer-events: none; transition: opacity 0.4s; }
     #hud.visible { opacity: 1; pointer-events: all; }
-    #pause-btn { background: transparent; border: 1px solid #f5c800; color: #f5c800; padding: 6px 20px; font-family: 'Courier New', monospace; font-size: 0.85rem; cursor: pointer; letter-spacing: 0.1em; transition: background 0.15s; flex-shrink: 0; }
+    #pause-btn { background: transparent; border: 1px solid #f5c800; color: #f5c800; padding: 6px 20px; font-family: 'Courier New', monospace; font-size: 0.85rem; cursor: pointer; letter-spacing: 0.1em; transition: background 0.15s; flex-shrink: 0; -webkit-tap-highlight-color: transparent; touch-action: manipulation; }
     #pause-btn:hover { background: #f5c80022; }
     #hud-speed-wrap { display: flex; align-items: center; gap: 6px; flex-shrink: 0; color: #111; font-size: 0.75rem; }
     #live-speed { accent-color: #f5c800; width: 100px; cursor: pointer; }
@@ -93,7 +101,7 @@
     #milestone-toast.show { transform: translateX(-50%) translateY(0); opacity: 1; }
 
     /* ---- leaderboard ---- */
-    #leaderboard { width: 320px; background: #44444466; border: 1px solid #f5c80033; border-radius: 4px; padding: 14px 16px; font-size: 0.75rem; }
+    #leaderboard { width: min(320px,90vw); background: #44444466; border: 1px solid #f5c80033; border-radius: 4px; padding: 14px 16px; font-size: 0.75rem; }
     #leaderboard h3 { color: #f5c800; font-size: 0.8rem; letter-spacing: 0.1em; margin-bottom: 12px; text-align: center; }
     .lb-row { display: flex; justify-content: space-between; align-items: center; padding: 4px 0; border-bottom: 1px solid #ffffff11; gap: 6px; }
     .lb-row:last-child { border-bottom: none; }
@@ -122,7 +130,7 @@
 
     /* ---- shop panel ---- */
     #shop-panel {
-      position: fixed; top: 44px; right: 0; bottom: 0; width: 300px;
+      position: fixed; top: 44px; right: 0; bottom: 0; width: min(300px, 92vw);
       background: #1a1500; border-left: 1px solid #f5c80033;
       transform: translateX(100%); transition: transform 0.3s ease;
       z-index: 80; display: flex; flex-direction: column; overflow: hidden;
@@ -192,7 +200,7 @@
 <body>
 
 <div id="header">
-  <span class="header-title">🐝</span>
+  <button class="header-btn" id="home-btn" title="go home" style="font-size:1.1rem;border:none;padding:4px 8px;">🐝</button>
   <span id="bee-currency" class="bee-stat">🍯 0</span>
   <span id="bee-bps">0/s</span>
   <button class="header-btn" id="shop-btn">🛒 SHOP</button>
@@ -510,6 +518,14 @@
   }
 
   let shopOpen = false;
+  document.getElementById('home-btn').addEventListener('click', async () => {
+    speechSynthesis.cancel();
+    running = false;
+    await saveScore(playerName);
+    overlay.style.opacity = '1'; overlay.style.pointerEvents = 'auto';
+    hud.classList.remove('visible'); header.classList.remove('visible');
+  });
+
   document.getElementById('shop-btn').addEventListener('click', () => {
     shopOpen = !shopOpen;
     document.getElementById('shop-panel').classList.toggle('open', shopOpen);
@@ -530,6 +546,7 @@
 
     function hunt() {
       if (!el.isConnected) return;
+      if (!running || paused) { setTimeout(hunt, 500); return; }
       const bees = Array.from(document.querySelectorAll('.bee.catchable'));
       const visible = bees.filter(b => {
         const r = b.getBoundingClientRect();
@@ -575,14 +592,14 @@
   // =============================================
   let beeAccum = 0;
   setInterval(() => {
+    if (!running || paused) return;
     const bps = calcBPS();
     if (bps <= 0) return;
-    beeAccum += bps / 10; // 100ms tick = 1/10 sec
+    beeAccum += bps / 10;
     if (beeAccum >= 1) {
       const gained = Math.floor(beeAccum);
       beeAccum -= gained;
       progress.beesTotal += gained;
-      // save periodically (done by the time tracker too)
       checkAchievements('bees');
       updateCurrencyDisplay();
       if (shopOpen) renderShop();
@@ -613,7 +630,6 @@
   const saveBtnEl    = document.getElementById('save-btn');
 
   let playerName    = 'anonymous';
-  let scoreSaved    = false;
   let beesCollected = 0;
 
   const BIN_URL     = `https://api.jsonbin.io/v3/b/${CONFIG.JSONBIN_BIN}`;
@@ -627,12 +643,10 @@
     } catch { return []; }
   }
 
-  async function saveScore(name, score) {
-    if (scoreSaved || score < 10) return;
-    scoreSaved = true;
+  async function saveScore(name) {
+    const score = Math.floor(progress.beesTotal);
+    if (!name || name === 'anonymous' || score < 1) return;
     let scores = await fetchScores();
-    const existing = scores.find(s => s.name === name);
-    if (existing && existing.score >= score) return;
     scores = scores.filter(s => s.name !== name);
     scores.push({ name, score, bees: beesCollected, date: new Date().toISOString().slice(0,10) });
     scores.sort((a,b) => b.score - a.score);
@@ -657,7 +671,8 @@
 
   async function loadLeaderboard() { const s = await fetchScores(); renderLeaderboard(s, playerName); }
   loadLeaderboard();
-  window.addEventListener('beforeunload', () => { if (running||litCount>0) saveScore(playerName,litCount); });
+  window.addEventListener('beforeunload', () => { saveScore(playerName); });
+  setInterval(() => { saveScore(playerName); }, 30000);
 
   // =============================================
   // GAME STATE
@@ -677,9 +692,14 @@
       voiceSelect.appendChild(opt);
     });
   }
-  speechSynthesis.onvoiceschanged = loadVoices; loadVoices();
+  speechSynthesis.onvoiceschanged = loadVoices;
+  loadVoices();
+  // iOS Safari loads voices asynchronously and may need multiple attempts
   let voiceRetries=0;
-  const voiceRetryTimer = setInterval(() => { if (voices.length||voiceRetries++>10) { clearInterval(voiceRetryTimer); return; } loadVoices(); }, 300);
+  const voiceRetryTimer = setInterval(() => {
+    if (voices.length || voiceRetries++ > 20) { clearInterval(voiceRetryTimer); return; }
+    loadVoices();
+  }, 250);
 
   function ttsRate() { return 0.5 + (+liveSpeed.value-1)/37*1.5; }
   speedEl.addEventListener('input', () => { speedVal.textContent = speedEl.value; });
@@ -835,7 +855,7 @@
   });
 
   saveBtnEl.addEventListener('click', () => {
-    if (litCount>0) { scoreSaved=false; saveScore(playerName,litCount); saveBtnEl.textContent='SAVED!'; setTimeout(()=>{saveBtnEl.textContent='SAVE';},1800); }
+    if (playerName) { saveScore(playerName); saveBtnEl.textContent='SAVED!'; setTimeout(()=>{saveBtnEl.textContent='SAVE';},1800); }
   });
 
   function lightWord(globalIdx) {
@@ -850,21 +870,81 @@
     else { const c=spans[globalIdx]; setTimeout(()=>{if(!c._dispatched)dropWord(c);},3000); }
   }
 
+  // iOS Safari: track last boundary event time to detect stalls
+  let lastBoundaryTime = 0;
+  let boundaryFired = false;
+
   function speakSentence(si) {
-    if (!running||paused||si>=sentences.length) { if(si>=sentences.length){running=false;saveScore(playerName,litCount);} return; }
+    if (!running||paused||si>=sentences.length) { if(si>=sentences.length){running=false;saveScore(playerName);} return; }
     const s=sentences[si]; const utt=new SpeechSynthesisUtterance(s.text);
     utt.pitch=parseFloat(pitchEl.value); utt.rate=ttsRate();
     const vi=parseInt(voiceSelect.value); if(voices[vi])utt.voice=voices[vi];
-    utt.onboundary=(e)=>{ if(e.name!=='word')return; const idx=s.charMap[e.charIndex]; if(idx!==undefined)lightWord(idx); };
-    utt.onstart=()=>{ lightWord(s.start); speakSentence(si+1); };
-    utt.onend=()=>{ for(let i=s.start;i<s.end;i++){if(!spans[i].classList.contains('lit'))lightWord(i);} };
+
+    // Estimate ms per character for fallback word timing
+    const charsPerSec = 15 * utt.rate;
+    let wordFallbackTimer = null;
+
+    function cancelFallback() { if (wordFallbackTimer) { clearTimeout(wordFallbackTimer); wordFallbackTimer = null; } }
+
+    function scheduleFallback(wordIdx, charLen) {
+      cancelFallback();
+      const ms = Math.max(80, (charLen / charsPerSec) * 1000);
+      wordFallbackTimer = setTimeout(() => {
+        if (!running || paused) return;
+        if (wordIdx < s.end) lightWord(wordIdx);
+        // advance to next word via fallback
+        const nextW = wordIdx + 1;
+        if (nextW < s.end) {
+          const nextChar = Object.entries(s.charMap).find(([,v]) => v === nextW);
+          scheduleFallback(nextW, nextChar ? words[nextW].length : 4);
+        }
+      }, ms);
+    }
+
+    utt.onboundary=(e)=>{
+      if(e.name!=='word') return;
+      boundaryFired = true;
+      lastBoundaryTime = Date.now();
+      cancelFallback();
+      const idx=s.charMap[e.charIndex];
+      if(idx!==undefined) lightWord(idx);
+    };
+
+    utt.onstart=()=>{
+      lightWord(s.start);
+      speakSentence(si+1);
+      // Start fallback timer in case onboundary never fires (iOS Safari)
+      if (!boundaryFired) {
+        scheduleFallback(s.start + 1, words[s.start] ? words[s.start].length : 4);
+      }
+    };
+
+    utt.onend=()=>{
+      cancelFallback();
+      for(let i=s.start;i<s.end;i++){if(!spans[i].classList.contains('lit'))lightWord(i);}
+    };
+
+    utt.onerror=()=>{ cancelFallback(); };
+
     speechSynthesis.speak(utt); sentIdx=si+1;
   }
 
+  // iOS Safari watchdog: speechSynthesis silently stalls, especially after ~30s
+  setInterval(() => {
+    if (!running || paused) return;
+    if (speechSynthesis.speaking && speechSynthesis.paused) {
+      speechSynthesis.resume();
+    }
+    // If synthesis claims to be speaking but no boundary fired recently, nudge it
+    if (speechSynthesis.speaking && boundaryFired && Date.now() - lastBoundaryTime > 8000) {
+      speechSynthesis.resume();
+    }
+  }, 5000);
+
   pauseBtn.addEventListener('click', () => {
     paused=!paused; pauseBtn.textContent=paused?'RESUME':'PAUSE';
-    if(paused){speechSynthesis.pause();if(litCount>0)saveScore(playerName,litCount);}
-    else{scoreSaved=false;speechSynthesis.resume();}
+    if(paused){speechSynthesis.pause();saveScore(playerName);}
+    else{speechSynthesis.resume();}
   });
 
   // =============================================
@@ -896,6 +976,7 @@
     const dur=6+Math.random()*18, delay=-(Math.random()*dur), wob=1.2+Math.random()*1.8;
     bee.style.cssText=`width:${size}px;top:${topPct}vh;animation:${goRight?'fly-right':'fly-left'} ${dur}s ${delay}s linear infinite,wobble ${wob}s ease-in-out infinite;opacity:${0.55+Math.random()*0.45};`;
     bee.addEventListener('click',()=>{ if(!running)return; catchBee(bee); });
+    bee.addEventListener('touchstart',(e)=>{ e.preventDefault(); if(!running)return; catchBee(bee); },{passive:false});
     if (running) bee.classList.add('catchable');
     beeContainer.appendChild(bee); activeBeeCount++;
   }
@@ -918,6 +999,12 @@
   // START
   // =============================================
   startBtn.addEventListener('click', async () => {
+    // iOS Safari: prime speechSynthesis synchronously within the gesture handler
+    // before any await, otherwise the browser blocks speech as non-user-initiated
+    const primer = new SpeechSynthesisUtterance('');
+    speechSynthesis.speak(primer);
+    speechSynthesis.cancel();
+
     playerName=playerNameEl.value.trim()||'anonymous';
     liveSpeed.value=speedEl.value;
     const res=await fetch(SCRIPT_FILE); if(!res.ok){alert('Could not load vibes.txt');return;}
@@ -928,7 +1015,9 @@
     hud.classList.add('visible'); header.classList.add('visible');
     loadLeaderboard();
     document.querySelectorAll('.bee').forEach(b=>b.classList.add('catchable'));
-    running=true; speakSentence(0);
+    running=true;
+    boundaryFired = false;
+    speakSentence(0);
   });
 
   // initial currency display
