@@ -41,14 +41,21 @@
       color: #f5c800;
       font-size: 0.75rem;
       letter-spacing: 0.1em;
+    }
+
+    #bee-counter {
+      color: #f5c800;
+      font-size: 0.72rem;
+      letter-spacing: 0.05em;
       flex: 1;
+      white-space: nowrap;
     }
 
     .header-btn {
       background: transparent;
       border: 1px solid #f5c80066;
       color: #f5c800;
-      padding: 4px 14px;
+      padding: 4px 12px;
       font-family: 'Courier New', monospace;
       font-size: 0.72rem;
       cursor: pointer;
@@ -59,10 +66,9 @@
     .header-btn:hover { background: #f5c80022; border-color: #f5c800; }
     .header-btn:active { transform: scale(0.96); }
 
-    .mode-btn { opacity: 0.45; }
-    .mode-btn.active { opacity: 1; background: #f5c80018; border-color: #f5c800; }
-
+    .mode-btn  { opacity: 0.45; }
     .cmode-btn { opacity: 0.45; }
+    .mode-btn.active,
     .cmode-btn.active { opacity: 1; background: #f5c80018; border-color: #f5c800; }
 
     .header-sep { width: 1px; height: 20px; background: #f5c80044; flex-shrink: 0; }
@@ -169,12 +175,8 @@
       transition: color 0.08s ease;
     }
 
-    .word.lit-yellow { color: #f5c800; }
-    .word.lit-black  { color: #111; }
-
-    /* ---- falling word clones ---- */
-    .falling-word {
-      position: absolute;
+    /* ---- floating/bouncing/falling word clones ---- */
+    .fly-word {
       font-family: 'Courier New', monospace;
       font-size: clamp(0.9rem, 2vw, 1.15rem);
       pointer-events: none;
@@ -184,12 +186,15 @@
       transform-origin: center center;
     }
 
+    @keyframes float-up {
+      0%   { transform: translateY(0)    scale(1);   opacity: 1; }
+      100% { transform: translateY(-50vh) scale(0.7); opacity: 0; }
+    }
+
     /* ---- HUD ---- */
     #hud {
       position: fixed;
-      bottom: 0;
-      left: 0;
-      right: 0;
+      bottom: 0; left: 0; right: 0;
       padding: 12px 24px 16px;
       background: linear-gradient(transparent, #555555dd 40%, #555);
       display: flex;
@@ -200,7 +205,6 @@
       pointer-events: none;
       transition: opacity 0.4s;
     }
-
     #hud.visible { opacity: 1; pointer-events: all; }
 
     #pause-btn {
@@ -215,7 +219,6 @@
       transition: background 0.15s;
       flex-shrink: 0;
     }
-
     #pause-btn:hover { background: #f5c80022; }
 
     #hud-speed-wrap {
@@ -227,18 +230,9 @@
       font-size: 0.75rem;
     }
 
-    #live-speed {
-      accent-color: #f5c800;
-      width: 100px;
-      cursor: pointer;
-    }
+    #live-speed { accent-color: #f5c800; width: 100px; cursor: pointer; }
 
-    #progress-wrap {
-      flex: 1;
-      display: flex;
-      flex-direction: column;
-      gap: 4px;
-    }
+    #progress-wrap { flex: 1; display: flex; flex-direction: column; gap: 4px; }
 
     #progress {
       position: relative;
@@ -259,15 +253,13 @@
       position: absolute;
       top: 50%;
       transform: translate(-50%, -50%);
-      width: 10px;
-      height: 10px;
+      width: 10px; height: 10px;
       background: #fff;
       border-radius: 50%;
       border: 2px solid #333;
       cursor: pointer;
       z-index: 2;
     }
-
     .milestone.reached { background: #f5c800; border-color: #f5c800; }
 
     .milestone-label {
@@ -285,7 +277,6 @@
       opacity: 0;
       transition: opacity 0.2s;
     }
-
     .milestone:hover .milestone-label,
     .milestone.reached:hover .milestone-label { opacity: 1; }
 
@@ -316,7 +307,6 @@
       text-align: center;
       max-width: 80vw;
     }
-
     #milestone-toast.show {
       transform: translateX(-50%) translateY(0);
       opacity: 1;
@@ -324,14 +314,13 @@
 
     /* ---- leaderboard ---- */
     #leaderboard {
-      width: 300px;
+      width: 320px;
       background: #44444466;
       border: 1px solid #f5c80033;
       border-radius: 4px;
       padding: 14px 16px;
       font-size: 0.75rem;
     }
-
     #leaderboard h3 {
       color: #f5c800;
       font-size: 0.8rem;
@@ -339,7 +328,6 @@
       margin-bottom: 12px;
       text-align: center;
     }
-
     .lb-row {
       display: flex;
       justify-content: space-between;
@@ -348,13 +336,12 @@
       border-bottom: 1px solid #ffffff11;
       gap: 6px;
     }
-
     .lb-row:last-child { border-bottom: none; }
-
-    .lb-rank { color: #f5c800; min-width: 18px; }
-    .lb-name { color: #ddd; flex: 1; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+    .lb-rank  { color: #f5c800; min-width: 18px; }
+    .lb-name  { color: #ddd; flex: 1; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
     .lb-score { color: #f5c800; text-align: right; min-width: 40px; }
-    .lb-row.me .lb-name, .lb-row.me .lb-score { color: #fff; font-weight: bold; }
+    .lb-bees  { color: #f5c800; text-align: right; min-width: 32px; font-size: 0.68rem; }
+    .lb-row.me .lb-name, .lb-row.me .lb-score, .lb-row.me .lb-bees { color: #fff; font-weight: bold; }
 
     /* ---- bees ---- */
     .bee {
@@ -362,6 +349,15 @@
       pointer-events: none;
       z-index: 10;
       image-rendering: pixelated;
+      transition: transform 0.25s ease, opacity 0.25s ease;
+    }
+    .bee.catchable {
+      pointer-events: auto;
+      cursor: pointer;
+    }
+    .bee.caught {
+      transform: scale(0) !important;
+      opacity: 0 !important;
     }
 
     @keyframes fly-right {
@@ -383,15 +379,18 @@
 <!-- header — visible only during gameplay -->
 <div id="header">
   <span class="header-title">🐝 beelieveInYourself</span>
+  <span id="bee-counter">  collected: 0</span>
   <button class="header-btn" id="save-btn">SAVE</button>
   <div class="header-sep"></div>
   <button class="header-btn mode-btn active" id="mode-list">LIST</button>
-  <button class="header-btn mode-btn" id="mode-fall">FALL</button>
+  <button class="header-btn mode-btn"        id="mode-fall">FALL</button>
+  <button class="header-btn mode-btn"        id="mode-float">FLOAT</button>
+  <button class="header-btn mode-btn"        id="mode-bounce">BOUNCE</button>
   <div class="header-sep"></div>
   <button class="header-btn cmode-btn active" id="cmode-bee">BEE</button>
-  <button class="header-btn cmode-btn" id="cmode-rainbow">RAINBOW</button>
-  <button class="header-btn cmode-btn" id="cmode-matrix">MATRIX</button>
-  <button class="header-btn cmode-btn" id="cmode-chaos">CHAOS</button>
+  <button class="header-btn cmode-btn"        id="cmode-rainbow">RAINBOW</button>
+  <button class="header-btn cmode-btn"        id="cmode-matrix">MATRIX</button>
+  <button class="header-btn cmode-btn"        id="cmode-chaos">CHAOS</button>
 </div>
 
 <div id="overlay">
@@ -404,7 +403,6 @@
         style="flex:1; background:#444; color:#f5c800; border:1px solid #f5c800;
                font-family:'Courier New',monospace; font-size:0.85rem; padding:4px 8px; outline:none;" />
     </div>
-
     <div class="control-row">
       <label>speed</label>
       <input type="range" id="speed" min="1" max="38" value="12" />
@@ -468,42 +466,39 @@
     { pct: 100,  icon: '🎬', label: 'No rehearsal for that.' },
   ];
 
-  const lbPanel      = document.getElementById('leaderboard');
-  const lbRows       = document.getElementById('lb-rows');
-  const playerNameEl = document.getElementById('player-name');
-  const overlay      = document.getElementById('overlay');
-  const wordsEl      = document.getElementById('words');
-  const hud          = document.getElementById('hud');
-  const header       = document.getElementById('header');
-  const pauseBtn     = document.getElementById('pause-btn');
-  const speedEl      = document.getElementById('speed');
-  const speedVal     = document.getElementById('speed-val');
-  const pitchEl      = document.getElementById('pitch');
-  const pitchVal     = document.getElementById('pitch-val');
-  const voiceSelect  = document.getElementById('voice-select');
-  const liveSpeed    = document.getElementById('live-speed');
-  const progressBar  = document.getElementById('progress-bar');
-  const progressEl   = document.getElementById('progress');
-  const wordCount    = document.getElementById('word-count');
-  const startBtn     = document.getElementById('start-btn');
-  const toast        = document.getElementById('milestone-toast');
-  const saveBtnEl    = document.getElementById('save-btn');
-  const modeListBtn  = document.getElementById('mode-list');
-  const modeFallBtn  = document.getElementById('mode-fall');
+  // --- element refs ---
+  const lbRows        = document.getElementById('lb-rows');
+  const playerNameEl  = document.getElementById('player-name');
+  const overlay       = document.getElementById('overlay');
+  const wordsEl       = document.getElementById('words');
+  const hud           = document.getElementById('hud');
+  const header        = document.getElementById('header');
+  const pauseBtn      = document.getElementById('pause-btn');
+  const speedEl       = document.getElementById('speed');
+  const speedVal      = document.getElementById('speed-val');
+  const pitchEl       = document.getElementById('pitch');
+  const pitchVal      = document.getElementById('pitch-val');
+  const voiceSelect   = document.getElementById('voice-select');
+  const liveSpeed     = document.getElementById('live-speed');
+  const progressBar   = document.getElementById('progress-bar');
+  const progressEl    = document.getElementById('progress');
+  const wordCount     = document.getElementById('word-count');
+  const startBtn      = document.getElementById('start-btn');
+  const toast         = document.getElementById('milestone-toast');
+  const saveBtnEl     = document.getElementById('save-btn');
+  const beeCounterEl  = document.getElementById('bee-counter');
 
-  let playerName = 'anonymous';
-  let scoreSaved = false;
+  let playerName    = 'anonymous';
+  let scoreSaved    = false;
+  let beesCollected = 0;
 
   // --- leaderboard ---
   const BIN_URL = `https://api.jsonbin.io/v3/b/${CONFIG.JSONBIN_BIN}`;
-  const BIN_HEADERS = {
-    'X-Master-Key': CONFIG.JSONBIN_KEY,
-    'Content-Type': 'application/json'
-  };
+  const BIN_HEADERS = { 'X-Master-Key': CONFIG.JSONBIN_KEY, 'Content-Type': 'application/json' };
 
   async function fetchScores() {
     try {
-      const res = await fetch(BIN_URL, { headers: { 'X-Master-Key': CONFIG.JSONBIN_KEY } });
+      const res  = await fetch(BIN_URL, { headers: { 'X-Master-Key': CONFIG.JSONBIN_KEY } });
       const data = await res.json();
       return data.record.scores || [];
     } catch { return []; }
@@ -513,17 +508,15 @@
     if (scoreSaved || score < 10) return;
     scoreSaved = true;
     let scores = await fetchScores();
-    // keep only the best score per username
     const existing = scores.find(s => s.name === name);
     if (existing && existing.score >= score) return;
     scores = scores.filter(s => s.name !== name);
-    scores.push({ name, score, date: new Date().toISOString().slice(0, 10) });
+    scores.push({ name, score, bees: beesCollected, date: new Date().toISOString().slice(0, 10) });
     scores.sort((a, b) => b.score - a.score);
     const top50 = scores.slice(0, 50);
     try {
       await fetch(BIN_URL, {
-        method: 'PUT',
-        headers: BIN_HEADERS,
+        method: 'PUT', headers: BIN_HEADERS,
         body: JSON.stringify({ scores: top50 }),
         keepalive: true
       });
@@ -541,6 +534,7 @@
         <span class="lb-rank">${i + 1}</span>
         <span class="lb-name">${s.name}</span>
         <span class="lb-score">${s.score.toLocaleString()}</span>
+        <span class="lb-bees">🐝${s.bees || 0}</span>
       `;
       lbRows.appendChild(row);
     });
@@ -558,16 +552,16 @@
     if (running || litCount > 0) saveScore(playerName, litCount);
   });
 
-  let words        = [];
-  let spans        = [];
-  let sentences    = [];
-  let sentIdx      = 0;
-  let litCount     = 0;
-  let paused       = false;
-  let running      = false;
-  let toastTimer   = null;
+  let words         = [];
+  let spans         = [];
+  let sentences     = [];
+  let sentIdx       = 0;
+  let litCount      = 0;
+  let paused        = false;
+  let running       = false;
+  let toastTimer    = null;
   let nextMilestone = 0;
-  let voices       = [];
+  let voices        = [];
 
   // --- voices ---
   function loadVoices() {
@@ -591,9 +585,7 @@
     loadVoices();
   }, 300);
 
-  function ttsRate() {
-    return 0.5 + (+liveSpeed.value - 1) / 37 * 1.5;
-  }
+  function ttsRate() { return 0.5 + (+liveSpeed.value - 1) / 37 * 1.5; }
 
   speedEl.addEventListener('input', () => { speedVal.textContent = speedEl.value; });
   pitchEl.addEventListener('input', () => { pitchVal.textContent = parseFloat(pitchEl.value).toFixed(2); });
@@ -630,9 +622,9 @@
     }
   }
 
-  // --- pre-render all words as grey spans ---
+  // --- pre-render ---
   function renderAll() {
-    words.forEach((w) => {
+    words.forEach(w => {
       const span = document.createElement('span');
       span.className = 'word';
       span.textContent = w + ' ';
@@ -641,7 +633,7 @@
     });
   }
 
-  // --- build sentence list with char→word maps ---
+  // --- build sentences ---
   function buildSentences() {
     const end = /[.!?]$/;
     let start = 0;
@@ -661,105 +653,180 @@
   }
 
   // =============================================
-  // FALL MODE — Matter.js physics
+  // DISPLAY MODES
   // =============================================
-  let fallMode    = false;
-  let fallEngine  = null;
-  let fallWorld   = null;
-  let fallBodies  = [];   // { body, el, span }
-  let fallInited  = false;
-  let fallGround  = null;
-  let fallLeft    = null;
-  let fallRight   = null;
+  let displayMode = 'list';
 
-  function groundY() { return window.scrollY + window.innerHeight - 50; }
+  // shared bounce state
+  let bouncingWords = [];
+
+  // master RAF — syncs fall DOM + runs bounce physics
+  (function masterRAF() {
+    requestAnimationFrame(masterRAF);
+    // fall: sync DOM to Matter.js bodies
+    fallBodies.forEach(({ body, el }) => {
+      el.style.left      = (body.position.x - el.offsetWidth  / 2) + 'px';
+      el.style.top       = (body.position.y - el.offsetHeight / 2) + 'px';
+      el.style.transform = `rotate(${body.angle}rad)`;
+    });
+    // bounce: simple viewport physics
+    bouncingWords.forEach(bw => {
+      bw.x += bw.vx;
+      bw.y += bw.vy;
+      const w = bw.el.offsetWidth;
+      const h = bw.el.offsetHeight;
+      if (bw.x < 0)                        { bw.x = 0;                        bw.vx =  Math.abs(bw.vx); }
+      if (bw.x + w > window.innerWidth)    { bw.x = window.innerWidth - w;    bw.vx = -Math.abs(bw.vx); }
+      if (bw.y < 44)                       { bw.y = 44;                       bw.vy =  Math.abs(bw.vy); }
+      if (bw.y + h > window.innerHeight)   { bw.y = window.innerHeight - h;   bw.vy = -Math.abs(bw.vy); }
+      bw.el.style.left = bw.x + 'px';
+      bw.el.style.top  = bw.y + 'px';
+    });
+  })();
+
+  // --- FALL (Matter.js, document-space) ---
+  let fallBodies = [];
+  let fallEngine = null;
+  let fallWorld  = null;
+  let fallInited = false;
+  let fallGround = null;
+  let fallLeft   = null;
+  let fallRight  = null;
+  let fallFloorY = 0;
+
+  function viewportBottom() { return window.scrollY + window.innerHeight - 50; }
 
   function initFall() {
     if (fallInited) return;
     fallInited = true;
+    fallFloorY = viewportBottom();
 
     fallEngine = Matter.Engine.create();
     fallWorld  = fallEngine.world;
     fallEngine.gravity.y = 1.2;
 
-    const gy = groundY();
-    fallGround = Matter.Bodies.rectangle(window.innerWidth / 2, gy + 30, window.innerWidth * 4, 60, { isStatic: true });
-    fallLeft   = Matter.Bodies.rectangle(-30, gy / 2, 60, gy * 2, { isStatic: true });
-    fallRight  = Matter.Bodies.rectangle(window.innerWidth + 30, gy / 2, 60, gy * 2, { isStatic: true });
+    fallGround = Matter.Bodies.rectangle(window.innerWidth / 2, fallFloorY + 30, window.innerWidth * 4, 60, { isStatic: true });
+    fallLeft   = Matter.Bodies.rectangle(-30, fallFloorY / 2, 60, fallFloorY * 2, { isStatic: true });
+    fallRight  = Matter.Bodies.rectangle(window.innerWidth + 30, fallFloorY / 2, 60, fallFloorY * 2, { isStatic: true });
     Matter.World.add(fallWorld, [fallGround, fallLeft, fallRight]);
 
-    // move ground with scroll so pile tracks the visible bottom
+    // only move ground DOWN (scrolling up never destroys the pile)
     window.addEventListener('scroll', () => {
-      const ny = groundY();
-      Matter.Body.setPosition(fallGround, { x: window.innerWidth / 2, y: ny + 30 });
-      Matter.Body.setPosition(fallLeft,   { x: -30,                   y: ny / 2  });
-      Matter.Body.setPosition(fallRight,  { x: window.innerWidth + 30, y: ny / 2 });
+      const ny = viewportBottom();
+      if (ny <= fallFloorY) return;
+      fallFloorY = ny;
+      Matter.Body.setPosition(fallGround, { x: window.innerWidth / 2, y: fallFloorY + 30 });
+      Matter.Body.setPosition(fallLeft,   { x: -30,                    y: fallFloorY / 2  });
+      Matter.Body.setPosition(fallRight,  { x: window.innerWidth + 30, y: fallFloorY / 2  });
     });
 
-    // physics tick
     setInterval(() => Matter.Engine.update(fallEngine, 1000 / 60), 1000 / 60);
-
-    // DOM sync loop
-    (function raf() {
-      requestAnimationFrame(raf);
-      fallBodies.forEach(({ body, el }) => {
-        el.style.left      = (body.position.x - el.offsetWidth  / 2) + 'px';
-        el.style.top       = (body.position.y - el.offsetHeight / 2) + 'px';
-        el.style.transform = `rotate(${body.angle}rad)`;
-      });
-    })();
   }
 
-  function dropSpan(span) {
-    if (span._falling) return;
-    span._falling = true;
+  function dropFall(span) {
+    if (span._dispatched) return;
+    span._dispatched = true;
+    initFall();
 
-    const rect = span.getBoundingClientRect();
-    const docX = rect.left + rect.width  / 2 + window.scrollX;
-    const docY = rect.top  + rect.height / 2 + window.scrollY;
-    // clamp start Y so off-screen words don't fall from far away
-    const startY = Math.min(docY, groundY() - 10);
+    const rect  = span.getBoundingClientRect();
+    const docX  = rect.left + rect.width  / 2 + window.scrollX;
+    const docY  = rect.top  + rect.height / 2 + window.scrollY;
+    const startY = Math.min(docY, fallFloorY - 20);
 
-    // clone floats in document space
     const el = document.createElement('span');
-    el.className = 'falling-word';
+    el.className   = 'fly-word';
+    el.style.position = 'absolute';
+    el.style.left  = '-9999px';
+    el.style.top   = '-9999px';
     el.textContent = span.textContent.trim();
     el.style.color = span.style.color || '#f5c800';
-    el.style.left = '-9999px';
-    el.style.top  = '-9999px';
     document.body.appendChild(el);
 
     const w = Math.max(el.offsetWidth,  10) + 6;
     const h = Math.max(el.offsetHeight, 10) + 6;
 
     const body = Matter.Bodies.rectangle(docX, startY, w, h, {
-      restitution: 0.4,
-      friction:    0.3,
-      frictionAir: 0.012,
+      restitution: 0.4, friction: 0.3, frictionAir: 0.012,
       angle: (Math.random() - 0.5) * 0.4,
     });
-    Matter.Body.setVelocity(body, {
-      x: (Math.random() - 0.5) * 4,
-      y: 2 + Math.random() * 2,
-    });
+    Matter.Body.setVelocity(body, { x: (Math.random() - 0.5) * 4, y: 2 + Math.random() * 2 });
     Matter.World.add(fallWorld, body);
     fallBodies.push({ body, el, span });
-
     span.style.visibility = 'hidden';
   }
 
-  function dropAllLit() {
-    initFall();
-    spans.forEach(span => {
-      if (span.classList.contains('lit') && !span._falling) {
-        dropSpan(span);
-      }
+  // --- FLOAT (CSS animation, viewport-space) ---
+  function dropFloat(span) {
+    if (span._dispatched) return;
+    span._dispatched = true;
+
+    const rect = span.getBoundingClientRect();
+    const el   = document.createElement('span');
+    el.className   = 'fly-word';
+    el.style.position = 'fixed';
+    el.style.left  = rect.left + 'px';
+    el.style.top   = rect.top  + 'px';
+    el.style.color = span.style.color || '#f5c800';
+    el.style.animation = `float-up ${2 + Math.random()}s ease-in forwards`;
+    el.textContent = span.textContent.trim();
+    document.body.appendChild(el);
+    span.style.visibility = 'hidden';
+    setTimeout(() => el.remove(), 3200);
+  }
+
+  // --- BOUNCE (simple viewport physics) ---
+  function dropBounce(span) {
+    if (span._dispatched) return;
+    span._dispatched = true;
+
+    const rect  = span.getBoundingClientRect();
+    const el    = document.createElement('span');
+    el.className   = 'fly-word';
+    el.style.position = 'fixed';
+    el.style.left  = rect.left + 'px';
+    el.style.top   = rect.top  + 'px';
+    el.style.color = span.style.color || '#f5c800';
+    el.textContent = span.textContent.trim();
+    document.body.appendChild(el);
+    span.style.visibility = 'hidden';
+
+    const speed = 2.5 + Math.random() * 4;
+    const angle = Math.random() * Math.PI * 2;
+    bouncingWords.push({
+      el,
+      x: rect.left,
+      y: rect.top,
+      vx: Math.cos(angle) * speed,
+      vy: Math.sin(angle) * speed,
     });
   }
 
+  // --- dispatch to correct mode ---
+  function dropWord(span) {
+    if (displayMode === 'fall')   dropFall(span);
+    else if (displayMode === 'float')  dropFloat(span);
+    else if (displayMode === 'bounce') dropBounce(span);
+  }
+
+  function dropAllLit() {
+    spans.forEach(span => {
+      if (span.classList.contains('lit') && !span._dispatched) dropWord(span);
+    });
+  }
+
+  // --- mode buttons ---
+  const modeBtns = document.querySelectorAll('.mode-btn');
+  modeBtns.forEach(btn => {
+    btn.addEventListener('click', () => {
+      displayMode = btn.id.replace('mode-', '');
+      modeBtns.forEach(b => b.classList.remove('active'));
+      btn.classList.add('active');
+      if (displayMode !== 'list' && running) dropAllLit();
+    });
+  });
+
   // --- color modes ---
   let colorMode = 'bee';
-
   const RAINBOW_COLORS = ['#ff3333','#ff8800','#ffee00','#33dd55','#3399ff','#aa44ff','#ff44cc'];
 
   function getWordColor(i) {
@@ -767,7 +834,7 @@
       case 'rainbow': return RAINBOW_COLORS[i % RAINBOW_COLORS.length];
       case 'matrix':  return `hsl(120,100%,${35 + (i % 6) * 6}%)`;
       case 'chaos':   return `hsl(${Math.round(i * 137.508) % 360},90%,62%)`;
-      default:        return i % 2 === 0 ? '#f5c800' : '#111111'; // bee
+      default:        return i % 2 === 0 ? '#f5c800' : '#111111';
     }
   }
 
@@ -777,25 +844,10 @@
       colorMode = btn.id.replace('cmode-', '');
       cmodeButtons.forEach(b => b.classList.remove('active'));
       btn.classList.add('active');
-      // recolor already-lit words live
       spans.forEach((span, i) => {
         if (span.classList.contains('lit')) span.style.color = getWordColor(i);
       });
     });
-  });
-
-  // --- mode buttons ---
-  modeListBtn.addEventListener('click', () => {
-    fallMode = false;
-    modeListBtn.classList.add('active');
-    modeFallBtn.classList.remove('active');
-  });
-
-  modeFallBtn.addEventListener('click', () => {
-    fallMode = true;
-    modeFallBtn.classList.add('active');
-    modeListBtn.classList.remove('active');
-    if (running) dropAllLit();
   });
 
   // --- save button ---
@@ -817,16 +869,15 @@
 
     const pct = litCount / words.length * 100;
     progressBar.style.width = pct.toFixed(1) + '%';
-    wordCount.textContent = `${litCount.toLocaleString()} / ${words.length.toLocaleString()}`;
+    wordCount.textContent   = `${litCount.toLocaleString()} / ${words.length.toLocaleString()}`;
     checkMilestones(pct);
 
-    if (!fallMode) spans[globalIdx].scrollIntoView({ block: 'center', behavior: 'smooth' });
-
-    // schedule fall after 3s if in fall mode
-    if (fallMode) {
+    if (displayMode === 'list') {
+      spans[globalIdx].scrollIntoView({ block: 'center', behavior: 'smooth' });
+    } else {
       const captured = spans[globalIdx];
       setTimeout(() => {
-        if (fallMode && !captured._falling) dropSpan(captured);
+        if (!captured._dispatched) dropWord(captured);
       }, 3000);
     }
   }
@@ -834,36 +885,28 @@
   // --- speak a sentence ---
   function speakSentence(si) {
     if (!running || paused || si >= sentences.length) {
-      if (si >= sentences.length) {
-        running = false;
-        saveScore(playerName, litCount);
-      }
+      if (si >= sentences.length) { running = false; saveScore(playerName, litCount); }
       return;
     }
 
-    const s = sentences[si];
+    const s   = sentences[si];
     const utt = new SpeechSynthesisUtterance(s.text);
     utt.pitch = parseFloat(pitchEl.value);
     utt.rate  = ttsRate();
-    const vi = parseInt(voiceSelect.value);
+    const vi  = parseInt(voiceSelect.value);
     if (voices[vi]) utt.voice = voices[vi];
 
     utt.onboundary = (e) => {
       if (e.name !== 'word') return;
-      const globalIdx = s.charMap[e.charIndex];
-      if (globalIdx !== undefined) lightWord(globalIdx);
+      const idx = s.charMap[e.charIndex];
+      if (idx !== undefined) lightWord(idx);
     };
 
-    utt.onstart = () => {
-      lightWord(s.start);
-      speakSentence(si + 1);
-    };
+    utt.onstart = () => { lightWord(s.start); speakSentence(si + 1); };
 
     utt.onend = () => {
       for (let i = s.start; i < s.end; i++) {
-        if (!spans[i].classList.contains('lit')) {
-          lightWord(i);
-        }
+        if (!spans[i].classList.contains('lit')) lightWord(i);
       }
     };
 
@@ -887,28 +930,32 @@
   // --- bees ---
   (function spawnBees() {
     const container = document.getElementById('bees');
-    const BEE_COUNT = 22;
-
-    for (let i = 0; i < BEE_COUNT; i++) {
-      const bee = document.createElement('img');
-      bee.src = 'bee.png';
-      bee.className = 'bee';
-
-      const goRight   = Math.random() > 0.5;
-      const size      = 108 + Math.random() * 216;
-      const topPct    = 2 + Math.random() * 88;
-      const duration  = 6 + Math.random() * 18;
-      const delay     = -(Math.random() * duration);
-      const wobbleDur = 1.2 + Math.random() * 1.8;
+    for (let i = 0; i < 22; i++) {
+      const bee      = document.createElement('img');
+      bee.src        = 'bee.png';
+      bee.className  = 'bee';
+      const goRight  = Math.random() > 0.5;
+      const size     = 108 + Math.random() * 216;
+      const topPct   = 2 + Math.random() * 88;
+      const dur      = 6 + Math.random() * 18;
+      const delay    = -(Math.random() * dur);
+      const wob      = 1.2 + Math.random() * 1.8;
 
       bee.style.cssText = `
-        width: ${size}px;
-        top: ${topPct}vh;
+        width: ${size}px; top: ${topPct}vh;
         animation:
-          ${goRight ? 'fly-right' : 'fly-left'} ${duration}s ${delay}s linear infinite,
-          wobble ${wobbleDur}s ease-in-out infinite;
+          ${goRight ? 'fly-right' : 'fly-left'} ${dur}s ${delay}s linear infinite,
+          wobble ${wob}s ease-in-out infinite;
         opacity: ${0.55 + Math.random() * 0.45};
       `;
+
+      bee.addEventListener('click', () => {
+        if (!running) return;
+        bee.classList.add('caught');
+        beesCollected++;
+        beeCounterEl.textContent = `  collected: ${beesCollected}`;
+        setTimeout(() => bee.remove(), 300);
+      });
 
       container.appendChild(bee);
     }
@@ -930,11 +977,14 @@
     buildSentences();
     buildMilestones();
 
-    overlay.style.opacity = '0';
+    overlay.style.opacity     = '0';
     overlay.style.pointerEvents = 'none';
     hud.classList.add('visible');
     header.classList.add('visible');
     loadLeaderboard();
+
+    // make bees catchable
+    document.querySelectorAll('.bee').forEach(b => b.classList.add('catchable'));
 
     running = true;
     speakSentence(0);
