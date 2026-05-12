@@ -62,6 +62,11 @@
     .mode-btn { opacity: 0.45; }
     .mode-btn.active { opacity: 1; background: #f5c80018; border-color: #f5c800; }
 
+    .cmode-btn { opacity: 0.45; }
+    .cmode-btn.active { opacity: 1; background: #f5c80018; border-color: #f5c800; }
+
+    .header-sep { width: 1px; height: 20px; background: #f5c80044; flex-shrink: 0; }
+
     /* ---- overlay ---- */
     #overlay {
       position: fixed;
@@ -379,8 +384,14 @@
 <div id="header">
   <span class="header-title">🐝 beelieveInYourself</span>
   <button class="header-btn" id="save-btn">SAVE</button>
+  <div class="header-sep"></div>
   <button class="header-btn mode-btn active" id="mode-list">LIST</button>
   <button class="header-btn mode-btn" id="mode-fall">FALL</button>
+  <div class="header-sep"></div>
+  <button class="header-btn cmode-btn active" id="cmode-bee">BEE</button>
+  <button class="header-btn cmode-btn" id="cmode-rainbow">RAINBOW</button>
+  <button class="header-btn cmode-btn" id="cmode-matrix">MATRIX</button>
+  <button class="header-btn cmode-btn" id="cmode-chaos">CHAOS</button>
 </div>
 
 <div id="overlay">
@@ -501,7 +512,11 @@
   async function saveScore(name, score) {
     if (scoreSaved || score < 10) return;
     scoreSaved = true;
-    const scores = await fetchScores();
+    let scores = await fetchScores();
+    // keep only the best score per username
+    const existing = scores.find(s => s.name === name);
+    if (existing && existing.score >= score) return;
+    scores = scores.filter(s => s.name !== name);
     scores.push({ name, score, date: new Date().toISOString().slice(0, 10) });
     scores.sort((a, b) => b.score - a.score);
     const top50 = scores.slice(0, 50);
@@ -709,7 +724,7 @@
     const el = document.createElement('span');
     el.className = 'falling-word';
     el.textContent = span.textContent.trim();
-    el.style.color = span.classList.contains('lit-yellow') ? '#f5c800' : '#111';
+    el.style.color = span.style.color || '#f5c800';
     el.style.left = '-9999px';
     el.style.top  = '-9999px';
     document.body.appendChild(el);
@@ -736,14 +751,38 @@
   function dropAllLit() {
     initFall();
     spans.forEach(span => {
-      if (
-        (span.classList.contains('lit-yellow') || span.classList.contains('lit-black'))
-        && !span._falling
-      ) {
+      if (span.classList.contains('lit') && !span._falling) {
         dropSpan(span);
       }
     });
   }
+
+  // --- color modes ---
+  let colorMode = 'bee';
+
+  const RAINBOW_COLORS = ['#ff3333','#ff8800','#ffee00','#33dd55','#3399ff','#aa44ff','#ff44cc'];
+
+  function getWordColor(i) {
+    switch (colorMode) {
+      case 'rainbow': return RAINBOW_COLORS[i % RAINBOW_COLORS.length];
+      case 'matrix':  return `hsl(120,100%,${35 + (i % 6) * 6}%)`;
+      case 'chaos':   return `hsl(${Math.round(i * 137.508) % 360},90%,62%)`;
+      default:        return i % 2 === 0 ? '#f5c800' : '#111111'; // bee
+    }
+  }
+
+  const cmodeButtons = document.querySelectorAll('.cmode-btn');
+  cmodeButtons.forEach(btn => {
+    btn.addEventListener('click', () => {
+      colorMode = btn.id.replace('cmode-', '');
+      cmodeButtons.forEach(b => b.classList.remove('active'));
+      btn.classList.add('active');
+      // recolor already-lit words live
+      spans.forEach((span, i) => {
+        if (span.classList.contains('lit')) span.style.color = getWordColor(i);
+      });
+    });
+  });
 
   // --- mode buttons ---
   modeListBtn.addEventListener('click', () => {
@@ -772,7 +811,8 @@
   // --- light up a word ---
   function lightWord(globalIdx) {
     if (globalIdx >= spans.length) return;
-    spans[globalIdx].classList.add(globalIdx % 2 === 0 ? 'lit-yellow' : 'lit-black');
+    spans[globalIdx].classList.add('lit');
+    spans[globalIdx].style.color = getWordColor(globalIdx);
     litCount = Math.max(litCount, globalIdx + 1);
 
     const pct = litCount / words.length * 100;
@@ -821,7 +861,7 @@
 
     utt.onend = () => {
       for (let i = s.start; i < s.end; i++) {
-        if (!spans[i].classList.contains('lit-yellow') && !spans[i].classList.contains('lit-black')) {
+        if (!spans[i].classList.contains('lit')) {
           lightWord(i);
         }
       }
