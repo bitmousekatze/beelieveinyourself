@@ -74,6 +74,29 @@
     #start-btn:hover { transform: scale(1.05); box-shadow: 0 0 40px #f5c800aa; }
     #start-btn:active { transform: scale(0.97); }
 
+    /* landing button hover glow + tooltip */
+    .landing-btn-wrap { position: relative; width: 100%; }
+    .landing-btn-wrap button, .landing-btn-wrap a {
+      transition: transform 0.1s, box-shadow 0.1s, background 0.15s, border-color 0.15s;
+    }
+    .landing-btn-wrap button:hover, .landing-btn-wrap a:hover {
+      transform: scale(1.03);
+      box-shadow: 0 0 18px #f5c80055;
+      background: #f5c80011 !important;
+      border-color: #f5c800 !important;
+    }
+    .landing-btn-wrap button:active, .landing-btn-wrap a:active { transform: scale(0.97); }
+    .landing-tip {
+      position: absolute; bottom: calc(100% + 8px); left: 50%; transform: translateX(-50%);
+      background: #1a1a1a; border: 1px solid #f5c80066; border-radius: 6px;
+      padding: 8px 12px; width: 220px; font-size: 0.7rem; color: #ccc;
+      line-height: 1.5; pointer-events: none; z-index: 600;
+      opacity: 0; transition: opacity 0.15s;
+      font-family: 'Courier New', monospace; text-align: left;
+    }
+    .landing-tip strong { color: #f5c800; display: block; margin-bottom: 3px; font-size: 0.72rem; }
+    .landing-btn-wrap:hover .landing-tip { opacity: 1; }
+
     /* ---- words ---- */
     #words { padding: 64px 5vw 200px; font-size: clamp(0.9rem,2vw,1.15rem); line-height: 1.9; word-spacing: 0.25em; max-width: 100%; }
     .word { display: inline; color: #555; transition: color 0.08s ease; }
@@ -354,14 +377,24 @@
         <div id="landing-prog-bar" style="height:100%;background:#f5c800;border-radius:2px;width:0%;transition:width 0.3s;"></div>
       </div>
     </div>
-    <div style="position:relative;width:100%;">
-      <button id="daily-book-btn" title="daily rewards" style="background:transparent;border:1px solid #f5c80066;color:#f5c800;font-family:'Courier New',monospace;font-size:0.85rem;padding:8px 20px;cursor:pointer;letter-spacing:0.1em;-webkit-tap-highlight-color:transparent;touch-action:manipulation;width:100%;text-align:center;">📖 DAILY REWARDS</button>
+    <div class="landing-btn-wrap">
+      <button id="daily-book-btn" style="background:transparent;border:1px solid #f5c80066;color:#f5c800;font-family:'Courier New',monospace;font-size:0.85rem;padding:8px 20px;cursor:pointer;letter-spacing:0.1em;-webkit-tap-highlight-color:transparent;touch-action:manipulation;width:100%;text-align:center;">📖 DAILY REWARDS</button>
       <span id="daily-dot" style="display:none;position:absolute;top:-4px;right:-4px;width:10px;height:10px;background:#ff4444;border-radius:50%;animation:pulse-dot 1.2s ease-in-out infinite;"></span>
+      <div class="landing-tip"><strong>📖 Daily Rewards</strong>Check in every day to claim honey. Streak bonuses double each day — miss a day and you can watch an ad to claim it retroactively.</div>
     </div>
     <button id="start-btn">▶ START FRESH</button>
-    <button id="resume-btn" style="background:transparent;border:1px solid #f5c80066;color:#f5c800;font-family:'Courier New',monospace;font-size:0.85rem;padding:8px 20px;cursor:pointer;letter-spacing:0.1em;-webkit-tap-highlight-color:transparent;touch-action:manipulation;width:100%;text-align:center;display:none;">⏩ RESUME</button>
-    <button id="landing-ach-btn" style="background:transparent;border:1px solid #f5c80066;color:#f5c800;font-family:'Courier New',monospace;font-size:0.85rem;padding:8px 20px;cursor:pointer;letter-spacing:0.1em;-webkit-tap-highlight-color:transparent;touch-action:manipulation;width:100%;text-align:center;">🏅 ACHIEVEMENTS</button>
-    <a href="beelieve.html" style="background:transparent;border:1px solid #f5c80066;color:#f5c800;font-family:'Courier New',monospace;font-size:0.85rem;padding:8px 20px;cursor:pointer;letter-spacing:0.1em;text-decoration:none;width:100%;text-align:center;display:block;box-sizing:border-box;">how was this made? →</a>
+    <div class="landing-btn-wrap" id="resume-wrap" style="display:none;">
+      <button id="resume-btn" style="background:transparent;border:1px solid #f5c80066;color:#f5c800;font-family:'Courier New',monospace;font-size:0.85rem;padding:8px 20px;cursor:pointer;letter-spacing:0.1em;-webkit-tap-highlight-color:transparent;touch-action:manipulation;width:100%;text-align:center;">⏩ RESUME</button>
+      <div class="landing-tip"><strong>⏩ Resume</strong>Pick up exactly where you left off. Your word position, honey, and upgrades are all saved automatically.</div>
+    </div>
+    <div class="landing-btn-wrap">
+      <button id="landing-ach-btn" style="background:transparent;border:1px solid #f5c80066;color:#f5c800;font-family:'Courier New',monospace;font-size:0.85rem;padding:8px 20px;cursor:pointer;letter-spacing:0.1em;-webkit-tap-highlight-color:transparent;touch-action:manipulation;width:100%;text-align:center;">🏅 ACHIEVEMENTS</button>
+      <div class="landing-tip"><strong>🏅 Achievements</strong>Track your progress — bee catches, listening time, script completions, and hidden discoveries. How many can you unlock?</div>
+    </div>
+    <div class="landing-btn-wrap">
+      <a href="beelieve.html" style="background:transparent;border:1px solid #f5c80066;color:#f5c800;font-family:'Courier New',monospace;font-size:0.85rem;padding:8px 20px;cursor:pointer;letter-spacing:0.1em;text-decoration:none;width:100%;text-align:center;display:block;box-sizing:border-box;">how was this made? →</a>
+      <div class="landing-tip"><strong>🛠️ How was this made?</strong>A full build log — every feature, bug, and fix documented in detail. Great if you're curious about the code behind the bees.</div>
+    </div>
     <div id="leaderboard">
       <h3>🏆 leaderboard</h3>
       <div style="color:#666;text-align:center;padding:12px;font-size:0.75rem;letter-spacing:0.05em;">coming soon</div>
@@ -706,7 +739,7 @@
     progress.savedLitCount = litCount;
     saveProgress(progress);
     await saveScore(playerName);
-    if (progress.savedLitCount > 0) resumeBtn.style.display = '';
+    if (progress.savedLitCount > 0) document.getElementById('resume-wrap').style.display = '';
     overlay.style.opacity = '1'; overlay.style.pointerEvents = 'auto';
     hud.classList.remove('visible'); header.classList.remove('visible');
   });
@@ -1414,7 +1447,7 @@
 
   // Show RESUME button if there's a saved position
   const resumeBtn = document.getElementById('resume-btn');
-  if (progress.savedLitCount > 0) resumeBtn.style.display = '';
+  if (progress.savedLitCount > 0) document.getElementById('resume-wrap').style.display = '';
 
   function updateLandingStats() {
     const bps = calcBPS();
