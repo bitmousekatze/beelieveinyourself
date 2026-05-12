@@ -430,17 +430,6 @@
     <li>Milestone dots on the progress bar light up as their percentage is crossed</li>
   </ol>
 
-  <h2>// things that were tried and changed</h2>
-  <ul>
-    <li>setInterval word timer → replaced by TTS-driven display</li>
-    <li>Single word utterances → 4-word chunks → full sentences</li>
-    <li>onend chaining → onstart pre-queueing to remove gaps</li>
-    <li>Words appended as spoken → all pre-rendered grey, revealed by onboundary</li>
-    <li>Estimated milestone positions → exact positions found by scanning the word array</li>
-    <li>All system voices → filtered to English only</li>
-    <li>Speed slider 1–10 → 1–50 → 1–38 (slowed max by 25%)</li>
-  </ul>
-
     <div class="timeline-item">
       <h3>11. leaderboard</h3>
       <div class="prompt-box">
@@ -517,6 +506,268 @@
       </p>
     </div>
 
+    <div class="timeline-item">
+      <h3>14. fixed gameplay header + display modes</h3>
+      <div class="prompt-box">
+        We need to make a save progress button when you start. This button should be at the top left as a header. We also need a few more buttons in the header. The way the text is being read right now is called LIST and it's on by default. Also add a text mode where once it's read after 3 seconds the text falls to the bottom of the page and collects at the bottom with physics.
+      </div>
+      <p>
+        A fixed 44px header bar was added that appears once the script starts. It contains a SAVE button,
+        display mode buttons (LIST / FALL / FLOAT / BOUNCE), and color mode buttons (BEE / RAINBOW / MATRIX / CHAOS).
+        Four display modes were built:
+      </p>
+      <ul>
+        <li><strong>LIST</strong> — default. Words light up in place, page scrolls to follow.</li>
+        <li><strong>FALL</strong> — words fall to the bottom of the document using <strong>Matter.js</strong> physics. Bodies are created in Matter.js world space, mirrored to <code>position: absolute</code> DOM elements each frame. A static ground body sits at the document bottom and only moves <em>down</em> with scroll — never up, preventing the pile from being destroyed.</li>
+        <li><strong>FLOAT</strong> — words float upward with a CSS <code>@keyframes float-up</code> animation and fade out.</li>
+        <li><strong>BOUNCE</strong> — words ricochet around the viewport using simple JS physics with edge collision detection, tracked in a <code>bouncingWords</code> array updated in a <code>requestAnimationFrame</code> loop.</li>
+      </ul>
+
+      <div class="bug-box">
+        <span class="bug-label">🐛 bug — scrollIntoView fighting user scroll in FALL/FLOAT/BOUNCE</span>
+        The auto-scroll that follows the current word in LIST mode was still running in other modes, constantly fighting the user's manual scroll.
+      </div>
+      <div class="fix-box">
+        <span class="fix-label">✅ fix</span>
+        Wrapped <code>scrollIntoView()</code> in a <code>if (displayMode === 'list')</code> check.
+      </div>
+
+      <div class="bug-box">
+        <span class="bug-label">🐛 bug — FALL words destroyed when scrolling up</span>
+        The scroll listener moved the Matter.js ground body to track the viewport bottom. When the user scrolled back up, the ground moved above the fallen pile, causing Matter.js to violently resolve all the bodies that were now below it.
+      </div>
+      <div class="fix-box">
+        <span class="fix-label">✅ fix</span>
+        Added a guard: <code>if (ny &lt;= fallFloorY) return;</code> — the ground only ever moves downward.
+      </div>
+    </div>
+
+    <div class="timeline-item">
+      <h3>15. color modes</h3>
+      <div class="prompt-box">
+        We need to make it so that the username is the same... Also what other types of 'funny' text options can we build? Can we make a rainbow text option?
+      </div>
+      <p>
+        Four color modes were added, selectable via header buttons. A <code>getWordColor(i)</code>
+        function dispatches based on <code>colorMode</code>:
+      </p>
+      <ul>
+        <li><strong>BEE</strong> — default yellow/black alternating pattern</li>
+        <li><strong>RAINBOW</strong> — cycles through 6 hues using <code>i % 6</code></li>
+        <li><strong>MATRIX</strong> — random shades of green for each word</li>
+        <li><strong>CHAOS</strong> — fully random <code>hsl()</code> color every time a word lights</li>
+      </ul>
+      <p>Also fixed in this pass: username deduplication on the leaderboard. Previously the same name accumulated multiple entries. Fixed by filtering out the existing entry for a name before pushing the new one.</p>
+    </div>
+
+    <div class="timeline-item">
+      <h3>16. bee catching + bee respawn</h3>
+      <div class="prompt-box">
+        We need to make it so that the bees respawn so there's always 22 on the screen. Also if you click a bee you collect a bee. At the top show 'Bees Collected' and track this on the leaderboard.
+      </div>
+      <p>
+        Bees became interactive. A <code>catchBee(bee)</code> function was extracted and shared
+        between click handlers and the later virtual mouse system. When caught, a bee scales to zero
+        and fades out, then a new one spawns 800–2000ms later via a <code>spawnBee()</code> function.
+        An <code>activeBeeCount</code> counter keeps the total at 22.
+      </p>
+      <p>
+        <code>beesCollected</code> tracks session catches. The header shows a live count.
+        The leaderboard entry was extended with a <code>bees</code> field.
+      </p>
+    </div>
+
+    <div class="timeline-item">
+      <h3>17. achievements system</h3>
+      <div class="prompt-box">
+        Can we add achievements that store locally? Bee catching milestones: 1, 50, 100, 1k, 10k, 50k, 100k, 1M. Time listening: 1 minute, 10 minutes, 1 hour, 10 hours, 24 hours, 72 hours, 1 week. Mode discovery achievements, one per display/color mode.
+      </div>
+      <p>
+        A full achievement system was added. All data lives in <code>localStorage</code> under a single
+        <code>beelieve_progress</code> key as a JSON object. The <code>ACHIEVEMENTS</code> array defines
+        every achievement with an <code>id</code>, <code>cat</code>, <code>threshold</code>, <code>icon</code>,
+        <code>name</code>, and <code>desc</code>.
+      </p>
+      <ul>
+        <li><strong>Bee catching</strong> — 8 milestones from 1 to 1,000,000 bees</li>
+        <li><strong>Time listening</strong> — 7 milestones from 1 minute to 1 week (only ticks while actively playing, not paused)</li>
+        <li><strong>Discoveries</strong> — one per display mode and color mode, unlocked on first use</li>
+        <li><strong>Script completions</strong> — 1, 10, 100, 1,000 full runs of the script</li>
+      </ul>
+      <p>
+        A toast notification slides in from the bottom-right when an achievement unlocks.
+        An achievements modal (opened from the header or landing page) shows all achievements
+        in a grid, locked ones dimmed, with progress bars for threshold-based ones.
+      </p>
+    </div>
+
+    <div class="timeline-item">
+      <h3>18. cookie-clicker shop + BPS</h3>
+      <div class="prompt-box">
+        Make this like cookie clicker. We need next to the bee collected a shop icon. Buy upgrades with the total bees collected. One of the upgrades should be a virtual mouse that zooms around the screen and clicks on bees. We also need bees per second (BPS) as a tracker.
+      </div>
+      <p>
+        A full idle-game economy was built around honey (🍯) as currency:
+      </p>
+      <ul>
+        <li>Catching bees or auto-generation adds to <code>progress.beesTotal</code> (spendable, persisted)</li>
+        <li>7 upgrade tiers in a slide-in shop panel: Virtual Mouse → Bee Drone → Mini Hive → Pollen Farm → Honey Distillery → Barry's Lawyer → Bee Movie Studio</li>
+        <li>Each tier has a base cost, BPS contribution, and owned count. Cost scales at <code>1.15^owned</code></li>
+        <li>A 100ms interval accumulates fractional BPS into whole honey increments</li>
+        <li>BPS auto-gen only runs while actively listening — paused or on home screen = no honey</li>
+        <li>The header shows three distinct elements: total honey | BPS rate | SHOP button</li>
+      </ul>
+      <p>
+        The <strong>Virtual Mouse</strong> upgrade spawns animated 🖱️ cursor elements that visually
+        hunt bees — they transition to a random bee's position every ~700ms, trigger a click animation,
+        and call <code>catchBee()</code> on whatever bee they reach. They freeze when paused.
+      </p>
+
+      <div class="bug-box">
+        <span class="bug-label">🐛 bug — TDZ crash: can't access 'fallBodies' before initialization (×2)</span>
+        The <code>masterRAF</code> IIFE ran immediately at parse time and referenced <code>fallBodies</code>
+        and <code>bouncingWords</code>, which were declared with <code>let</code> further down in the script.
+        JavaScript's temporal dead zone (TDZ) throws a ReferenceError for <code>let</code> before its declaration.
+        The same issue appeared later with <code>syncVirtualMice()</code> referencing <code>running</code>.
+      </div>
+      <div class="fix-box">
+        <span class="fix-label">✅ fix</span>
+        Moved all <code>let fallBodies</code>, <code>let bouncingWords</code> declarations to before the
+        IIFE. Moved <code>syncVirtualMice()</code> call to after the <code>let running = false</code> declaration.
+      </div>
+    </div>
+
+    <div class="timeline-item">
+      <h3>19. mobile + iOS Safari support</h3>
+      <div class="prompt-box">
+        We now need a solid mobile update so it works on mobile. Currently going to the site on Safari on my iPhone doesn't do anything — no text gets read or changed to colors.
+      </div>
+      <p>
+        iOS Safari has several specific restrictions on the Web Speech API and touch handling:
+      </p>
+
+      <div class="bug-box">
+        <span class="bug-label">🐛 bug — speech never starts on iOS Safari</span>
+        <code>speechSynthesis.speak()</code> on iOS must be called synchronously within a direct user
+        gesture. The start button handler did <code>await fetch(SCRIPT_FILE)</code> before calling
+        <code>speakSentence()</code>. The <code>await</code> breaks the gesture context — iOS blocks
+        the speech call as non-user-initiated.
+      </div>
+      <div class="fix-box">
+        <span class="fix-label">✅ fix — gesture priming</span>
+        A silent <code>SpeechSynthesisUtterance('')</code> is spoken and immediately cancelled
+        synchronously at the very top of the click handler, before any <code>await</code>.
+        This primes the browser's gesture context, allowing the real speech to start later.
+      </div>
+
+      <div class="bug-box">
+        <span class="bug-label">🐛 bug — onboundary never fires on iOS Safari</span>
+        iOS Safari does not fire <code>onboundary</code> events at all. Without them, no words light up.
+      </div>
+      <div class="fix-box">
+        <span class="fix-label">✅ fix — character-rate fallback timer</span>
+        Added a fallback: when <code>onstart</code> fires and no boundary has ever been seen,
+        a <code>scheduleFallback()</code> function advances words one at a time using a timer
+        calculated from <code>(charLen / charsPerSec) * 1000</code>. If real boundary events
+        start arriving, the fallback cancels itself.
+      </div>
+
+      <div class="bug-box">
+        <span class="bug-label">🐛 bug — iOS speech silently stalls after ~30 seconds</span>
+        A known iOS Safari bug causes <code>speechSynthesis</code> to silently pause mid-playback,
+        with <code>speaking</code> still returning <code>true</code>.
+      </div>
+      <div class="fix-box">
+        <span class="fix-label">✅ fix — watchdog interval</span>
+        A 5-second interval checks if <code>speechSynthesis.paused</code> is true while it should be
+        playing, and calls <code>.resume()</code>. Also detects if no boundary event has fired in
+        over 8 seconds and nudges the synthesiser.
+      </div>
+
+      <p>Additional mobile fixes: header scrolls horizontally instead of wrapping; all interactive
+      elements got <code>touch-action: manipulation</code> and <code>-webkit-tap-highlight-color: transparent</code>;
+      bees got a <code>touchstart</code> handler with <code>preventDefault</code> for instant tap response;
+      overlay, leaderboard, and shop panel use <code>min(X, 90vw)</code> for small screens.</p>
+    </div>
+
+    <div class="timeline-item">
+      <h3>20. start fresh / resume + completion tracking</h3>
+      <div class="prompt-box">
+        On the landing page show two buttons — either start from beginning or resume from last session. Track how many times they completed the script as an achievement: 1, 10, 100, 1000 times.
+      </div>
+      <p>
+        <code>progress.savedLitCount</code> stores the last word index in localStorage every 10 seconds
+        while listening, and immediately when the home button is pressed. On the landing page, if
+        <code>savedLitCount &gt; 0</code>, a RESUME button appears alongside START FRESH.
+      </p>
+      <p>
+        Resuming lights all previously-heard words instantly (no speech), then finds the correct sentence
+        index and calls <code>speakSentence(si)</code> to pick up from there.
+      </p>
+      <p>
+        When the script finishes, <code>progress.completions</code> increments, <code>savedLitCount</code>
+        resets to 0, and four new achievements are checked: <em>You Watched It</em> (1×),
+        <em>Bee On Repeat</em> (10×), <em>Hive Mind</em> (100×), <em>According to All Known Laws</em> (1,000×).
+      </p>
+    </div>
+
+    <div class="timeline-item">
+      <h3>21. daily login bonus</h3>
+      <div class="prompt-box">
+        Can you add a daily login bonus of 69 honey that doubles each day you log in? Today it's 69, tomorrow 138, next day 276, etc.
+      </div>
+      <p>
+        On page load, the script compares today's date (<code>new Date().toISOString().slice(0,10)</code>)
+        against <code>progress.lastLoginDate</code>. If it's a new day, and yesterday matches the
+        last login date, the streak increments. Otherwise it resets to 1.
+        Bonus = <code>69 × 2^(streak − 1)</code> added directly to <code>progress.beesTotal</code>.
+        A toast pops up 800ms after page load showing the bonus amount and current streak day.
+      </p>
+    </div>
+
+    <div class="timeline-item">
+      <h3>22. leaderboard — coming soon</h3>
+      <p>
+        The original leaderboard used JSONBin.io as a free REST JSON store. Scores were saved on
+        pause, finish, tab close (<code>beforeunload</code> with <code>keepalive: true</code>),
+        and every 30 seconds via <code>setInterval</code>. The leaderboard score was migrated from
+        "words read" to "total bees ever caught" (stored in <code>progress.beesCaught</code>) so
+        spending honey in the shop can't lower your rank.
+      </p>
+      <p>
+        The JSONBin backend was removed and the leaderboard stubbed with a "coming soon" placeholder.
+        A <strong>Supabase</strong> database integration is planned as the replacement.
+        All local progress (honey, bees, shop, achievements, streak) continues to persist in localStorage.
+      </p>
+    </div>
+
+  </div>
+
+  <h2>// local storage schema</h2>
+  <p>All persistent progress lives under the key <code>beelieve_progress</code> in <code>localStorage</code>:</p>
+  <ul>
+    <li><code>beesTotal</code> — current spendable honey balance</li>
+    <li><code>beesCaught</code> — all-time bees caught by click or virtual mouse</li>
+    <li><code>listeningSeconds</code> — total seconds spent actively listening (not paused)</li>
+    <li><code>completions</code> — number of times the full script was finished</li>
+    <li><code>savedLitCount</code> — word index to resume from (0 if no active session)</li>
+    <li><code>loginStreak</code> — current consecutive daily login streak</li>
+    <li><code>lastLoginDate</code> — ISO date string of last visit (for streak calculation)</li>
+    <li><code>shop</code> — object mapping upgrade IDs to owned counts</li>
+    <li><code>unlocked</code> — object mapping achievement IDs to unlock date strings</li>
+  </ul>
+
+  <h2>// tech stack</h2>
+  <div style="margin-bottom: 16px;">
+    <span class="tech-tag">HTML</span>
+    <span class="tech-tag">CSS</span>
+    <span class="tech-tag">JavaScript</span>
+    <span class="tech-tag">Web Speech API</span>
+    <span class="tech-tag">Matter.js (physics)</span>
+    <span class="tech-tag">localStorage</span>
+    <span class="tech-tag">GitHub Pages</span>
+    <span class="tech-tag">Supabase (coming soon)</span>
+    <span class="tech-tag">the bee movie (2007)</span>
   </div>
 
   <h2>// things that were tried and changed</h2>
@@ -531,6 +782,12 @@
     <li>12 bees → 22 bees, 24px max → 324px max (two rounds of "BIGGER")</li>
     <li>Leaderboard fixed left panel → moved inside landing overlay, hidden after start</li>
     <li>speakSentence wrapper → removed, save call inlined directly</li>
+    <li>Leaderboard score: words read → total bees ever caught (score can't decrease from shop spending)</li>
+    <li>JSONBin.io leaderboard backend → stubbed, Supabase integration pending</li>
+    <li>Single START button → START FRESH + RESUME (resume only shown if session exists)</li>
+    <li>BPS/honey auto-gen always running → gated on <code>running && !paused</code></li>
+    <li>Virtual mice always hunting → freeze when paused, resume on play</li>
+    <li>All voices → English only; voice retry 10× at 300ms → 20× at 250ms for iOS</li>
   </ul>
 
   <hr>
