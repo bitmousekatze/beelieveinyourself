@@ -37,19 +37,9 @@
     }
     #header.visible { display: flex; }
 
-    .header-title {
-      color: #f5c800;
-      font-size: 0.75rem;
-      letter-spacing: 0.1em;
-    }
+    .header-title { color: #f5c800; font-size: 0.75rem; letter-spacing: 0.1em; }
 
-    #bee-counter {
-      color: #f5c800;
-      font-size: 0.72rem;
-      letter-spacing: 0.05em;
-      flex: 1;
-      white-space: nowrap;
-    }
+    #bee-counter { color: #f5c800; font-size: 0.72rem; letter-spacing: 0.05em; flex: 1; white-space: nowrap; }
 
     .header-btn {
       background: transparent;
@@ -68,95 +58,50 @@
 
     .mode-btn  { opacity: 0.45; }
     .cmode-btn { opacity: 0.45; }
-    .mode-btn.active,
-    .cmode-btn.active { opacity: 1; background: #f5c80018; border-color: #f5c800; }
+    .mode-btn.active, .cmode-btn.active { opacity: 1; background: #f5c80018; border-color: #f5c800; }
 
     .header-sep { width: 1px; height: 20px; background: #f5c80044; flex-shrink: 0; }
 
     /* ---- overlay ---- */
     #overlay {
-      position: fixed;
-      inset: 0;
+      position: fixed; inset: 0;
       background: #555;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: center;
-      gap: 24px;
-      z-index: 100;
+      display: flex; flex-direction: column; align-items: center; justify-content: center;
+      gap: 24px; z-index: 100;
       transition: opacity 0.6s ease;
     }
-
     #overlay h1 {
       font-size: clamp(2rem, 6vw, 4rem);
-      letter-spacing: 0.1em;
-      text-align: center;
+      letter-spacing: 0.1em; text-align: center;
       text-shadow: 0 0 30px #f5c800aa;
     }
-
-    #overlay p { color: #111; font-size: 1rem; }
+    #overlay > p { color: #111; font-size: 1rem; }
 
     .controls {
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      gap: 14px;
-      width: 320px;
+      display: flex; flex-direction: column; align-items: center;
+      gap: 14px; width: 320px;
     }
-
     .control-row {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      width: 100%;
-      gap: 10px;
-      color: #111;
-      font-size: 0.85rem;
+      display: flex; align-items: center; justify-content: space-between;
+      width: 100%; gap: 10px; color: #111; font-size: 0.85rem;
     }
-
     .control-row label { min-width: 50px; color: #111; }
-
-    .control-row input[type=range] {
-      flex: 1;
-      accent-color: #f5c800;
-      cursor: pointer;
-    }
-
+    .control-row input[type=range] { flex: 1; accent-color: #f5c800; cursor: pointer; }
     .control-row select {
-      flex: 1;
-      background: #444;
-      color: #f5c800;
-      border: 1px solid #f5c800;
-      font-family: 'Courier New', monospace;
-      font-size: 0.8rem;
-      padding: 4px 6px;
-      cursor: pointer;
-      outline: none;
+      flex: 1; background: #444; color: #f5c800;
+      border: 1px solid #f5c800; font-family: 'Courier New', monospace;
+      font-size: 0.8rem; padding: 4px 6px; cursor: pointer; outline: none;
     }
-
-    .control-row .val {
-      min-width: 30px;
-      text-align: right;
-      color: #f5c800;
-      font-size: 0.8rem;
-    }
+    .control-row .val { min-width: 30px; text-align: right; color: #f5c800; font-size: 0.8rem; }
 
     #start-btn {
-      background: #f5c800;
-      color: #0a0a00;
-      border: none;
-      padding: 16px 48px;
-      font-size: 1.4rem;
-      font-family: 'Courier New', monospace;
-      font-weight: bold;
-      cursor: pointer;
-      letter-spacing: 0.15em;
-      text-transform: uppercase;
+      background: #f5c800; color: #0a0a00; border: none;
+      padding: 16px 48px; font-size: 1.4rem;
+      font-family: 'Courier New', monospace; font-weight: bold;
+      cursor: pointer; letter-spacing: 0.15em; text-transform: uppercase;
       transition: transform 0.1s, box-shadow 0.1s;
-      box-shadow: 0 0 20px #f5c80066;
-      margin-top: 8px;
+      box-shadow: 0 0 20px #f5c80066; margin-top: 8px;
     }
-
     #start-btn:hover { transform: scale(1.05); box-shadow: 0 0 40px #f5c800aa; }
     #start-btn:active { transform: scale(0.97); }
 
@@ -164,178 +109,82 @@
     #words {
       padding: 64px 5vw 200px;
       font-size: clamp(0.9rem, 2vw, 1.15rem);
-      line-height: 1.9;
-      word-spacing: 0.25em;
-      max-width: 100%;
+      line-height: 1.9; word-spacing: 0.25em; max-width: 100%;
     }
+    .word { display: inline; color: #555; transition: color 0.08s ease; }
 
-    .word {
-      display: inline;
-      color: #555;
-      transition: color 0.08s ease;
-    }
-
-    /* ---- floating/bouncing/falling word clones ---- */
+    /* ---- fly-word clones ---- */
     .fly-word {
       font-family: 'Courier New', monospace;
       font-size: clamp(0.9rem, 2vw, 1.15rem);
-      pointer-events: none;
-      z-index: 5;
-      white-space: nowrap;
-      line-height: 1;
-      transform-origin: center center;
+      pointer-events: none; z-index: 5;
+      white-space: nowrap; line-height: 1; transform-origin: center center;
     }
-
     @keyframes float-up {
-      0%   { transform: translateY(0)    scale(1);   opacity: 1; }
+      0%   { transform: translateY(0) scale(1);    opacity: 1; }
       100% { transform: translateY(-50vh) scale(0.7); opacity: 0; }
     }
 
     /* ---- HUD ---- */
     #hud {
-      position: fixed;
-      bottom: 0; left: 0; right: 0;
+      position: fixed; bottom: 0; left: 0; right: 0;
       padding: 12px 24px 16px;
       background: linear-gradient(transparent, #555555dd 40%, #555);
-      display: flex;
-      align-items: center;
-      gap: 16px;
-      z-index: 50;
-      opacity: 0;
-      pointer-events: none;
-      transition: opacity 0.4s;
+      display: flex; align-items: center; gap: 16px;
+      z-index: 50; opacity: 0; pointer-events: none; transition: opacity 0.4s;
     }
     #hud.visible { opacity: 1; pointer-events: all; }
 
     #pause-btn {
-      background: transparent;
-      border: 1px solid #f5c800;
-      color: #f5c800;
-      padding: 6px 20px;
-      font-family: 'Courier New', monospace;
-      font-size: 0.85rem;
-      cursor: pointer;
-      letter-spacing: 0.1em;
-      transition: background 0.15s;
-      flex-shrink: 0;
+      background: transparent; border: 1px solid #f5c800; color: #f5c800;
+      padding: 6px 20px; font-family: 'Courier New', monospace; font-size: 0.85rem;
+      cursor: pointer; letter-spacing: 0.1em; transition: background 0.15s; flex-shrink: 0;
     }
     #pause-btn:hover { background: #f5c80022; }
 
-    #hud-speed-wrap {
-      display: flex;
-      align-items: center;
-      gap: 6px;
-      flex-shrink: 0;
-      color: #111;
-      font-size: 0.75rem;
-    }
-
+    #hud-speed-wrap { display: flex; align-items: center; gap: 6px; flex-shrink: 0; color: #111; font-size: 0.75rem; }
     #live-speed { accent-color: #f5c800; width: 100px; cursor: pointer; }
-
     #progress-wrap { flex: 1; display: flex; flex-direction: column; gap: 4px; }
-
-    #progress {
-      position: relative;
-      height: 6px;
-      background: #333;
-      border-radius: 3px;
-    }
-
-    #progress-bar {
-      height: 100%;
-      background: #f5c800;
-      width: 0%;
-      border-radius: 3px;
-      transition: width 0.3s linear;
-    }
+    #progress { position: relative; height: 6px; background: #333; border-radius: 3px; }
+    #progress-bar { height: 100%; background: #f5c800; width: 0%; border-radius: 3px; transition: width 0.3s linear; }
 
     .milestone {
-      position: absolute;
-      top: 50%;
-      transform: translate(-50%, -50%);
-      width: 10px; height: 10px;
-      background: #fff;
-      border-radius: 50%;
-      border: 2px solid #333;
-      cursor: pointer;
-      z-index: 2;
+      position: absolute; top: 50%; transform: translate(-50%, -50%);
+      width: 10px; height: 10px; background: #fff;
+      border-radius: 50%; border: 2px solid #333; cursor: pointer; z-index: 2;
     }
     .milestone.reached { background: #f5c800; border-color: #f5c800; }
-
     .milestone-label {
-      position: absolute;
-      bottom: 14px;
-      transform: translateX(-50%);
-      background: #222;
-      color: #f5c800;
-      font-size: 0.65rem;
-      font-family: 'Courier New', monospace;
-      white-space: nowrap;
-      padding: 3px 6px;
-      border-radius: 3px;
-      pointer-events: none;
-      opacity: 0;
-      transition: opacity 0.2s;
+      position: absolute; bottom: 14px; transform: translateX(-50%);
+      background: #222; color: #f5c800; font-size: 0.65rem;
+      font-family: 'Courier New', monospace; white-space: nowrap;
+      padding: 3px 6px; border-radius: 3px; pointer-events: none;
+      opacity: 0; transition: opacity 0.2s;
     }
     .milestone:hover .milestone-label,
     .milestone.reached:hover .milestone-label { opacity: 1; }
 
-    #word-count {
-      color: #333;
-      font-size: 0.75rem;
-      min-width: 90px;
-      text-align: right;
-      flex-shrink: 0;
-    }
+    #word-count { color: #333; font-size: 0.75rem; min-width: 90px; text-align: right; flex-shrink: 0; }
 
     #milestone-toast {
-      position: fixed;
-      top: 60px;
-      left: 50%;
+      position: fixed; top: 60px; left: 50%;
       transform: translateX(-50%) translateY(-80px);
-      background: #111;
-      color: #f5c800;
-      font-family: 'Courier New', monospace;
-      font-size: 0.9rem;
-      padding: 10px 20px;
-      border: 1px solid #f5c800;
-      border-radius: 4px;
-      z-index: 200;
-      transition: transform 0.3s ease, opacity 0.3s ease;
-      opacity: 0;
-      pointer-events: none;
-      text-align: center;
-      max-width: 80vw;
+      background: #111; color: #f5c800;
+      font-family: 'Courier New', monospace; font-size: 0.9rem;
+      padding: 10px 20px; border: 1px solid #f5c800; border-radius: 4px;
+      z-index: 200; transition: transform 0.3s ease, opacity 0.3s ease;
+      opacity: 0; pointer-events: none; text-align: center; max-width: 80vw;
     }
-    #milestone-toast.show {
-      transform: translateX(-50%) translateY(0);
-      opacity: 1;
-    }
+    #milestone-toast.show { transform: translateX(-50%) translateY(0); opacity: 1; }
 
     /* ---- leaderboard ---- */
     #leaderboard {
-      width: 320px;
-      background: #44444466;
-      border: 1px solid #f5c80033;
-      border-radius: 4px;
-      padding: 14px 16px;
-      font-size: 0.75rem;
+      width: 320px; background: #44444466;
+      border: 1px solid #f5c80033; border-radius: 4px;
+      padding: 14px 16px; font-size: 0.75rem;
     }
-    #leaderboard h3 {
-      color: #f5c800;
-      font-size: 0.8rem;
-      letter-spacing: 0.1em;
-      margin-bottom: 12px;
-      text-align: center;
-    }
-    .lb-row {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      padding: 4px 0;
-      border-bottom: 1px solid #ffffff11;
-      gap: 6px;
-    }
+    #leaderboard h3 { color: #f5c800; font-size: 0.8rem; letter-spacing: 0.1em; margin-bottom: 12px; text-align: center; }
+    .lb-row { display: flex; justify-content: space-between; align-items: center; padding: 4px 0; border-bottom: 1px solid #ffffff11; gap: 6px; }
     .lb-row:last-child { border-bottom: none; }
     .lb-rank  { color: #f5c800; min-width: 18px; }
     .lb-name  { color: #ddd; flex: 1; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
@@ -345,20 +194,11 @@
 
     /* ---- bees ---- */
     .bee {
-      position: fixed;
-      pointer-events: none;
-      z-index: 10;
-      image-rendering: pixelated;
+      position: fixed; pointer-events: none; z-index: 10; image-rendering: pixelated;
       transition: transform 0.25s ease, opacity 0.25s ease;
     }
-    .bee.catchable {
-      pointer-events: auto;
-      cursor: pointer;
-    }
-    .bee.caught {
-      transform: scale(0) !important;
-      opacity: 0 !important;
-    }
+    .bee.catchable { pointer-events: auto; cursor: pointer; }
+    .bee.caught { transform: scale(0) !important; opacity: 0 !important; }
 
     @keyframes fly-right {
       from { transform: translateX(-120px) scaleX(1); }
@@ -372,6 +212,77 @@
       0%,100% { margin-top: 0; }
       50%      { margin-top: 18px; }
     }
+
+    /* ---- achievement toast ---- */
+    #ach-toast {
+      position: fixed; bottom: 80px; right: 20px;
+      background: #222; border: 1px solid #f5c800;
+      color: #f5c800; font-family: 'Courier New', monospace;
+      padding: 12px 16px; border-radius: 6px; z-index: 300;
+      max-width: 260px; opacity: 0; pointer-events: none;
+      transform: translateX(30px);
+      transition: opacity 0.4s, transform 0.4s;
+    }
+    #ach-toast.show { opacity: 1; transform: translateX(0); }
+    #ach-toast .ach-toast-icon { font-size: 1.4rem; }
+    #ach-toast .ach-toast-name { font-size: 0.85rem; font-weight: bold; margin-top: 2px; }
+    #ach-toast .ach-toast-desc { font-size: 0.7rem; color: #aaa; margin-top: 3px; }
+
+    /* ---- achievements modal ---- */
+    #ach-overlay {
+      position: fixed; inset: 0;
+      background: #000000cc;
+      display: none; align-items: center; justify-content: center;
+      z-index: 500;
+    }
+    #ach-overlay.open { display: flex; }
+
+    #ach-panel {
+      background: #2a2a2a; border: 1px solid #f5c80055;
+      border-radius: 8px; padding: 28px 24px;
+      width: min(780px, 96vw); max-height: 85vh;
+      overflow-y: auto; position: relative;
+    }
+    #ach-panel h2 {
+      color: #f5c800; font-size: 1.1rem; letter-spacing: 0.15em;
+      text-align: center; margin-bottom: 6px;
+    }
+    #ach-panel .ach-subtitle {
+      color: #777; font-size: 0.72rem; text-align: center; margin-bottom: 22px;
+    }
+    .ach-section-title {
+      color: #f5c80077; font-size: 0.7rem; letter-spacing: 0.15em;
+      text-transform: uppercase; margin: 18px 0 10px;
+      border-bottom: 1px solid #f5c80022; padding-bottom: 6px;
+    }
+    .ach-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+      gap: 10px;
+    }
+    .ach-card {
+      background: #333; border: 1px solid #44440022;
+      border-radius: 6px; padding: 12px 14px;
+      opacity: 0.35; transition: opacity 0.2s;
+    }
+    .ach-card.unlocked { opacity: 1; border-color: #f5c80033; background: #3a3500; }
+    .ach-card-icon { font-size: 1.5rem; margin-bottom: 4px; }
+    .ach-card-name { color: #f5c800; font-size: 0.78rem; font-weight: bold; }
+    .ach-card-desc { color: #888; font-size: 0.68rem; margin-top: 4px; line-height: 1.4; }
+    .ach-card-date { color: #f5c80077; font-size: 0.6rem; margin-top: 6px; }
+
+    #ach-close {
+      position: absolute; top: 14px; right: 16px;
+      background: transparent; border: 1px solid #f5c80044;
+      color: #f5c800; font-family: 'Courier New', monospace;
+      font-size: 0.75rem; cursor: pointer; padding: 3px 10px;
+    }
+    #ach-close:hover { background: #f5c80022; }
+
+    .ach-progress-bar {
+      height: 3px; background: #444; border-radius: 2px; margin-top: 8px;
+    }
+    .ach-progress-fill { height: 100%; background: #f5c800; border-radius: 2px; }
   </style>
 </head>
 <body>
@@ -381,6 +292,7 @@
   <span class="header-title">🐝 beelieveInYourself</span>
   <span id="bee-counter">  collected: 0</span>
   <button class="header-btn" id="save-btn">SAVE</button>
+  <button class="header-btn" id="header-ach-btn">ACHIEVEMENTS</button>
   <div class="header-sep"></div>
   <button class="header-btn mode-btn active" id="mode-list">LIST</button>
   <button class="header-btn mode-btn"        id="mode-fall">FALL</button>
@@ -393,6 +305,7 @@
   <button class="header-btn cmode-btn"        id="cmode-chaos">CHAOS</button>
 </div>
 
+<!-- landing page -->
 <div id="overlay">
   <h1>🐝 beelieveInYourself</h1>
   <p>according to all known laws of aviation...</p>
@@ -418,6 +331,12 @@
       <select id="voice-select"><option>loading voices...</option></select>
     </div>
     <button id="start-btn">START</button>
+    <button id="landing-ach-btn"
+      style="background:transparent; border:1px solid #f5c80066; color:#f5c800;
+             font-family:'Courier New',monospace; font-size:0.8rem; padding:8px 24px;
+             cursor:pointer; letter-spacing:0.1em;">
+      🏅 ACHIEVEMENTS
+    </button>
     <a href="beelieve.html" style="color:#111; font-size:0.75rem; letter-spacing:0.1em; text-decoration:none; margin-top:4px;">how was this made? →</a>
 
     <div id="leaderboard">
@@ -425,6 +344,23 @@
       <div id="lb-rows"><div style="color:#666;text-align:center;padding:8px">loading...</div></div>
     </div>
   </div>
+</div>
+
+<!-- achievements modal -->
+<div id="ach-overlay">
+  <div id="ach-panel">
+    <button id="ach-close">✕ CLOSE</button>
+    <h2>🏅 ACHIEVEMENTS</h2>
+    <div class="ach-subtitle" id="ach-subtitle">loading...</div>
+    <div id="ach-content"></div>
+  </div>
+</div>
+
+<!-- achievement unlock toast -->
+<div id="ach-toast">
+  <div class="ach-toast-icon" id="ach-toast-icon"></div>
+  <div class="ach-toast-name" id="ach-toast-name"></div>
+  <div class="ach-toast-desc" id="ach-toast-desc"></div>
 </div>
 
 <div id="bees"></div>
@@ -438,9 +374,7 @@
     <input type="range" id="live-speed" min="1" max="38" value="12" />
   </div>
   <div id="progress-wrap">
-    <div id="progress">
-      <div id="progress-bar"></div>
-    </div>
+    <div id="progress"><div id="progress-bar"></div></div>
   </div>
   <span id="word-count">0 / 0</span>
 </div>
@@ -466,7 +400,130 @@
     { pct: 100,  icon: '🎬', label: 'No rehearsal for that.' },
   ];
 
-  // --- element refs ---
+  // =============================================
+  // ACHIEVEMENTS
+  // =============================================
+  const ACHIEVEMENTS = [
+    // --- bee catching ---
+    { id: 'bee_1',       cat: 'bees', threshold: 1,        icon: '🐝', name: 'First Sting',           desc: "You caught your first bee. They said it couldn't be done." },
+    { id: 'bee_50',      cat: 'bees', threshold: 50,       icon: '🫙', name: 'Amateur Beekeeper',      desc: "50 bees. You're getting the hang of this." },
+    { id: 'bee_100',     cat: 'bees', threshold: 100,      icon: '🍯', name: 'Hive Thief',             desc: "100 bees caught. The colony is getting suspicious." },
+    { id: 'bee_1000',    cat: 'bees', threshold: 1000,     icon: '🦺', name: 'Bee Wrangler',           desc: "1,000 bees. You have a problem and you know it." },
+    { id: 'bee_10000',   cat: 'bees', threshold: 10000,    icon: '🚔', name: 'Bee Criminal',           desc: "10,000 bees. Interpol has been notified." },
+    { id: 'bee_50000',   cat: 'bees', threshold: 50000,    icon: '⚡', name: 'Bee God',                desc: "50,000 bees. You are beyond mortal comprehension." },
+    { id: 'bee_100000',  cat: 'bees', threshold: 100000,   icon: '👑', name: 'Bee Yourself',           desc: "100,000 bees. A fitting end to your journey." },
+    { id: 'bee_1000000', cat: 'bees', threshold: 1000000,  icon: '🎬', name: 'Bee Movie',              desc: "1,000,000 bees. According to all known laws of aviation..." },
+    // --- time listening ---
+    { id: 'time_1m',     cat: 'time', threshold: 60,       icon: '⏱️', name: 'Still Here?',            desc: "1 minute of listening. This is fine." },
+    { id: 'time_10m',    cat: 'time', threshold: 600,      icon: '🎧', name: 'Barry Fan',              desc: "10 minutes. You are genuinely invested in this." },
+    { id: 'time_1h',     cat: 'time', threshold: 3600,     icon: '🌻', name: "That's Honey Time",      desc: "1 hour of Bee Movie. Please consider going outside." },
+    { id: 'time_10h',    cat: 'time', threshold: 36000,    icon: '💃', name: 'Waggle Dancer',          desc: "10 hours. Your friends are starting to worry." },
+    { id: 'time_24h',    cat: 'time', threshold: 86400,    icon: '🌍', name: 'One Full Rotation',      desc: "24 hours. You have experienced a full Earth rotation of Bee Movie." },
+    { id: 'time_72h',    cat: 'time', threshold: 259200,   icon: '😵', name: 'Sleep Is for the Weak',  desc: "72 hours. Three days. Are you doing okay in there?" },
+    { id: 'time_1week',  cat: 'time', threshold: 604800,   icon: '🧘', name: 'The Bee Whisperer',      desc: "One full week. You have transcended. Barry is proud of you." },
+  ];
+
+  const PROGRESS_KEY = 'beelieve_progress';
+
+  function loadProgress() {
+    try { return JSON.parse(localStorage.getItem(PROGRESS_KEY) || '{}'); }
+    catch { return {}; }
+  }
+
+  function saveProgress(p) {
+    localStorage.setItem(PROGRESS_KEY, JSON.stringify(p));
+  }
+
+  // persistent totals across sessions
+  let progress = loadProgress();
+  if (!progress.beesTotal)       progress.beesTotal = 0;
+  if (!progress.listeningSeconds) progress.listeningSeconds = 0;
+  if (!progress.unlocked)        progress.unlocked = {};
+
+  let achToastTimer = null;
+
+  function showAchToast(ach) {
+    const el   = document.getElementById('ach-toast');
+    document.getElementById('ach-toast-icon').textContent = ach.icon;
+    document.getElementById('ach-toast-name').textContent = `UNLOCKED: ${ach.name}`;
+    document.getElementById('ach-toast-desc').textContent = ach.desc;
+    el.classList.add('show');
+    clearTimeout(achToastTimer);
+    achToastTimer = setTimeout(() => el.classList.remove('show'), 4000);
+  }
+
+  function checkAchievements(type) {
+    const val = type === 'bees' ? progress.beesTotal : progress.listeningSeconds;
+    ACHIEVEMENTS.filter(a => a.cat === type).forEach(ach => {
+      if (!progress.unlocked[ach.id] && val >= ach.threshold) {
+        progress.unlocked[ach.id] = new Date().toISOString().slice(0, 10);
+        saveProgress(progress);
+        showAchToast(ach);
+      }
+    });
+  }
+
+  function renderAchievements() {
+    const content  = document.getElementById('ach-content');
+    const subtitle = document.getElementById('ach-subtitle');
+    const total    = ACHIEVEMENTS.length;
+    const unlocked = Object.keys(progress.unlocked).length;
+    subtitle.textContent = `${unlocked} / ${total} unlocked  ·  🐝 ${progress.beesTotal.toLocaleString()} total  ·  ⏱ ${formatTime(progress.listeningSeconds)} listened`;
+
+    content.innerHTML = '';
+
+    ['bees', 'time'].forEach(cat => {
+      const title = document.createElement('div');
+      title.className = 'ach-section-title';
+      title.textContent = cat === 'bees' ? '🐝 Bee Catching' : '⏱ Time Listening';
+      content.appendChild(title);
+
+      const grid = document.createElement('div');
+      grid.className = 'ach-grid';
+
+      ACHIEVEMENTS.filter(a => a.cat === cat).forEach(ach => {
+        const date     = progress.unlocked[ach.id];
+        const card     = document.createElement('div');
+        card.className = 'ach-card' + (date ? ' unlocked' : '');
+
+        const pct = cat === 'bees'
+          ? Math.min(100, (progress.beesTotal / ach.threshold) * 100)
+          : Math.min(100, (progress.listeningSeconds / ach.threshold) * 100);
+
+        card.innerHTML = `
+          <div class="ach-card-icon">${date ? ach.icon : '🔒'}</div>
+          <div class="ach-card-name">${ach.name}</div>
+          <div class="ach-card-desc">${ach.desc}</div>
+          ${date ? `<div class="ach-card-date">unlocked ${date}</div>` : `
+            <div class="ach-progress-bar">
+              <div class="ach-progress-fill" style="width:${pct.toFixed(1)}%"></div>
+            </div>`}
+        `;
+        grid.appendChild(card);
+      });
+
+      content.appendChild(grid);
+    });
+  }
+
+  function formatTime(s) {
+    if (s < 60)   return `${s}s`;
+    if (s < 3600) return `${Math.floor(s/60)}m`;
+    return `${Math.floor(s/3600)}h ${Math.floor((s%3600)/60)}m`;
+  }
+
+  // achievements modal open/close
+  function openAch() { renderAchievements(); document.getElementById('ach-overlay').classList.add('open'); }
+  function closeAch() { document.getElementById('ach-overlay').classList.remove('open'); }
+
+  document.getElementById('landing-ach-btn').addEventListener('click', openAch);
+  document.getElementById('header-ach-btn').addEventListener('click', openAch);
+  document.getElementById('ach-close').addEventListener('click', closeAch);
+  document.getElementById('ach-overlay').addEventListener('click', e => { if (e.target.id === 'ach-overlay') closeAch(); });
+
+  // =============================================
+  // ELEMENT REFS
+  // =============================================
   const lbRows        = document.getElementById('lb-rows');
   const playerNameEl  = document.getElementById('player-name');
   const overlay       = document.getElementById('overlay');
@@ -490,10 +547,12 @@
 
   let playerName    = 'anonymous';
   let scoreSaved    = false;
-  let beesCollected = 0;
+  let beesCollected = 0; // this session only (for leaderboard)
 
-  // --- leaderboard ---
-  const BIN_URL = `https://api.jsonbin.io/v3/b/${CONFIG.JSONBIN_BIN}`;
+  // =============================================
+  // LEADERBOARD
+  // =============================================
+  const BIN_URL     = `https://api.jsonbin.io/v3/b/${CONFIG.JSONBIN_BIN}`;
   const BIN_HEADERS = { 'X-Master-Key': CONFIG.JSONBIN_KEY, 'Content-Type': 'application/json' };
 
   async function fetchScores() {
@@ -517,8 +576,7 @@
     try {
       await fetch(BIN_URL, {
         method: 'PUT', headers: BIN_HEADERS,
-        body: JSON.stringify({ scores: top50 }),
-        keepalive: true
+        body: JSON.stringify({ scores: top50 }), keepalive: true
       });
       renderLeaderboard(top50, name);
     } catch {}
@@ -547,11 +605,13 @@
   }
 
   loadLeaderboard();
-
   window.addEventListener('beforeunload', () => {
     if (running || litCount > 0) saveScore(playerName, litCount);
   });
 
+  // =============================================
+  // GAME STATE
+  // =============================================
   let words         = [];
   let spans         = [];
   let sentences     = [];
@@ -602,9 +662,7 @@
   function buildMilestones() {
     MILESTONES.forEach((m, i) => {
       const dot = document.createElement('div');
-      dot.className = 'milestone';
-      dot.id = `ms-${i}`;
-      dot.style.left = m.pct + '%';
+      dot.className = 'milestone'; dot.id = `ms-${i}`; dot.style.left = m.pct + '%';
       const lbl = document.createElement('div');
       lbl.className = 'milestone-label';
       lbl.textContent = `${m.icon} ${m.label}`;
@@ -622,26 +680,21 @@
     }
   }
 
-  // --- pre-render ---
+  // --- pre-render / sentences ---
   function renderAll() {
     words.forEach(w => {
       const span = document.createElement('span');
-      span.className = 'word';
-      span.textContent = w + ' ';
-      wordsEl.appendChild(span);
-      spans.push(span);
+      span.className = 'word'; span.textContent = w + ' ';
+      wordsEl.appendChild(span); spans.push(span);
     });
   }
 
-  // --- build sentences ---
   function buildSentences() {
-    const end = /[.!?]$/;
-    let start = 0;
+    const end = /[.!?]$/; let start = 0;
     for (let i = 0; i < words.length; i++) {
       if (end.test(words[i]) || i === words.length - 1) {
         const slice = words.slice(start, i + 1);
-        const charMap = [];
-        let pos = 0;
+        const charMap = []; let pos = 0;
         slice.forEach((w, wi) => {
           for (let c = 0; c < w.length; c++) charMap[pos + c] = start + wi;
           pos += w.length + 1;
@@ -657,151 +710,98 @@
   // =============================================
   let displayMode = 'list';
 
-  // shared state — declared before masterRAF so the IIFE can reference them
+  // declared before masterRAF IIFE to avoid TDZ errors
   let bouncingWords = [];
   let fallBodies    = [];
 
-  // master RAF — syncs fall DOM + runs bounce physics
   (function masterRAF() {
     requestAnimationFrame(masterRAF);
-    // fall: sync DOM to Matter.js bodies
     fallBodies.forEach(({ body, el }) => {
       el.style.left      = (body.position.x - el.offsetWidth  / 2) + 'px';
       el.style.top       = (body.position.y - el.offsetHeight / 2) + 'px';
       el.style.transform = `rotate(${body.angle}rad)`;
     });
-    // bounce: simple viewport physics
     bouncingWords.forEach(bw => {
-      bw.x += bw.vx;
-      bw.y += bw.vy;
-      const w = bw.el.offsetWidth;
-      const h = bw.el.offsetHeight;
-      if (bw.x < 0)                        { bw.x = 0;                        bw.vx =  Math.abs(bw.vx); }
-      if (bw.x + w > window.innerWidth)    { bw.x = window.innerWidth - w;    bw.vx = -Math.abs(bw.vx); }
-      if (bw.y < 44)                       { bw.y = 44;                       bw.vy =  Math.abs(bw.vy); }
-      if (bw.y + h > window.innerHeight)   { bw.y = window.innerHeight - h;   bw.vy = -Math.abs(bw.vy); }
-      bw.el.style.left = bw.x + 'px';
-      bw.el.style.top  = bw.y + 'px';
+      bw.x += bw.vx; bw.y += bw.vy;
+      const w = bw.el.offsetWidth, h = bw.el.offsetHeight;
+      if (bw.x < 0)                      { bw.x = 0;                      bw.vx =  Math.abs(bw.vx); }
+      if (bw.x + w > window.innerWidth)  { bw.x = window.innerWidth - w;  bw.vx = -Math.abs(bw.vx); }
+      if (bw.y < 44)                     { bw.y = 44;                     bw.vy =  Math.abs(bw.vy); }
+      if (bw.y + h > window.innerHeight) { bw.y = window.innerHeight - h; bw.vy = -Math.abs(bw.vy); }
+      bw.el.style.left = bw.x + 'px'; bw.el.style.top = bw.y + 'px';
     });
   })();
 
-  // --- FALL (Matter.js, document-space) ---
-  let fallEngine = null;
-  let fallWorld  = null;
-  let fallInited = false;
-  let fallGround = null;
-  let fallLeft   = null;
-  let fallRight  = null;
-  let fallFloorY = 0;
+  // --- FALL ---
+  let fallEngine = null, fallWorld = null, fallInited = false;
+  let fallGround = null, fallLeft = null, fallRight = null, fallFloorY = 0;
 
   function viewportBottom() { return window.scrollY + window.innerHeight - 50; }
 
   function initFall() {
-    if (fallInited) return;
-    fallInited = true;
+    if (fallInited) return; fallInited = true;
     fallFloorY = viewportBottom();
-
-    fallEngine = Matter.Engine.create();
-    fallWorld  = fallEngine.world;
+    fallEngine = Matter.Engine.create(); fallWorld = fallEngine.world;
     fallEngine.gravity.y = 1.2;
-
     fallGround = Matter.Bodies.rectangle(window.innerWidth / 2, fallFloorY + 30, window.innerWidth * 4, 60, { isStatic: true });
     fallLeft   = Matter.Bodies.rectangle(-30, fallFloorY / 2, 60, fallFloorY * 2, { isStatic: true });
     fallRight  = Matter.Bodies.rectangle(window.innerWidth + 30, fallFloorY / 2, 60, fallFloorY * 2, { isStatic: true });
     Matter.World.add(fallWorld, [fallGround, fallLeft, fallRight]);
-
-    // only move ground DOWN (scrolling up never destroys the pile)
     window.addEventListener('scroll', () => {
-      const ny = viewportBottom();
-      if (ny <= fallFloorY) return;
-      fallFloorY = ny;
+      const ny = viewportBottom(); if (ny <= fallFloorY) return; fallFloorY = ny;
       Matter.Body.setPosition(fallGround, { x: window.innerWidth / 2, y: fallFloorY + 30 });
       Matter.Body.setPosition(fallLeft,   { x: -30,                    y: fallFloorY / 2  });
       Matter.Body.setPosition(fallRight,  { x: window.innerWidth + 30, y: fallFloorY / 2  });
     });
-
     setInterval(() => Matter.Engine.update(fallEngine, 1000 / 60), 1000 / 60);
   }
 
   function dropFall(span) {
-    if (span._dispatched) return;
-    span._dispatched = true;
-    initFall();
-
-    const rect  = span.getBoundingClientRect();
-    const docX  = rect.left + rect.width  / 2 + window.scrollX;
-    const docY  = rect.top  + rect.height / 2 + window.scrollY;
+    if (span._dispatched) return; span._dispatched = true; initFall();
+    const rect = span.getBoundingClientRect();
+    const docX = rect.left + rect.width / 2 + window.scrollX;
+    const docY = rect.top + rect.height / 2 + window.scrollY;
     const startY = Math.min(docY, fallFloorY - 20);
-
     const el = document.createElement('span');
-    el.className   = 'fly-word';
-    el.style.position = 'absolute';
-    el.style.left  = '-9999px';
-    el.style.top   = '-9999px';
-    el.textContent = span.textContent.trim();
-    el.style.color = span.style.color || '#f5c800';
+    el.className = 'fly-word'; el.style.position = 'absolute';
+    el.style.left = '-9999px'; el.style.top = '-9999px';
+    el.textContent = span.textContent.trim(); el.style.color = span.style.color || '#f5c800';
     document.body.appendChild(el);
-
-    const w = Math.max(el.offsetWidth,  10) + 6;
-    const h = Math.max(el.offsetHeight, 10) + 6;
-
-    const body = Matter.Bodies.rectangle(docX, startY, w, h, {
-      restitution: 0.4, friction: 0.3, frictionAir: 0.012,
-      angle: (Math.random() - 0.5) * 0.4,
-    });
+    const w = Math.max(el.offsetWidth, 10) + 6, h = Math.max(el.offsetHeight, 10) + 6;
+    const body = Matter.Bodies.rectangle(docX, startY, w, h, { restitution: 0.4, friction: 0.3, frictionAir: 0.012, angle: (Math.random() - 0.5) * 0.4 });
     Matter.Body.setVelocity(body, { x: (Math.random() - 0.5) * 4, y: 2 + Math.random() * 2 });
-    Matter.World.add(fallWorld, body);
-    fallBodies.push({ body, el, span });
+    Matter.World.add(fallWorld, body); fallBodies.push({ body, el, span });
     span.style.visibility = 'hidden';
   }
 
-  // --- FLOAT (CSS animation, viewport-space) ---
+  // --- FLOAT ---
   function dropFloat(span) {
-    if (span._dispatched) return;
-    span._dispatched = true;
-
+    if (span._dispatched) return; span._dispatched = true;
     const rect = span.getBoundingClientRect();
-    const el   = document.createElement('span');
-    el.className   = 'fly-word';
-    el.style.position = 'fixed';
-    el.style.left  = rect.left + 'px';
-    el.style.top   = rect.top  + 'px';
+    const el = document.createElement('span');
+    el.className = 'fly-word'; el.style.position = 'fixed';
+    el.style.left = rect.left + 'px'; el.style.top = rect.top + 'px';
     el.style.color = span.style.color || '#f5c800';
     el.style.animation = `float-up ${2 + Math.random()}s ease-in forwards`;
     el.textContent = span.textContent.trim();
-    document.body.appendChild(el);
-    span.style.visibility = 'hidden';
+    document.body.appendChild(el); span.style.visibility = 'hidden';
     setTimeout(() => el.remove(), 3200);
   }
 
-  // --- BOUNCE (simple viewport physics) ---
+  // --- BOUNCE ---
   function dropBounce(span) {
-    if (span._dispatched) return;
-    span._dispatched = true;
-
-    const rect  = span.getBoundingClientRect();
-    const el    = document.createElement('span');
-    el.className   = 'fly-word';
-    el.style.position = 'fixed';
-    el.style.left  = rect.left + 'px';
-    el.style.top   = rect.top  + 'px';
+    if (span._dispatched) return; span._dispatched = true;
+    const rect = span.getBoundingClientRect();
+    const el = document.createElement('span');
+    el.className = 'fly-word'; el.style.position = 'fixed';
+    el.style.left = rect.left + 'px'; el.style.top = rect.top + 'px';
     el.style.color = span.style.color || '#f5c800';
     el.textContent = span.textContent.trim();
-    document.body.appendChild(el);
-    span.style.visibility = 'hidden';
-
-    const speed = 2.5 + Math.random() * 4;
-    const angle = Math.random() * Math.PI * 2;
-    bouncingWords.push({
-      el,
-      x: rect.left,
-      y: rect.top,
-      vx: Math.cos(angle) * speed,
-      vy: Math.sin(angle) * speed,
-    });
+    document.body.appendChild(el); span.style.visibility = 'hidden';
+    const speed = 2.5 + Math.random() * 4, angle = Math.random() * Math.PI * 2;
+    bouncingWords.push({ el, x: rect.left, y: rect.top, vx: Math.cos(angle) * speed, vy: Math.sin(angle) * speed });
   }
 
-  // --- dispatch to correct mode ---
   function dropWord(span) {
     if (displayMode === 'fall')   dropFall(span);
     else if (displayMode === 'float')  dropFloat(span);
@@ -809,9 +809,7 @@
   }
 
   function dropAllLit() {
-    spans.forEach(span => {
-      if (span.classList.contains('lit') && !span._dispatched) dropWord(span);
-    });
+    spans.forEach(span => { if (span.classList.contains('lit') && !span._dispatched) dropWord(span); });
   }
 
   // --- mode buttons ---
@@ -819,8 +817,7 @@
   modeBtns.forEach(btn => {
     btn.addEventListener('click', () => {
       displayMode = btn.id.replace('mode-', '');
-      modeBtns.forEach(b => b.classList.remove('active'));
-      btn.classList.add('active');
+      modeBtns.forEach(b => b.classList.remove('active')); btn.classList.add('active');
       if (displayMode !== 'list' && running) dropAllLit();
     });
   });
@@ -842,19 +839,15 @@
   cmodeButtons.forEach(btn => {
     btn.addEventListener('click', () => {
       colorMode = btn.id.replace('cmode-', '');
-      cmodeButtons.forEach(b => b.classList.remove('active'));
-      btn.classList.add('active');
-      spans.forEach((span, i) => {
-        if (span.classList.contains('lit')) span.style.color = getWordColor(i);
-      });
+      cmodeButtons.forEach(b => b.classList.remove('active')); btn.classList.add('active');
+      spans.forEach((span, i) => { if (span.classList.contains('lit')) span.style.color = getWordColor(i); });
     });
   });
 
   // --- save button ---
   saveBtnEl.addEventListener('click', () => {
     if (litCount > 0) {
-      scoreSaved = false;
-      saveScore(playerName, litCount);
+      scoreSaved = false; saveScore(playerName, litCount);
       saveBtnEl.textContent = 'SAVED!';
       setTimeout(() => { saveBtnEl.textContent = 'SAVE'; }, 1800);
     }
@@ -866,19 +859,15 @@
     spans[globalIdx].classList.add('lit');
     spans[globalIdx].style.color = getWordColor(globalIdx);
     litCount = Math.max(litCount, globalIdx + 1);
-
     const pct = litCount / words.length * 100;
     progressBar.style.width = pct.toFixed(1) + '%';
     wordCount.textContent   = `${litCount.toLocaleString()} / ${words.length.toLocaleString()}`;
     checkMilestones(pct);
-
     if (displayMode === 'list') {
       spans[globalIdx].scrollIntoView({ block: 'center', behavior: 'smooth' });
     } else {
       const captured = spans[globalIdx];
-      setTimeout(() => {
-        if (!captured._dispatched) dropWord(captured);
-      }, 3000);
+      setTimeout(() => { if (!captured._dispatched) dropWord(captured); }, 3000);
     }
   }
 
@@ -888,80 +877,95 @@
       if (si >= sentences.length) { running = false; saveScore(playerName, litCount); }
       return;
     }
-
-    const s   = sentences[si];
+    const s = sentences[si];
     const utt = new SpeechSynthesisUtterance(s.text);
-    utt.pitch = parseFloat(pitchEl.value);
-    utt.rate  = ttsRate();
-    const vi  = parseInt(voiceSelect.value);
+    utt.pitch = parseFloat(pitchEl.value); utt.rate = ttsRate();
+    const vi = parseInt(voiceSelect.value);
     if (voices[vi]) utt.voice = voices[vi];
-
     utt.onboundary = (e) => {
       if (e.name !== 'word') return;
-      const idx = s.charMap[e.charIndex];
-      if (idx !== undefined) lightWord(idx);
+      const idx = s.charMap[e.charIndex]; if (idx !== undefined) lightWord(idx);
     };
-
     utt.onstart = () => { lightWord(s.start); speakSentence(si + 1); };
-
-    utt.onend = () => {
-      for (let i = s.start; i < s.end; i++) {
-        if (!spans[i].classList.contains('lit')) lightWord(i);
-      }
-    };
-
-    speechSynthesis.speak(utt);
-    sentIdx = si + 1;
+    utt.onend   = () => { for (let i = s.start; i < s.end; i++) { if (!spans[i].classList.contains('lit')) lightWord(i); } };
+    speechSynthesis.speak(utt); sentIdx = si + 1;
   }
 
   // --- pause / resume ---
   pauseBtn.addEventListener('click', () => {
-    paused = !paused;
-    pauseBtn.textContent = paused ? 'RESUME' : 'PAUSE';
-    if (paused) {
-      speechSynthesis.pause();
-      if (litCount > 0) saveScore(playerName, litCount);
-    } else {
-      scoreSaved = false;
-      speechSynthesis.resume();
-    }
+    paused = !paused; pauseBtn.textContent = paused ? 'RESUME' : 'PAUSE';
+    if (paused) { speechSynthesis.pause(); if (litCount > 0) saveScore(playerName, litCount); }
+    else { scoreSaved = false; speechSynthesis.resume(); }
   });
 
-  // --- bees ---
-  (function spawnBees() {
-    const container = document.getElementById('bees');
-    for (let i = 0; i < 22; i++) {
-      const bee      = document.createElement('img');
-      bee.src        = 'bee.png';
-      bee.className  = 'bee';
-      const goRight  = Math.random() > 0.5;
-      const size     = 108 + Math.random() * 216;
-      const topPct   = 2 + Math.random() * 88;
-      const dur      = 6 + Math.random() * 18;
-      const delay    = -(Math.random() * dur);
-      const wob      = 1.2 + Math.random() * 1.8;
+  // =============================================
+  // BEES
+  // =============================================
+  const beeContainer = document.getElementById('bees');
+  let activeBeeCount = 0;
+  const TARGET_BEES  = 22;
 
-      bee.style.cssText = `
-        width: ${size}px; top: ${topPct}vh;
-        animation:
-          ${goRight ? 'fly-right' : 'fly-left'} ${dur}s ${delay}s linear infinite,
-          wobble ${wob}s ease-in-out infinite;
-        opacity: ${0.55 + Math.random() * 0.45};
-      `;
+  function spawnBee() {
+    const bee     = document.createElement('img');
+    bee.src       = 'bee.png';
+    bee.className = 'bee';
+    const goRight = Math.random() > 0.5;
+    const size    = 108 + Math.random() * 216;
+    const topPct  = 2 + Math.random() * 88;
+    const dur     = 6 + Math.random() * 18;
+    const delay   = -(Math.random() * dur);
+    const wob     = 1.2 + Math.random() * 1.8;
 
-      bee.addEventListener('click', () => {
-        if (!running) return;
-        bee.classList.add('caught');
-        beesCollected++;
-        beeCounterEl.textContent = `  collected: ${beesCollected}`;
-        setTimeout(() => bee.remove(), 300);
-      });
+    bee.style.cssText = `
+      width: ${size}px; top: ${topPct}vh;
+      animation:
+        ${goRight ? 'fly-right' : 'fly-left'} ${dur}s ${delay}s linear infinite,
+        wobble ${wob}s ease-in-out infinite;
+      opacity: ${0.55 + Math.random() * 0.45};
+    `;
 
-      container.appendChild(bee);
-    }
-  })();
+    bee.addEventListener('click', () => {
+      if (!running) return;
+      bee.classList.add('caught');
+      beesCollected++;
+      beeCounterEl.textContent = `  collected: ${beesCollected}`;
 
-  // --- start ---
+      // persistent total + achievement check
+      progress.beesTotal++;
+      saveProgress(progress);
+      checkAchievements('bees');
+
+      activeBeeCount--;
+      setTimeout(() => {
+        bee.remove();
+        // respawn after a short delay to keep count at TARGET_BEES
+        setTimeout(() => { spawnBee(); activeBeeCount++; }, 800 + Math.random() * 1200);
+      }, 300);
+    });
+
+    if (running) bee.classList.add('catchable');
+    beeContainer.appendChild(bee);
+    activeBeeCount++;
+  }
+
+  // initial swarm
+  for (let i = 0; i < TARGET_BEES; i++) spawnBee();
+
+  // =============================================
+  // TIME TRACKING
+  // =============================================
+  let saveProgressTick = 0;
+  setInterval(() => {
+    if (!running || paused) return;
+    progress.listeningSeconds++;
+    saveProgressTick++;
+    if (saveProgressTick >= 10) { saveProgress(progress); saveProgressTick = 0; }
+    checkAchievements('time');
+  }, 1000);
+
+  // =============================================
+  // START
+  // =============================================
   startBtn.addEventListener('click', async () => {
     playerName = playerNameEl.value.trim() || 'anonymous';
     liveSpeed.value = speedEl.value;
@@ -973,21 +977,15 @@
     words = text.trim().split(/\s+/);
     wordCount.textContent = `0 / ${words.length.toLocaleString()}`;
 
-    renderAll();
-    buildSentences();
-    buildMilestones();
+    renderAll(); buildSentences(); buildMilestones();
 
-    overlay.style.opacity     = '0';
-    overlay.style.pointerEvents = 'none';
-    hud.classList.add('visible');
-    header.classList.add('visible');
+    overlay.style.opacity = '0'; overlay.style.pointerEvents = 'none';
+    hud.classList.add('visible'); header.classList.add('visible');
     loadLeaderboard();
 
-    // make bees catchable
     document.querySelectorAll('.bee').forEach(b => b.classList.add('catchable'));
 
-    running = true;
-    speakSentence(0);
+    running = true; speakSentence(0);
   });
 </script>
 </body>
