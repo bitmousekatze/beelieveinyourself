@@ -384,13 +384,19 @@
     /* ad modal */
     #ad-overlay { position: fixed; inset: 0; background: #000000ee; display: none; align-items: center; justify-content: center; z-index: 600; }
     #ad-overlay.open { display: flex; }
-    #ad-panel { background: #111; border: 2px solid #f5c800; border-radius: 10px; padding: 32px 28px; width: min(340px,90vw); text-align: center; }
-    #ad-panel h3 { color: #f5c800; font-size: 1rem; letter-spacing: 0.1em; margin-bottom: 8px; }
-    #ad-panel p { color: #aaa; font-size: 0.8rem; margin-bottom: 20px; }
+    #ad-panel { background: #111; border: 2px solid #f5c800; border-radius: 10px; padding: 28px 24px; width: min(360px,92vw); text-align: center; }
+    #ad-panel h3 { color: #f5c800; font-size: 1rem; letter-spacing: 0.1em; margin-bottom: 6px; }
+    #ad-panel p { color: #aaa; font-size: 0.8rem; margin-bottom: 14px; }
     #ad-countdown { font-size: 2.5rem; color: #f5c800; font-family: 'Courier New', monospace; margin-bottom: 16px; }
     #ad-skip-btn { background: #f5c800; color: #0a0a00; border: none; padding: 8px 28px; font-family: 'Courier New', monospace; font-size: 0.85rem; font-weight: bold; cursor: pointer; border-radius: 4px; display: none; }
     #ad-bar-wrap { height: 6px; background: #333; border-radius: 3px; margin-bottom: 16px; }
     #ad-bar { height: 100%; background: #f5c800; border-radius: 3px; width: 0%; transition: width 0.2s linear; }
+    #trivia-question { color: #f0e080; font-size: 0.88rem; margin-bottom: 14px; line-height: 1.5; text-align: left; }
+    .trivia-choice { display: block; width: 100%; margin-bottom: 8px; background: #1a1a1a; border: 1px solid #f5c80055; color: #ccc; font-family: 'Courier New', monospace; font-size: 0.8rem; padding: 8px 12px; cursor: pointer; border-radius: 4px; text-align: left; transition: background 0.15s, border-color 0.15s; }
+    .trivia-choice:hover { background: #2a2a00; border-color: #f5c800; }
+    .trivia-choice.correct { background: #003300; border-color: #44ff44; color: #88ff88; }
+    .trivia-choice.wrong { background: #330000; border-color: #ff4444; color: #ff8888; }
+    #trivia-result { font-size: 0.85rem; margin-top: 10px; min-height: 1.2em; }
     @keyframes pulse-dot { 0%,100% { transform: scale(1); opacity: 1; } 50% { transform: scale(1.4); opacity: 0.6; } }
   </style>
 </head>
@@ -588,6 +594,9 @@
     <div id="ad-bar-wrap"><div id="ad-bar"></div></div>
     <div id="ad-countdown">5</div>
     <button id="ad-skip-btn">✓ CLAIM</button>
+    <div id="trivia-question" style="display:none"></div>
+    <div id="trivia-choices" style="display:none"></div>
+    <div id="trivia-result"></div>
   </div>
 </div>
 
@@ -1760,7 +1769,7 @@
         icon = '🔒'; label = dayNum;
       } else {
         cls += ' missed';
-        icon = '📺'; label = dayNum;
+        icon = '🐝'; label = dayNum;
       }
 
       div.className = cls;
@@ -1770,7 +1779,7 @@
         const reward = adBonus(daysBack);
         const hint = document.createElement('div');
         hint.className = 'ad-hint';
-        hint.textContent = `▶ watch ad · +${fmtN(reward)} 🍯`;
+        hint.textContent = `▶ bee trivia · +${fmtN(reward)} 🍯`;
         div.appendChild(hint);
         div.addEventListener('click', () => watchAdForDay(d, daysBack));
       } else if (isToday && !claimed) {
@@ -1837,17 +1846,102 @@
     });
   }
 
+  const BEE_TRIVIA = [
+    { q: 'What is Barry B. Benson\'s job ambition when he graduates?', choices: ['Pollen jock', 'Honey stirrer', 'Lawyer', 'Queen\'s guard'], a: 0 },
+    { q: 'What does Barry say when he meets Vanessa for the first time indoors?', choices: ['You like jazz?', 'Thank you for saving my life.', 'I\'m a bee!', 'According to all known laws of aviation...'], a: 1 },
+    { q: 'What sport do the pollen jocks play with a tennis ball?', choices: ['Baseball', 'They joust with it', 'They don\'t play sports', 'Soccer'], a: 2, note: 'trick — they just fly through it' },
+    { q: 'Who does Barry sue on behalf of all bees?', choices: ['Honex Industries', 'The entire human race', 'Vanessa\'s flower shop', 'The Krelman'], a: 1 },
+    { q: 'What is the name of the honey company where Barry works?', choices: ['Bee Corp', 'Golden Hive', 'Honex Industries', 'BuzzCo'], a: 2 },
+    { q: 'What musician does Barry call as a witness in the trial?', choices: ['Barry White', 'Sting', 'Bono', 'Seal'], a: 1 },
+    { q: 'What phrase does the crowd chant during the trial?', choices: ['Free the bees!', 'Bee rights now!', 'Honey for all!', 'Barry for president!'], a: 0 },
+    { q: 'What is Barry\'s full name?', choices: ['Barry Benjamin Benson', 'Barry B. Benson', 'Barry Bruce Benson', 'Bartholomew Benson'], a: 1 },
+    { q: 'What goes wrong with the flowers after the bees win their case?', choices: ['They bloom too much', 'They start talking', 'They wilt and die', 'They attract wasps'], a: 2 },
+    { q: 'How does Barry get back into Vanessa\'s apartment after the window incident?', choices: ['Through the mail slot', 'She opens the door', 'Through a crack in the wall', 'He flies through an open window'], a: 3 },
+    { q: 'What does Barry do that breaks the cardinal rule of being a bee?', choices: ['Stings someone', 'Talks to a human', 'Leaves the hive alone', 'Eats human food'], a: 1 },
+    { q: 'Where is Vanessa\'s flower shop located?', choices: ['Brooklyn', 'Manhattan', 'Queens', 'The Bronx'], a: 1 },
+    { q: 'What is the "Krelman"?', choices: ['A type of honey', 'A job at Honex that catches the last drop from the vat', 'Barry\'s dad\'s title', 'A bee dance ritual'], a: 1 },
+    { q: 'What year was Bee Movie released?', choices: ['2005', '2006', '2007', '2008'], a: 2 },
+    { q: 'What does Barry\'s dad do for a living?', choices: ['He\'s a pollen jock', 'He works the Krelman', 'He\'s retired', 'He makes honey labels'], a: 1 },
+    { q: 'What does Vanessa give Barry to drink?', choices: ['Tea', 'Coffee', 'Honey lemonade', 'Nothing — he\'s a bee'], a: 1 },
+    { q: 'What color is Barry\'s graduation cap tassel?', choices: ['Black', 'Yellow', 'Gold', 'White'], a: 1 },
+    { q: 'How many times has a bee ever stung someone in New York City?', choices: ['Zero', 'Once', 'Seventeen', 'Thousands'], a: 0, note: 'Barry says this during the trial' },
+    { q: 'What does Barry land on that causes the trial scene to go crazy?', choices: ['The judge\'s head', 'The jury box', 'The witness stand', 'Opposing counsel\'s nose'], a: 0 },
+    { q: 'What airline does Barry help land at the end of the film?', choices: ['Delta', 'United', 'JetBlue', 'Air France'], a: 0 },
+  ];
+
   function watchAdForDay(dateStr, daysBack) {
     if (progress.adDays.includes(dateStr)) return;
     const reward = adBonus(daysBack);
-    showCountdown('📺 WATCH AD', `Earn +${fmtN(reward)} 🍯 for missing day ${new Date(dateStr + 'T12:00:00').getDate()}`, 5, () => {
+    const dayNum = new Date(dateStr + 'T12:00:00').getDate();
+
+    // pick a deterministic question per dateStr so refreshing doesn't shuffle
+    const seed = dateStr.split('-').reduce((s,n)=>s+parseInt(n),0);
+    const q = BEE_TRIVIA[seed % BEE_TRIVIA.length];
+
+    document.getElementById('ad-title').textContent = '🐝 BEE MOVIE TRIVIA';
+    document.getElementById('ad-desc').textContent = `Answer correctly to claim +${fmtN(reward)} 🍯 for missing day ${dayNum}.`;
+    document.getElementById('ad-bar-wrap').style.display = 'none';
+    document.getElementById('ad-countdown').style.display = 'none';
+    document.getElementById('ad-skip-btn').style.display = 'none';
+
+    const qEl = document.getElementById('trivia-question');
+    const cEl = document.getElementById('trivia-choices');
+    const rEl = document.getElementById('trivia-result');
+    qEl.textContent = q.q;
+    qEl.style.display = 'block';
+    rEl.textContent = '';
+
+    // shuffle choices but remember which index is correct
+    const indexed = q.choices.map((text, i) => ({ text, correct: i === q.a }));
+    for (let i = indexed.length - 1; i > 0; i--) {
+      const j = Math.floor(Math.random() * (i + 1));
+      [indexed[i], indexed[j]] = [indexed[j], indexed[i]];
+    }
+    cEl.style.display = 'block';
+    cEl.innerHTML = '';
+    indexed.forEach((c, i) => {
+      const btn = document.createElement('button');
+      btn.className = 'trivia-choice';
+      btn.textContent = c.text;
+      btn._correct = c.correct;
+      btn.addEventListener('click', () => triviaAnswer(btn, c.correct, reward, dateStr));
+      cEl.appendChild(btn);
+    });
+
+    document.getElementById('ad-overlay').classList.add('open');
+  }
+
+  function triviaAnswer(btn, correct, reward, dateStr) {
+    const choices = document.querySelectorAll('.trivia-choice');
+    choices.forEach(b => b.disabled = true);
+    const rEl = document.getElementById('trivia-result');
+    if (correct) {
+      btn.classList.add('correct');
+      rEl.style.color = '#88ff88';
+      rEl.textContent = `✓ Correct! +${fmtN(reward)} 🍯`;
       progress.adDays.push(dateStr);
       progress.beesTotal += reward;
       saveProgress(progress);
       updateCurrencyDisplay();
       renderCalendar();
-      showToast(`📺 Ad watched! +${fmtN(reward)} honey!`);
-    });
+      showToast(`🐝 Correct! +${fmtN(reward)} honey!`);
+      setTimeout(() => closeTriviaPanel(), 1800);
+    } else {
+      btn.classList.add('wrong');
+      choices.forEach(b => { if (b._correct) b.classList.add('correct'); });
+      rEl.style.color = '#ff8888';
+      rEl.textContent = '✗ Wrong! Better luck tomorrow. No honey for you.';
+      setTimeout(() => closeTriviaPanel(), 2500);
+    }
+  }
+
+  function closeTriviaPanel() {
+    document.getElementById('ad-overlay').classList.remove('open');
+    document.getElementById('ad-bar-wrap').style.display = '';
+    document.getElementById('ad-countdown').style.display = '';
+    document.getElementById('trivia-question').style.display = 'none';
+    document.getElementById('trivia-choices').style.display = 'none';
+    document.getElementById('trivia-result').textContent = '';
   }
 
   function openDailyCalendar() {

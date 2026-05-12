@@ -32,7 +32,7 @@ you press start. the words come. they do not stop. yellow. black. yellow. black.
 - ✅ **cheat detection** — auto-pauses if speech synthesis goes silent unexpectedly (e.g. audio muted via OS mixer)
 - ✅ **achievements** — bee catching, time listening, display/color mode discoveries, script completions
 - ✅ **daily rewards** — 69 🍯 base, doubles each consecutive day; book-open animation, 3-second claim countdown
-- ✅ **ad-watch for missed days** — retroactively claim missed daily rewards; reward doubles the further back in time
+- ✅ **trivia for missed days** — answer a Bee Movie trivia question to retroactively claim a missed daily reward; reward doubles the further back in time; wrong answer means no honey
 - ✅ **username persistence** — saved to localStorage, auto-filled on every visit
 - ✅ **mobile support** — iOS Safari speech priming, boundary fallback timer, touch handlers, responsive layout
 - ✅ **everything persists** — honey, shop upgrades, achievements, streak, and word position survive page refresh
@@ -121,7 +121,7 @@ everything lives under `beelieve_progress` in localStorage:
 | `completions` | full script finish count |
 | `savedLitCount` | word index to resume from |
 | `claimedDates` | ISO dates of claimed daily rewards |
-| `adDays` | ISO dates of ad-watch claimed days |
+| `adDays` | ISO dates of trivia-claimed missed days |
 | `shop` | upgrade owned counts by ID |
 | `unlocked` | achievement unlock dates by ID |
 
