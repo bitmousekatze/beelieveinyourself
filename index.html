@@ -2031,42 +2031,21 @@
     entry.span._dispatched = false;
   }
 
-  function fallFreezeBody(entry) {
-    // Detach from physics, leave DOM element frozen in place as fixed overlay
-    Matter.World.remove(fallWorld, entry.body);
-    const el = entry.el;
-    // Convert absolute doc coords → fixed viewport coords
-    const docX = parseFloat(el.style.left) || entry.body.position.x - el.offsetWidth/2;
-    const docY = parseFloat(el.style.top)  || entry.body.position.y - el.offsetHeight/2;
-    el.style.position = 'fixed';
-    el.style.left = (docX - window.scrollX) + 'px';
-    el.style.top  = (docY - window.scrollY) + 'px';
-    el.style.transform = `rotate(${entry.body.angle}rad)`;
-    entry.frozen = true;
-  }
-
   (function masterRAF() {
     requestAnimationFrame(masterRAF);
 
     if (fallBodies.length > 0) {
-      const cullAbove = window.scrollY - 500; // remove bodies well above viewport
+      const cullBelow = window.scrollY + window.innerHeight + 200;
+      const cullAbove = window.scrollY - 500;
       for (let i = fallBodies.length - 1; i >= 0; i--) {
         const entry = fallBodies[i];
-        if (entry.frozen) continue;
         const {body, el} = entry;
         const py = body.position.y;
 
-        // Scrolled far above viewport — restore span as static text
-        if (py < cullAbove) {
-          fallBodies.splice(i, 1);
-          fallRemoveBody(entry);
-          continue;
-        }
-
-        // Settled (tiny velocity, low kinetic energy) — freeze in DOM, free from physics
-        const spd = Math.abs(body.velocity.x) + Math.abs(body.velocity.y);
-        if (spd < 0.08 && py > fallFloorY - 60) {
-          fallFreezeBody(entry);
+        // Fell off bottom or scrolled far above — remove, keep span hidden (already played)
+        if (py > cullBelow || py < cullAbove) {
+          Matter.World.remove(fallWorld, body);
+          el.remove();
           fallBodies.splice(i, 1);
           continue;
         }
@@ -2088,22 +2067,11 @@
     });
   })();
 
-  let fallEngine=null,fallWorld=null,fallInited=false,fallGround=null,fallLeft=null,fallRight=null,fallFloorY=0;
+  let fallEngine=null,fallWorld=null,fallInited=false;
   let fallTickInterval=null;
-  function viewportBottom() { return window.scrollY+window.innerHeight-50; }
   function initFall() {
-    if (fallInited) return; fallInited=true; fallFloorY=viewportBottom();
-    fallEngine=Matter.Engine.create(); fallWorld=fallEngine.world; fallEngine.gravity.y=1.2;
-    fallGround=Matter.Bodies.rectangle(window.innerWidth/2,fallFloorY+30,window.innerWidth*4,60,{isStatic:true});
-    fallLeft  =Matter.Bodies.rectangle(-30,fallFloorY/2,60,fallFloorY*2,{isStatic:true});
-    fallRight =Matter.Bodies.rectangle(window.innerWidth+30,fallFloorY/2,60,fallFloorY*2,{isStatic:true});
-    Matter.World.add(fallWorld,[fallGround,fallLeft,fallRight]);
-    window.addEventListener('scroll',()=>{
-      const ny=viewportBottom(); if (ny<=fallFloorY) return; fallFloorY=ny;
-      Matter.Body.setPosition(fallGround,{x:window.innerWidth/2,y:fallFloorY+30});
-      Matter.Body.setPosition(fallLeft,  {x:-30,                 y:fallFloorY/2 });
-      Matter.Body.setPosition(fallRight, {x:window.innerWidth+30,y:fallFloorY/2 });
-    });
+    if (fallInited) return; fallInited=true;
+    fallEngine=Matter.Engine.create(); fallWorld=fallEngine.world; fallEngine.gravity.y=1.5;
     fallTickInterval=setInterval(()=>{
       if (fallBodies.length > 0) Matter.Engine.update(fallEngine,1000/60);
     },1000/60);
@@ -2118,13 +2086,12 @@
 
     const docX=rect.left+rect.width/2+window.scrollX;
     const docY=rect.top+rect.height/2+window.scrollY;
-    const startY=Math.min(docY,fallFloorY-20);
     const el=document.createElement('span'); el.className='fly-word'; el.style.position='absolute'; el.style.left='-9999px'; el.style.top='-9999px';
     el.textContent=span.textContent.trim(); el.style.color=span.style.color||'#f5c800';
     document.body.appendChild(el);
     const w=Math.max(el.offsetWidth,10)+6, h=Math.max(el.offsetHeight,10)+6;
-    const body=Matter.Bodies.rectangle(docX,startY,w,h,{restitution:0.4,friction:0.3,frictionAir:0.012,angle:(Math.random()-0.5)*0.4});
-    Matter.Body.setVelocity(body,{x:(Math.random()-0.5)*4,y:2+Math.random()*2});
+    const body=Matter.Bodies.rectangle(docX,docY,w,h,{restitution:0,friction:0,frictionAir:0.008,angle:(Math.random()-0.5)*0.5,collisionFilter:{mask:0}});
+    Matter.Body.setVelocity(body,{x:(Math.random()-0.5)*3,y:1+Math.random()*2});
     Matter.World.add(fallWorld,body); fallBodies.push({body,el,span}); span.style.visibility='hidden';
 
     // Prune oldest bodies if over cap
@@ -2220,7 +2187,7 @@
     progressBar.style.width=pct.toFixed(1)+'%';
     wordCount.textContent=`${litCount.toLocaleString()} / ${words.length.toLocaleString()}`;
     checkMilestones(pct);
-    if (displayMode==='list' && !userScrolled) { spans[globalIdx].scrollIntoView({block:'center',behavior:'smooth'}); }
+    if ((displayMode==='list' || displayMode==='fall') && !userScrolled) { spans[globalIdx].scrollIntoView({block:'center',behavior:'smooth'}); }
     else { const c=spans[globalIdx]; setTimeout(()=>{if(!c._dispatched)dropWord(c);},1500); }
   }
 
