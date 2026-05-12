@@ -196,6 +196,45 @@
     .ach-progress-fill { height: 100%; background: #f5c800; border-radius: 2px; }
     #ach-close { position: absolute; top: 14px; right: 16px; background: transparent; border: 1px solid #f5c80044; color: #f5c800; font-family: 'Courier New', monospace; font-size: 0.75rem; cursor: pointer; padding: 3px 10px; }
     #ach-close:hover { background: #f5c80022; }
+
+    /* ---- daily calendar modal ---- */
+    #daily-overlay { position: fixed; inset: 0; background: #000000cc; display: none; align-items: center; justify-content: center; z-index: 500; }
+    #daily-overlay.open { display: flex; }
+    #daily-panel {
+      background: #1a1200; border: 2px solid #f5c800; border-radius: 12px;
+      padding: 28px 24px; width: min(420px, 94vw); position: relative;
+      transform-origin: left center;
+      animation: book-open 0.35s cubic-bezier(.4,0,.2,1) both;
+    }
+    @keyframes book-open {
+      from { transform: perspective(800px) rotateY(-90deg); opacity: 0; }
+      to   { transform: perspective(800px) rotateY(0deg);   opacity: 1; }
+    }
+    #daily-panel h2 { color: #f5c800; font-size: 1rem; letter-spacing: 0.15em; text-align: center; margin-bottom: 4px; }
+    #daily-streak-line { color: #888; font-size: 0.72rem; text-align: center; margin-bottom: 18px; }
+    .cal-grid { display: grid; grid-template-columns: repeat(7, 1fr); gap: 6px; margin-bottom: 18px; }
+    .cal-day {
+      aspect-ratio: 1; border-radius: 6px; display: flex; flex-direction: column;
+      align-items: center; justify-content: center; font-size: 0.6rem;
+      border: 1px solid #f5c80033; background: #2a2000; color: #888; gap: 2px;
+    }
+    .cal-day.claimed { background: #3a3000; border-color: #f5c80066; color: #f5c800; }
+    .cal-day.today   { border-color: #f5c800; border-width: 2px; }
+    .cal-day.today.unclaimed { background: #4a3800; color: #f5c800; cursor: pointer; }
+    .cal-day.today.unclaimed:hover { background: #5a4800; }
+    .cal-day.future  { opacity: 0.25; }
+    .cal-day-check   { font-size: 0.9rem; line-height: 1; }
+    .cal-day-label   { font-size: 0.55rem; opacity: 0.7; }
+    #daily-claim-area { text-align: center; }
+    #daily-claim-btn {
+      background: #f5c800; color: #0a0a00; border: none; padding: 10px 32px;
+      font-family: 'Courier New', monospace; font-size: 0.95rem; font-weight: bold;
+      cursor: pointer; letter-spacing: 0.1em; border-radius: 4px;
+      -webkit-tap-highlight-color: transparent; touch-action: manipulation;
+    }
+    #daily-claim-btn:hover { background: #ffd700; }
+    #daily-already { color: #888; font-size: 0.8rem; }
+    #daily-close { position: absolute; top: 12px; right: 14px; background: transparent; border: 1px solid #f5c80044; color: #f5c800; font-family: 'Courier New', monospace; font-size: 0.72rem; cursor: pointer; padding: 2px 8px; }
   </style>
 </head>
 <body>
@@ -260,10 +299,7 @@
       <input type="password" id="elevenlabs-key" maxlength="200" placeholder="sk_..."
         style="width:100%;background:#333;color:#f5c800;border:1px solid #f5c80044;font-family:'Courier New',monospace;font-size:0.78rem;padding:4px 8px;outline:none;" />
     </div>
-    <div id="daily-bonus-banner" style="display:none;background:#2a2000;border:1px solid #f5c800;border-radius:4px;padding:10px 16px;text-align:center;width:100%;">
-      <div id="daily-bonus-text" style="color:#f5c800;font-size:0.85rem;margin-bottom:8px;"></div>
-      <button id="daily-claim-btn" style="background:#f5c800;color:#0a0a00;border:none;padding:6px 24px;font-family:'Courier New',monospace;font-size:0.85rem;font-weight:bold;cursor:pointer;letter-spacing:0.1em;-webkit-tap-highlight-color:transparent;">🍯 CLAIM</button>
-    </div>
+    <button id="daily-book-btn" title="daily rewards" style="background:transparent;border:1px solid #f5c80066;color:#f5c800;font-family:'Courier New',monospace;font-size:0.85rem;padding:8px 20px;cursor:pointer;letter-spacing:0.1em;-webkit-tap-highlight-color:transparent;touch-action:manipulation;width:100%;text-align:center;">📖 DAILY REWARDS</button>
     <button id="start-btn">▶ START FRESH</button>
     <button id="resume-btn" style="background:transparent;border:2px solid #f5c800;color:#f5c800;padding:12px 32px;font-size:1rem;font-family:'Courier New',monospace;font-weight:bold;cursor:pointer;letter-spacing:0.12em;text-transform:uppercase;transition:transform 0.1s,box-shadow 0.1s;-webkit-tap-highlight-color:transparent;touch-action:manipulation;display:none;">⏩ RESUME</button>
     <button id="landing-ach-btn"
@@ -285,6 +321,17 @@
     <h2>🏅 ACHIEVEMENTS</h2>
     <div class="ach-subtitle" id="ach-subtitle">loading...</div>
     <div id="ach-content"></div>
+  </div>
+</div>
+
+<!-- daily calendar modal -->
+<div id="daily-overlay">
+  <div id="daily-panel">
+    <button id="daily-close">✕</button>
+    <h2>📖 DAILY REWARDS</h2>
+    <div id="daily-streak-line"></div>
+    <div class="cal-grid" id="cal-grid"></div>
+    <div id="daily-claim-area"></div>
   </div>
 </div>
 
@@ -405,21 +452,36 @@
   if (!progress.beesCaught)       progress.beesCaught = 0;
   if (!progress.completions)      progress.completions = 0;
   if (!progress.savedLitCount)    progress.savedLitCount = 0;
-  if (!progress.loginStreak)      progress.loginStreak = 0;
-  if (!progress.lastLoginDate)    progress.lastLoginDate = '';
+  if (!progress.claimedDates)     progress.claimedDates = [];
 
-  // Daily bonus — calculated on load, claimed via button
-  let _dailyBonus = 0, _dailyStreak = 0;
-  (function calcDailyBonus() {
-    const today = new Date().toISOString().slice(0, 10);
-    if (progress.lastLoginDate === today) return;
-    const yesterday = new Date(Date.now() - 86400000).toISOString().slice(0, 10);
-    progress.loginStreak = (progress.lastLoginDate === yesterday) ? progress.loginStreak + 1 : 1;
-    progress.lastLoginDate = today;
-    _dailyBonus  = 69 * Math.pow(2, progress.loginStreak - 1);
-    _dailyStreak = progress.loginStreak;
+  // Migrate old streak data into claimedDates if needed
+  if (progress.lastLoginDate && !progress.claimedDates.includes(progress.lastLoginDate)) {
+    // backfill streak days as claimed so history isn't lost
+    const streak = progress.loginStreak || 1;
+    for (let i = streak - 1; i >= 0; i--) {
+      const d = new Date(Date.now() - i * 86400000).toISOString().slice(0, 10);
+      if (!progress.claimedDates.includes(d)) progress.claimedDates.push(d);
+    }
+    delete progress.loginStreak;
+    delete progress.lastLoginDate;
     saveProgress(progress);
-  })();
+  }
+
+  function todayStr() { return new Date().toISOString().slice(0, 10); }
+  function dateOffset(n) { return new Date(Date.now() + n * 86400000).toISOString().slice(0, 10); }
+
+  function calcStreak() {
+    let streak = 0, d = todayStr();
+    while (progress.claimedDates.includes(d)) {
+      streak++;
+      d = dateOffset(-(streak));
+    }
+    return streak;
+  }
+
+  function dailyBonus(streak) { return 69 * Math.pow(2, Math.max(0, streak - 1)); }
+
+  function todayClaimed() { return progress.claimedDates.includes(todayStr()); }
 
   let achToastTimer = null;
   function showAchToast(ach) {
@@ -754,20 +816,79 @@
     toastTimer = setTimeout(() => toast.classList.remove('show'), 2800);
   }
 
-  if (_dailyBonus > 0) {
-    const banner = document.getElementById('daily-bonus-banner');
-    const nextBonus = fmtN(_dailyBonus * 2);
-    document.getElementById('daily-bonus-text').innerHTML =
-      `🍯 Day ${_dailyStreak} login bonus!<br><strong style="font-size:1.1rem;">+${fmtN(_dailyBonus)} honey</strong><br><span style="color:#888;font-size:0.7rem;">come back tomorrow for +${nextBonus}</span>`;
-    banner.style.display = '';
-    document.getElementById('daily-claim-btn').addEventListener('click', () => {
-      progress.beesTotal += _dailyBonus;
-      saveProgress(progress);
-      updateCurrencyDisplay();
-      banner.style.display = 'none';
-      showToast(`🍯 +${fmtN(_dailyBonus)} honey claimed! Day ${_dailyStreak} streak!`);
-    });
+  // =============================================
+  // DAILY CALENDAR
+  // =============================================
+  function renderCalendar() {
+    const grid = document.getElementById('cal-grid');
+    const claimArea = document.getElementById('daily-claim-area');
+    const streakLine = document.getElementById('daily-streak-line');
+    grid.innerHTML = ''; claimArea.innerHTML = '';
+
+    const streak = calcStreak();
+    const claimed = todayClaimed();
+    const bonus = dailyBonus(streak + (claimed ? 0 : 1));
+    const nextBonus = dailyBonus(streak + (claimed ? 1 : 2));
+
+    streakLine.textContent = streak > 0
+      ? `🔥 ${streak}-day streak${claimed ? '' : ' — claim today to keep it going!'}`
+      : claimed ? '✅ Claimed today!' : 'claim your first daily reward!';
+
+    // Show 7 days: 5 past + today + 1 future
+    for (let i = -5; i <= 1; i++) {
+      const d = dateOffset(i);
+      const isClaimed = progress.claimedDates.includes(d);
+      const isToday = i === 0;
+      const isFuture = i > 0;
+      const dayNum = new Date(d).getDate();
+      const div = document.createElement('div');
+      div.className = 'cal-day' +
+        (isClaimed ? ' claimed' : '') +
+        (isToday ? ' today' + (isClaimed ? '' : ' unclaimed') : '') +
+        (isFuture ? ' future' : '');
+      div.innerHTML = `<span class="cal-day-check">${isClaimed ? '✅' : isToday ? '🍯' : isFuture ? '🔒' : '⬜'}</span><span class="cal-day-label">${dayNum}</span>`;
+      if (isToday && !isClaimed) div.addEventListener('click', claimToday);
+      grid.appendChild(div);
+    }
+
+    if (!claimed) {
+      claimArea.innerHTML = `<div style="color:#f5c800;font-size:0.8rem;margin-bottom:10px;">Today's reward: <strong>+${fmtN(bonus)} 🍯</strong><br><span style="color:#666;font-size:0.68rem;">tomorrow: +${fmtN(nextBonus)}</span></div>`;
+      const btn = document.createElement('button');
+      btn.id = 'daily-claim-btn'; btn.textContent = '🍯 CLAIM';
+      btn.addEventListener('click', claimToday);
+      claimArea.appendChild(btn);
+    } else {
+      claimArea.innerHTML = `<div id="daily-already">✅ Come back tomorrow for +${fmtN(nextBonus)} 🍯</div>`;
+    }
   }
+
+  function claimToday() {
+    if (todayClaimed()) return;
+    const streak = calcStreak();
+    const bonus = dailyBonus(streak + 1);
+    progress.claimedDates.push(todayStr());
+    progress.beesTotal += bonus;
+    saveProgress(progress);
+    updateCurrencyDisplay();
+    renderCalendar();
+    showToast(`🍯 +${fmtN(bonus)} honey! Day ${calcStreak()} streak!`);
+  }
+
+  function openDailyCalendar() {
+    renderCalendar();
+    // Re-trigger animation by removing and re-adding the panel
+    const panel = document.getElementById('daily-panel');
+    panel.style.animation = 'none';
+    requestAnimationFrame(() => { panel.style.animation = ''; });
+    document.getElementById('daily-overlay').classList.add('open');
+  }
+
+  document.getElementById('daily-book-btn').addEventListener('click', openDailyCalendar);
+  document.getElementById('daily-close').addEventListener('click', () => document.getElementById('daily-overlay').classList.remove('open'));
+  document.getElementById('daily-overlay').addEventListener('click', e => { if (e.target.id === 'daily-overlay') document.getElementById('daily-overlay').classList.remove('open'); });
+
+  // Pulse the book button if today's reward is unclaimed
+  if (!todayClaimed()) document.getElementById('daily-book-btn').style.borderColor = '#f5c800';
 
   function buildMilestones() {
     MILESTONES.forEach((m,i) => {
