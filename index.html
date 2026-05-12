@@ -304,7 +304,7 @@
             <div style="color:#f5c800;font-weight:bold;margin-bottom:5px;">🎙️ ElevenLabs TTS</div>
             Uses ElevenLabs AI voices instead of your browser's built-in voice.<br><br>
             <strong style="color:#f5c800;">To get a key:</strong><br>
-            1. Go to <span style="color:#f5c800;">elevenlabs.io</span><br>
+            1. Go to <a href="https://try.elevenlabs.io/njdl6paos6mu" target="_blank" style="color:#f5c800;">elevenlabs.io</a><br>
             2. Sign up (free tier available)<br>
             3. Go to Profile → API Keys<br>
             4. Copy your key and paste it here<br><br>
@@ -781,8 +781,14 @@
   elKeyEl.addEventListener('input', () => localStorage.setItem('beelieve_el_key', elKeyEl.value.trim()));
   const elHelpBtn = document.getElementById('el-help-btn');
   const elHelpTip = document.getElementById('el-help-tip');
-  elHelpBtn.addEventListener('mouseenter', () => elHelpTip.style.display = 'block');
-  elHelpBtn.addEventListener('mouseleave', () => elHelpTip.style.display = 'none');
+  let elTipTimer = null;
+  function showElTip() { clearTimeout(elTipTimer); elHelpTip.style.display = 'block'; }
+  function hideElTip() { elTipTimer = setTimeout(() => elHelpTip.style.display = 'none', 120); }
+  elHelpBtn.addEventListener('mouseenter', showElTip);
+  elHelpBtn.addEventListener('mouseleave', hideElTip);
+  elHelpTip.addEventListener('mouseenter', showElTip);
+  elHelpTip.addEventListener('mouseleave', hideElTip);
+  elHelpTip.style.pointerEvents = 'auto';
   let beesCollected = progress.beesCaught;
 
   // Leaderboard stubbed out — Supabase integration coming soon
