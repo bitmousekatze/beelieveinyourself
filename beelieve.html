@@ -972,6 +972,47 @@
       </p>
     </div>
 
+    <div class="entry">
+      <h3>32. landing page fixes — start fresh style, leaderboard removal, scroll lock</h3>
+      <div class="prompt-box">
+        Two bugs on the landing page: the start fresh button should match the rest of the website buttons. Also remove the leaderboard entirely from the site, and move the header down by 40 pixels, it's cut off from the top of the website.
+      </div>
+      <p>
+        Three issues addressed in one pass:
+      </p>
+      <ul>
+        <li>
+          <strong>START FRESH button mismatch</strong> — the button had a bespoke gold-fill style (<code>background:#f5c800; color:#0a0a00; padding:16px 48px; font-size:1.4rem</code>)
+          left over from the very first version of the landing page. It was replaced with the same transparent-border style as every other landing button, and the
+          <code>.landing-btn-wrap</code> hover glow/expand effect now covers it automatically.
+        </li>
+        <li>
+          <strong>Leaderboard removed</strong> — the "coming soon" leaderboard placeholder was removed from both the HTML and CSS.
+          The JSONBin backend was already stubbed out; this cleans up the dead UI entirely.
+        </li>
+        <li>
+          <strong>Header offset attempt → reverted</strong> — adding <code>top:40px</code> to the fixed header caused 40px of script content
+          to show above the bar (visible in a screenshot). All dependent offsets (shop/casino panels <code>top:44→84px</code>, words padding-top, milestone toast) were
+          also reverted back to their original values.
+        </li>
+      </ul>
+
+      <h3>33. auto-scroll pause on user scroll</h3>
+      <div class="prompt-box">
+        Scrolling up when I'm listening to the script will push me back down to where the voice is saying words.
+      </div>
+      <p>
+        In LIST mode, <code>lightWord()</code> calls <code>scrollIntoView({block:'center',behavior:'smooth'})</code> on every lit word.
+        This fought any manual scroll — the page immediately snapped back to the current word.
+      </p>
+      <p>
+        Fixed with a <code>userScrolled</code> flag. A <code>wheel</code> listener sets the flag when <code>deltaY &lt; 0</code> (scroll up).
+        A <code>touchmove</code> listener sets it when the touch Y increases (finger moving down = page scrolling up).
+        A <code>scroll</code> listener resets a 4-second debounce timer; when the timer fires, <code>userScrolled</code> is cleared and auto-scroll resumes.
+        <code>lightWord()</code> skips the <code>scrollIntoView</code> call while <code>userScrolled</code> is true, so the user can freely read ahead or back without the page fighting them.
+      </p>
+    </div>
+
   </div>
 
   <h2>// local storage schema</h2>
@@ -1036,6 +1077,10 @@
     <li>"how was this made?" plain link → restyled as matching button-style <code>&lt;a&gt;</code> tag</li>
     <li>Landing page no context → stats panel shows honey, BPS, and script progress % before you start</li>
     <li>No hover feedback on landing buttons → scale+glow expand and info tooltip on all buttons</li>
+    <li>START FRESH gold-fill button → restyled to match uniform transparent-border landing button style</li>
+    <li>Leaderboard "coming soon" placeholder → removed entirely (CSS + HTML)</li>
+    <li>header top:40px offset → reverted; content was visible above the fixed bar</li>
+    <li>Auto-scroll always follows current word → paused when user scrolls up; resumes 4s after idle</li>
   </ul>
 
   <hr>
