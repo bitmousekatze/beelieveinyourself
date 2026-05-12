@@ -977,6 +977,7 @@
   const BJ_CHIPS = [5,10,25,50,100];
 
   let bjShoe=[], bjHands=[], bjActive=0, bjDealer=[], bjPhase='betting';
+  let bjRenderedCards=new Set();
   let bjMessage='Place your bets and deal!';
   let bjDoubleFaceDown=true, bjReshuffling=false;
   let bjHandBets=[0,0,0];
@@ -1083,6 +1084,7 @@
       }
     }
     bjHands=updatedHands; bjShoe=currentShoe;
+    bjRender();
     bjStartDealerTurn(currentShoe,updatedHands);
   }
 
@@ -1162,15 +1164,23 @@
   function bjReset() {
     bjRevealTimers.forEach(clearTimeout); bjRevealTimers=[];
     bjHands=[]; bjDealer=[]; bjDealerRevealed=new Set(); bjFlippingCards=new Set();
-    bjActive=0; bjActiveBets=[]; bjHandBets=[0,0,0];
+    bjActive=0; bjActiveBets=[]; bjHandBets=[0,0,0]; bjRenderedCards=new Set();
     bjPhase='betting'; bjMessage='Place your bets and deal!'; bjRender();
   }
 
   function bjCardHTML(card, hidden, flipping) {
-    if (hidden) return `<div class="bj-card hidden" style="${card.dealDelay?`animation-delay:${card.dealDelay}ms`:''}">🂠</div>`;
-    const red=card.suit==='♥'||card.suit==='♦';
-    const delay=(!flipping&&card.dealDelay)?`animation-delay:${card.dealDelay}ms`:'';
-    return `<div class="bj-card ${flipping?'flipping':''} ${red?'red':'blk'}" style="${delay}"><div class="bj-card-rank">${card.rank}<br>${card.suit}</div><div class="bj-card-suit-br">${card.suit}</div></div>`;
+    const alreadyDealt = bjRenderedCards.has(card.id);
+    if (!alreadyDealt) bjRenderedCards.add(card.id);
+    if (hidden) {
+      const style = alreadyDealt ? 'animation:none;' : (card.dealDelay ? `animation-delay:${card.dealDelay}ms;` : '');
+      return `<div class="bj-card hidden" style="${style}">🂠</div>`;
+    }
+    const red = card.suit==='♥'||card.suit==='♦';
+    let animStyle = '';
+    if (flipping) animStyle = '';
+    else if (alreadyDealt) animStyle = 'animation:none;';
+    else if (card.dealDelay) animStyle = `animation-delay:${card.dealDelay}ms;`;
+    return `<div class="bj-card ${flipping?'flipping':''} ${red?'red':'blk'}" style="${animStyle}"><div class="bj-card-rank">${card.rank}<br>${card.suit}</div><div class="bj-card-suit-br">${card.suit}</div></div>`;
   }
 
   function bjResultClass(result) {
