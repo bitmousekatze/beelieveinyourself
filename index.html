@@ -263,7 +263,7 @@
     <a href="beelieve.html" style="color:#111;font-size:0.75rem;letter-spacing:0.1em;text-decoration:none;margin-top:4px;">how was this made? →</a>
     <div id="leaderboard">
       <h3>🏆 leaderboard</h3>
-      <div id="lb-rows"><div style="color:#666;text-align:center;padding:8px">loading...</div></div>
+      <div style="color:#666;text-align:center;padding:12px;font-size:0.75rem;letter-spacing:0.05em;">coming soon</div>
     </div>
   </div>
 </div>
@@ -629,7 +629,6 @@
   // =============================================
   // LEADERBOARD
   // =============================================
-  const lbRows       = document.getElementById('lb-rows');
   const playerNameEl = document.getElementById('player-name');
   const overlay      = document.getElementById('overlay');
   const wordsEl      = document.getElementById('words');
@@ -652,52 +651,9 @@
   let playerName    = 'anonymous';
   let beesCollected = progress.beesCaught;
 
-  const BIN_URL     = `https://api.jsonbin.io/v3/b/${CONFIG.JSONBIN_BIN}`;
-  const BIN_HEADERS = { 'X-Master-Key': CONFIG.JSONBIN_KEY, 'Content-Type': 'application/json' };
-
-  async function fetchScores() {
-    try {
-      const res  = await fetch(BIN_URL, { headers: { 'X-Master-Key': CONFIG.JSONBIN_KEY } });
-      const data = await res.json();
-      return data.record.scores || [];
-    } catch { return []; }
-  }
-
-  async function saveScore(name) {
-    if (!name || name === 'anonymous') return;
-    // Use all-time caught bees as score so spending honey doesn't lower rank
-    const score = progress.beesCaught;
-    if (score < 1) return;
-    let scores = await fetchScores();
-    const existing = scores.find(s => s.name === name);
-    // Only update if our current data is better or equal (always keep latest bees count)
-    const newEntry = { name, score: Math.max(score, existing?.score || 0), bees: progress.beesCaught, date: new Date().toISOString().slice(0,10) };
-    scores = scores.filter(s => s.name !== name);
-    scores.push(newEntry);
-    scores.sort((a,b) => b.score - a.score);
-    const top50 = scores.slice(0,50);
-    try {
-      await fetch(BIN_URL, { method:'PUT', headers:BIN_HEADERS, body:JSON.stringify({scores:top50}), keepalive:true });
-      renderLeaderboard(top50, name);
-    } catch {}
-  }
-
-  function renderLeaderboard(scores, highlightName) {
-    lbRows.innerHTML = '';
-    const top10 = scores.slice(0,10);
-    top10.forEach((s,i) => {
-      const row = document.createElement('div');
-      row.className = 'lb-row' + (s.name===highlightName ? ' me' : '');
-      row.innerHTML = `<span class="lb-rank">${i+1}</span><span class="lb-name">${s.name}</span><span class="lb-score">${s.score.toLocaleString()}</span><span class="lb-bees">🐝${s.bees||0}</span>`;
-      lbRows.appendChild(row);
-    });
-    if (!top10.length) lbRows.innerHTML = '<div style="color:#666;text-align:center;padding:8px">no scores yet</div>';
-  }
-
-  async function loadLeaderboard() { const s = await fetchScores(); renderLeaderboard(s, playerName); }
-  loadLeaderboard();
-  window.addEventListener('beforeunload', () => { saveScore(playerName); });
-  setInterval(() => { saveScore(playerName); }, 30000);
+  // Leaderboard stubbed out — Supabase integration coming soon
+  async function saveScore() {}
+  async function loadLeaderboard() {}
 
   // =============================================
   // GAME STATE
