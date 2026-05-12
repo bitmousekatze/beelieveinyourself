@@ -235,6 +235,7 @@
     #daily-claim-btn:hover { background: #ffd700; }
     #daily-already { color: #888; font-size: 0.8rem; }
     #daily-close { position: absolute; top: 12px; right: 14px; background: transparent; border: 1px solid #f5c80044; color: #f5c800; font-family: 'Courier New', monospace; font-size: 0.72rem; cursor: pointer; padding: 2px 8px; }
+    @keyframes pulse-dot { 0%,100% { transform: scale(1); opacity: 1; } 50% { transform: scale(1.4); opacity: 0.6; } }
   </style>
 </head>
 <body>
@@ -297,7 +298,7 @@
     </div>
     <div class="control-row" style="flex-direction:column;align-items:flex-start;gap:4px;">
       <div style="display:flex;align-items:center;gap:6px;">
-        <label style="color:#ccc;font-size:0.75rem;">elevenlabs api key <span style="color:#999;">(optional)</span></label>
+        <label style="color:#f5c800;font-size:0.75rem;">elevenlabs api key <span style="color:#f5c80099;">(optional)</span></label>
         <div style="position:relative;display:inline-block;">
           <span id="el-help-btn" style="display:inline-flex;align-items:center;justify-content:center;width:15px;height:15px;border-radius:50%;border:1px solid #f5c80088;color:#f5c800;font-size:0.6rem;cursor:default;font-family:'Courier New',monospace;line-height:1;">?</span>
           <div id="el-help-tip" style="display:none;position:absolute;left:50%;bottom:calc(100% + 8px);transform:translateX(-50%);width:240px;background:#1a1a1a;border:1px solid #f5c80066;border-radius:6px;padding:10px 12px;font-size:0.7rem;color:#ccc;line-height:1.5;z-index:600;pointer-events:none;">
@@ -316,7 +317,10 @@
       <input type="password" id="elevenlabs-key" maxlength="200" placeholder="sk_..."
         style="width:100%;background:#333;color:#f5c800;border:1px solid #f5c80044;font-family:'Courier New',monospace;font-size:0.78rem;padding:4px 8px;outline:none;" />
     </div>
-    <button id="daily-book-btn" title="daily rewards" style="background:transparent;border:1px solid #f5c80066;color:#f5c800;font-family:'Courier New',monospace;font-size:0.85rem;padding:8px 20px;cursor:pointer;letter-spacing:0.1em;-webkit-tap-highlight-color:transparent;touch-action:manipulation;width:100%;text-align:center;">📖 DAILY REWARDS</button>
+    <div style="position:relative;width:100%;">
+      <button id="daily-book-btn" title="daily rewards" style="background:transparent;border:1px solid #f5c80066;color:#f5c800;font-family:'Courier New',monospace;font-size:0.85rem;padding:8px 20px;cursor:pointer;letter-spacing:0.1em;-webkit-tap-highlight-color:transparent;touch-action:manipulation;width:100%;text-align:center;">📖 DAILY REWARDS</button>
+      <span id="daily-dot" style="display:none;position:absolute;top:-4px;right:-4px;width:10px;height:10px;background:#ff4444;border-radius:50%;animation:pulse-dot 1.2s ease-in-out infinite;"></span>
+    </div>
     <button id="start-btn">▶ START FRESH</button>
     <button id="resume-btn" style="background:transparent;border:2px solid #f5c800;color:#f5c800;padding:12px 32px;font-size:1rem;font-family:'Courier New',monospace;font-weight:bold;cursor:pointer;letter-spacing:0.12em;text-transform:uppercase;transition:transform 0.1s,box-shadow 0.1s;-webkit-tap-highlight-color:transparent;touch-action:manipulation;display:none;">⏩ RESUME</button>
     <button id="landing-ach-btn"
@@ -898,6 +902,8 @@
     saveProgress(progress);
     updateCurrencyDisplay();
     renderCalendar();
+    document.getElementById('daily-dot').style.display = 'none';
+    document.getElementById('daily-book-btn').style.background = 'transparent';
     showToast(`🍯 +${fmtN(bonus)} honey! Day ${calcStreak()} streak!`);
   }
 
@@ -915,7 +921,11 @@
   document.getElementById('daily-overlay').addEventListener('click', e => { if (e.target.id === 'daily-overlay') document.getElementById('daily-overlay').classList.remove('open'); });
 
   // Pulse the book button if today's reward is unclaimed
-  if (!todayClaimed()) document.getElementById('daily-book-btn').style.borderColor = '#f5c800';
+  if (!todayClaimed()) {
+    document.getElementById('daily-book-btn').style.borderColor = '#f5c800';
+    document.getElementById('daily-book-btn').style.background = '#2a1f00';
+    document.getElementById('daily-dot').style.display = 'block';
+  }
 
   function buildMilestones() {
     MILESTONES.forEach((m,i) => {
