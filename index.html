@@ -657,8 +657,9 @@
   // =============================================
   let displayMode = 'list';
 
-  // shared bounce state
+  // shared state — declared before masterRAF so the IIFE can reference them
   let bouncingWords = [];
+  let fallBodies    = [];
 
   // master RAF — syncs fall DOM + runs bounce physics
   (function masterRAF() {
@@ -685,7 +686,6 @@
   })();
 
   // --- FALL (Matter.js, document-space) ---
-  let fallBodies = [];
   let fallEngine = null;
   let fallWorld  = null;
   let fallInited = false;
