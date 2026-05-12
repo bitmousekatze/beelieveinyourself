@@ -396,6 +396,22 @@
   if (!progress.beesCaught)       progress.beesCaught = 0;
   if (!progress.completions)      progress.completions = 0;
   if (!progress.savedLitCount)    progress.savedLitCount = 0;
+  if (!progress.loginStreak)      progress.loginStreak = 0;
+  if (!progress.lastLoginDate)    progress.lastLoginDate = '';
+
+  // Calculated now, toast shown after showToast is defined below
+  let _dailyBonus = 0, _dailyStreak = 0;
+  (function calcDailyBonus() {
+    const today = new Date().toISOString().slice(0, 10);
+    if (progress.lastLoginDate === today) return;
+    const yesterday = new Date(Date.now() - 86400000).toISOString().slice(0, 10);
+    progress.loginStreak = (progress.lastLoginDate === yesterday) ? progress.loginStreak + 1 : 1;
+    progress.lastLoginDate = today;
+    _dailyBonus  = 69 * Math.pow(2, progress.loginStreak - 1);
+    _dailyStreak = progress.loginStreak;
+    progress.beesTotal += _dailyBonus;
+    saveProgress(progress);
+  })();
 
   let achToastTimer = null;
   function showAchToast(ach) {
@@ -708,6 +724,11 @@
   function showToast(text) {
     clearTimeout(toastTimer); toast.textContent = text; toast.classList.add('show');
     toastTimer = setTimeout(() => toast.classList.remove('show'), 2800);
+  }
+
+  if (_dailyBonus > 0) {
+    setTimeout(() => showToast(`🍯 Daily bonus: +${fmtN(_dailyBonus)} honey! (day ${_dailyStreak} streak)`), 800);
+    updateCurrencyDisplay();
   }
 
   function buildMilestones() {
