@@ -409,6 +409,7 @@
   <div style="flex:1;min-width:8px;"></div>
   <button class="header-btn" id="shop-btn">🛒 SHOP</button>
   <button class="header-btn" id="casino-btn">🎰 CASINO</button>
+  <button class="header-btn" id="reset-text-btn" title="Reset all fallen/floating words back to plain text">RESET TEXT</button>
   <button class="header-btn" id="save-btn">SAVE</button>
   <button class="header-btn" id="header-ach-btn">ACHIEVEMENTS</button>
   <div class="header-sep"></div>
@@ -2021,13 +2022,61 @@
     userScrollTimer = setTimeout(() => { userScrolled = false; }, 4000);
   }, { passive: true });
 
+  const FALL_MAX_BODIES = 180;
+
+  function fallRemoveBody(entry) {
+    Matter.World.remove(fallWorld, entry.body);
+    entry.el.remove();
+    entry.span.style.visibility = '';
+    entry.span._dispatched = false;
+  }
+
+  function fallFreezeBody(entry) {
+    // Detach from physics, leave DOM element frozen in place as fixed overlay
+    Matter.World.remove(fallWorld, entry.body);
+    const el = entry.el;
+    // Convert absolute doc coords → fixed viewport coords
+    const docX = parseFloat(el.style.left) || entry.body.position.x - el.offsetWidth/2;
+    const docY = parseFloat(el.style.top)  || entry.body.position.y - el.offsetHeight/2;
+    el.style.position = 'fixed';
+    el.style.left = (docX - window.scrollX) + 'px';
+    el.style.top  = (docY - window.scrollY) + 'px';
+    el.style.transform = `rotate(${entry.body.angle}rad)`;
+    entry.frozen = true;
+  }
+
   (function masterRAF() {
     requestAnimationFrame(masterRAF);
-    fallBodies.forEach(({body,el}) => {
-      el.style.left=(body.position.x-el.offsetWidth/2)+'px';
-      el.style.top=(body.position.y-el.offsetHeight/2)+'px';
-      el.style.transform=`rotate(${body.angle}rad)`;
-    });
+
+    if (fallBodies.length > 0) {
+      const cullAbove = window.scrollY - 500; // remove bodies well above viewport
+      for (let i = fallBodies.length - 1; i >= 0; i--) {
+        const entry = fallBodies[i];
+        if (entry.frozen) continue;
+        const {body, el} = entry;
+        const py = body.position.y;
+
+        // Scrolled far above viewport — restore span as static text
+        if (py < cullAbove) {
+          fallBodies.splice(i, 1);
+          fallRemoveBody(entry);
+          continue;
+        }
+
+        // Settled (tiny velocity, low kinetic energy) — freeze in DOM, free from physics
+        const spd = Math.abs(body.velocity.x) + Math.abs(body.velocity.y);
+        if (spd < 0.08 && py > fallFloorY - 60) {
+          fallFreezeBody(entry);
+          fallBodies.splice(i, 1);
+          continue;
+        }
+
+        el.style.left = (body.position.x - el.offsetWidth/2)  + 'px';
+        el.style.top  = (body.position.y - el.offsetHeight/2) + 'px';
+        el.style.transform = `rotate(${body.angle}rad)`;
+      }
+    }
+
     bouncingWords.forEach(bw => {
       bw.x+=bw.vx; bw.y+=bw.vy;
       const w=bw.el.offsetWidth,h=bw.el.offsetHeight;
@@ -2040,6 +2089,7 @@
   })();
 
   let fallEngine=null,fallWorld=null,fallInited=false,fallGround=null,fallLeft=null,fallRight=null,fallFloorY=0;
+  let fallTickInterval=null;
   function viewportBottom() { return window.scrollY+window.innerHeight-50; }
   function initFall() {
     if (fallInited) return; fallInited=true; fallFloorY=viewportBottom();
@@ -2054,12 +2104,18 @@
       Matter.Body.setPosition(fallLeft,  {x:-30,                 y:fallFloorY/2 });
       Matter.Body.setPosition(fallRight, {x:window.innerWidth+30,y:fallFloorY/2 });
     });
-    setInterval(()=>Matter.Engine.update(fallEngine,1000/60),1000/60);
+    fallTickInterval=setInterval(()=>{
+      if (fallBodies.length > 0) Matter.Engine.update(fallEngine,1000/60);
+    },1000/60);
   }
 
   function dropFall(span) {
     if (span._dispatched) return; span._dispatched=true; initFall();
     const rect=span.getBoundingClientRect();
+
+    // Skip physics for words not near the viewport — leave span visible as static text
+    if (rect.bottom < -300 || rect.top > window.innerHeight + 300) return;
+
     const docX=rect.left+rect.width/2+window.scrollX;
     const docY=rect.top+rect.height/2+window.scrollY;
     const startY=Math.min(docY,fallFloorY-20);
@@ -2070,6 +2126,12 @@
     const body=Matter.Bodies.rectangle(docX,startY,w,h,{restitution:0.4,friction:0.3,frictionAir:0.012,angle:(Math.random()-0.5)*0.4});
     Matter.Body.setVelocity(body,{x:(Math.random()-0.5)*4,y:2+Math.random()*2});
     Matter.World.add(fallWorld,body); fallBodies.push({body,el,span}); span.style.visibility='hidden';
+
+    // Prune oldest bodies if over cap
+    if (fallBodies.length > FALL_MAX_BODIES) {
+      const evict = fallBodies.splice(0, fallBodies.length - FALL_MAX_BODIES);
+      evict.forEach(e => fallRemoveBody(e));
+    }
   }
   function dropFloat(span) {
     if (span._dispatched) return; span._dispatched=true;
@@ -2135,6 +2197,21 @@
     if (playerName) { saveScore(playerName); saveBtnEl.textContent='SAVED!'; setTimeout(()=>{saveBtnEl.textContent='SAVE';},1800); }
   });
 
+  document.getElementById('reset-text-btn').addEventListener('click', () => {
+    // Remove all active fall physics bodies
+    if (fallWorld) {
+      fallBodies.forEach(e => { Matter.World.remove(fallWorld, e.body); e.el.remove(); e.span.style.visibility=''; e.span._dispatched=false; });
+      fallBodies.length = 0;
+    }
+    // Remove frozen fall elements (position:fixed overlays)
+    document.querySelectorAll('.fly-word').forEach(el => el.remove());
+    // Restore all hidden spans and clear dispatched flag
+    spans.forEach(s => { s.style.visibility=''; s._dispatched=false; });
+    // Clear bouncing words
+    bouncingWords.forEach(bw => bw.el.remove());
+    bouncingWords.length = 0;
+  });
+
   function lightWord(globalIdx) {
     if (globalIdx>=spans.length) return;
     spans[globalIdx].classList.add('lit'); spans[globalIdx].style.color=getWordColor(globalIdx);
@@ -2144,7 +2221,7 @@
     wordCount.textContent=`${litCount.toLocaleString()} / ${words.length.toLocaleString()}`;
     checkMilestones(pct);
     if (displayMode==='list' && !userScrolled) { spans[globalIdx].scrollIntoView({block:'center',behavior:'smooth'}); }
-    else { const c=spans[globalIdx]; setTimeout(()=>{if(!c._dispatched)dropWord(c);},3000); }
+    else { const c=spans[globalIdx]; setTimeout(()=>{if(!c._dispatched)dropWord(c);},1500); }
   }
 
   // iOS Safari: track last boundary event time to detect stalls
