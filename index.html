@@ -901,6 +901,7 @@
     saveProgress(progress);
     await saveScore(playerName);
     if (progress.savedLitCount > 0) document.getElementById('resume-wrap').style.display = '';
+    updateLandingStats();
     overlay.style.opacity = '1'; overlay.style.pointerEvents = 'auto';
     hud.classList.remove('visible'); header.classList.remove('visible');
   });
@@ -2312,6 +2313,11 @@
   }
 
   startBtn.addEventListener('click', async () => {
+    if (progress.savedLitCount > 0) {
+      const pct = Math.min(100, (progress.savedLitCount / 9157) * 100).toFixed(1);
+      const ok = confirm(`You're at ${pct}% of the script. Start fresh and lose your place?`);
+      if (!ok) return;
+    }
     progress.savedLitCount = 0;
     saveProgress(progress);
     await launchGame(0);
