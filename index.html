@@ -950,11 +950,11 @@
     casinoOpen ? closeCasino() : openCasino();
   });
   document.getElementById('casino-close').addEventListener('click', closeCasino);
+  document.getElementById('casino-panel').addEventListener('click', e => e.stopPropagation());
   document.addEventListener('click', e => {
     if (!casinoOpen) return;
-    const panel = document.getElementById('casino-panel');
-    const btn   = document.getElementById('casino-btn');
-    if (!panel.contains(e.target) && e.target !== btn) closeCasino();
+    const btn = document.getElementById('casino-btn');
+    if (e.target !== btn) closeCasino();
   });
 
   function casinoSetTab(tab) {
